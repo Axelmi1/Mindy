@@ -1,0 +1,60 @@
+/**
+ * MINDY User Types
+ * Shared between server and mobile for type safety
+ */
+/**
+ * User profile data
+ */
+export interface User {
+    id: string;
+    email: string;
+    username: string;
+    xp: number;
+    level: number;
+    streak: number;
+    maxStreak: number;
+    streakFreezes: number;
+    soundEnabled: boolean;
+    lastActiveAt: string | null;
+    createdAt: string;
+    updatedAt: string;
+}
+/**
+ * User stats for dashboard display
+ */
+export interface UserStats {
+    username: string;
+    xp: number;
+    level: number;
+    streak: number;
+    maxStreak: number;
+    streakFreezes: number;
+    streakAtRisk: boolean;
+    soundEnabled: boolean;
+    lessonsCompleted: number;
+    totalLessons: number;
+    achievementsUnlocked: number;
+    referralCode: string | null;
+}
+/**
+ * User progress on a specific lesson
+ */
+export interface UserProgress {
+    id: string;
+    userId: string;
+    lessonId: string;
+    completedSteps: number[];
+    isCompleted: boolean;
+}
+/**
+ * Progress with lesson details (for dashboard)
+ */
+export interface UserProgressWithLesson extends UserProgress {
+    lesson: {
+        id: string;
+        title: string;
+        domain: string;
+        xpReward: number;
+    };
+}
+//# sourceMappingURL=user.d.ts.map
