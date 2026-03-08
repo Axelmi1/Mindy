@@ -91,10 +91,19 @@ const lessons = [
         },
         {
           type: "price_prediction",
-          question: "Voici l'évolution du prix du Bitcoin sur 10 jours. Le prochain mouvement sera-t-il à la hausse ou à la baisse ?",
-          priceData: [42000, 43200, 42800, 44100, 45000, 44600, 45800, 46200, 45900, 46500],
+          question: "Bitcoin consolide après une hausse. Analyse les chandeliers et prédit le prochain mouvement.",
+          candles: [
+            { open: 41800, high: 43500, low: 41200, close: 43200 },
+            { open: 43200, high: 44800, low: 42900, close: 44500 },
+            { open: 44500, high: 45200, low: 43800, close: 44100 },
+            { open: 44100, high: 44600, low: 43400, close: 44400 },
+            { open: 44400, high: 45800, low: 44100, close: 45600 },
+            { open: 45600, high: 46200, low: 45000, close: 45200 },
+            { open: 45200, high: 45600, low: 44600, close: 45500 },
+            { open: 45500, high: 46800, low: 45300, close: 46500 },
+          ],
           correctAnswer: "up",
-          explanation: "La tendance est clairement haussière avec des creux de plus en plus hauts (higher lows). Le momentum indique une continuation à la hausse.",
+          explanation: "Tendance haussière claire : higher highs et higher lows consécutifs. Les chandelier verts dominent avec de longues mèches basses (acheteurs actifs sur les replis). Le momentum est bullish.",
           mindyMessage: "Même un débutant peut voir la tendance. La vraie difficulté ? Ne pas vendre trop tôt. 📈"
         },
         {
@@ -108,6 +117,30 @@ const lessons = [
           title: "À retenir",
           content: "Bitcoin est rare, sécurisé et appartient à ses utilisateurs. C'est la base de tout l'écosystème crypto.",
           mindyMessage: "Pas mal pour un débutant. Ne prends pas trop la confiance. 😎"
+        },
+        {
+          type: "news_impact",
+          headline: "BlackRock's iShares Bitcoin Trust (IBIT) dépasse 10 milliards $ d'actifs en 2 mois",
+          source: "Bloomberg",
+          date: "2024-03-01",
+          correctImpact: "bullish",
+          explanation: "L'afflux massif de capitaux institutionnels via les ETF spot Bitcoin valide l'actif comme classe d'investissement mainstream. 10 milliards en 2 mois = record historique pour un ETF.",
+          mindyMessage: "Quand BlackRock arrive, le marché écoute. L'institutionnel change tout. 🏦"
+        },
+        {
+          type: "speed_round",
+          title: "Speed Round : Faits Bitcoin",
+          pairs: [
+            { statement: "Le créateur de Bitcoin est connu sous le nom de Satoshi Nakamoto.", isTrue: true },
+            { statement: "Il existe un maximum de 21 millions de Bitcoins.", isTrue: true },
+            { statement: "Bitcoin utilise le Proof of Stake pour valider les transactions.", isTrue: false },
+            { statement: "Le premier achat en Bitcoin était deux pizzas pour 10 000 BTC.", isTrue: true },
+            { statement: "Le halving de Bitcoin a lieu tous les 2 ans.", isTrue: false },
+            { statement: "Bitcoin est la première cryptomonnaie jamais créée.", isTrue: true },
+            { statement: "Les transactions Bitcoin sont totalement anonymes.", isTrue: false },
+            { statement: "Le genesis block de Bitcoin date de janvier 2009.", isTrue: true }
+          ],
+          timeLimitSeconds: 40
         }
       ]
     }
@@ -223,6 +256,22 @@ const lessons = [
           title: "Sécurité maximum",
           content: "Le Cold Wallet est le plus sûr car il n'est jamais relié à internet, sauf pour signer une transaction.",
           mindyMessage: "Bravo, tu es désormais moins vulnérable. 🛡️"
+        },
+        {
+          type: "scenario",
+          situation: "Tu reçois un email de 'MetaMask Support' te demandant de cliquer sur un lien pour 'vérifier ton wallet' suite à une 'faille de sécurité'. Le lien mène à metamask-security-update.com. Que fais-tu ?",
+          choices: [
+            { text: "Je clique et entre ma seed phrase pour sécuriser mon wallet", isGood: false, explanation: "JAMAIS. Aucun service légitime ne te demandera ta seed phrase. C'est du phishing classique." },
+            { text: "J'ignore l'email — MetaMask ne contacte jamais par email pour demander des infos sensibles", isGood: true, explanation: "Correct. MetaMask n'a pas ton email. Tout contact 'officiel' demandant ta seed phrase = arnaque à 100%." },
+            { text: "Je vérifie en allant sur le site officiel metamask.io avant de cliquer", isGood: false, explanation: "Bonne réflexion de vérifier, mais le simple fait de cliquer sur un lien de phishing peut être dangereux. Ignore et supprime." }
+          ],
+          mindyMessage: "Règle d'or : PERSONNE ne doit JAMAIS voir ta seed phrase. Ni MetaMask, ni Binance, ni même Mindy. 🔐"
+        },
+        {
+          type: "flashcard",
+          front: "Hot Wallet vs Cold Wallet",
+          back: "Hot Wallet : connecté à Internet (MetaMask, Trust Wallet). Pratique mais vulnérable aux hacks.\n\nCold Wallet : hors-ligne (Ledger, Trezor). Sécurité maximale, idéal pour le stockage long terme.\n\nRègle : Hot wallet = dépenses quotidiennes. Cold wallet = épargne crypto.",
+          category: "Sécurité Crypto"
         }
       ]
     }
@@ -343,6 +392,22 @@ const lessons = [
           title: "Conclusion DeFi",
           content: "La DeFi est puissante, mais attention aux bugs dans le code des contrats et aux 'rug pulls'.",
           mindyMessage: "Garde la tête froide, les rendements de 1000% sont souvent des pièges. 🪤"
+        },
+        {
+          type: "scenario",
+          situation: "Un nouveau protocole DeFi 'MoonYield' promet 500% APY sur ton stablecoin. Le projet a 2 semaines d'existence, pas d'audit, et le code n'est pas vérifié sur Etherscan. Que fais-tu ?",
+          choices: [
+            { text: "J'investis 50% de mon portefeuille — 500% APY c'est trop bien", isGood: false, explanation: "Red flags partout : pas d'audit, code non vérifié, APY irréaliste. C'est le profil type d'un rug pull." },
+            { text: "Je passe mon chemin — trop de red flags (pas d'audit, APY irréaliste, projet trop récent)", isGood: true, explanation: "Correct. Un rendement de 500% APY sans historique ni audit = quasi-certainement un rug pull ou un Ponzi." },
+            { text: "J'investis un petit montant pour tester", isGood: false, explanation: "Même un 'petit montant' dans un rug pull = perte totale. Les smart contracts malveillants peuvent aussi drainer ton wallet." }
+          ],
+          mindyMessage: "Si c'est trop beau pour être vrai en DeFi, c'est un rug pull. 100% du temps. 🚩"
+        },
+        {
+          type: "flashcard",
+          front: "TVL (Total Value Locked)",
+          back: "TVL = valeur totale des actifs déposés dans un protocole DeFi. C'est l'indicateur #1 de confiance.\n\nExemples (2024) :\n• Lido : ~35 milliards $\n• Aave : ~12 milliards $\n• Un rug pull random : 500k$ max\n\nPlus le TVL est élevé et stable, plus le protocole est fiable.",
+          category: "DeFi"
         }
       ]
     }
@@ -430,6 +495,24 @@ const lessons = [
           title: "Bilan",
           content: "Le staking est une alternative écologique au minage et permet de générer des revenus passifs.",
           mindyMessage: "Fais pousser tes tokens comme des tomates. 🍅"
+        },
+        {
+          type: "calculator",
+          question: "Tu stakes 5 ETH à 4.5% APY pendant 1 an. Combien d'ETH gagnes-tu en récompenses ? (Formule: montant × taux)",
+          variables: ["Montant staké: 5 ETH", "APY: 4.5%", "Durée: 1 an", "Récompense = 5 × 0.045"],
+          answer: 0.225,
+          tolerance: 0.01,
+          unit: "ETH",
+          mindyMessage: "0.225 ETH gratuits pour avoir sécurisé le réseau. Pas mal pour du revenu passif. 💰"
+        },
+        {
+          type: "news_impact",
+          headline: "Lido Finance détient désormais 33% de tout l'ETH staké — seuil critique de centralisation",
+          source: "CoinDesk",
+          date: "2024-02-20",
+          correctImpact: "bearish",
+          explanation: "Un seul protocole contrôlant 33%+ du staking Ethereum menace la décentralisation du réseau. C'est le seuil à partir duquel des attaques théoriques deviennent possibles. Signal négatif pour la gouvernance Ethereum.",
+          mindyMessage: "La décentralisation, c'est le pilier d'Ethereum. Quand Lido devient trop gros, c'est un problème systémique. ⚠️"
         }
       ]
     }
@@ -576,6 +659,31 @@ const lessons = [
           title: "L'automatisation",
           content: "Le secret est de se payer en premier : programmez un virement automatique vers votre épargne dès que le salaire arrive.",
           mindyMessage: "Devenir riche en étant fainéant, c'est ça le but. 🏦"
+        },
+        {
+          type: "speed_round",
+          title: "Speed Round : Budget",
+          pairs: [
+            { statement: "La règle 50/30/20 est adaptée à tous les niveaux de revenus.", isTrue: true },
+            { statement: "Un budget doit être rigide et ne jamais être ajusté.", isTrue: false },
+            { statement: "Se payer en premier signifie épargner AVANT de dépenser.", isTrue: true },
+            { statement: "Les abonnements oubliés ne coûtent pas grand-chose.", isTrue: false },
+            { statement: "Un budget aide à réduire le stress financier.", isTrue: true },
+            { statement: "Avoir un budget signifie ne plus jamais se faire plaisir.", isTrue: false },
+            { statement: "Les dépenses variables sont plus faciles à réduire que les fixes.", isTrue: true },
+            { statement: "Un fond d'urgence fait partie de la catégorie Épargne.", isTrue: true }
+          ],
+          timeLimitSeconds: 40
+        },
+        {
+          type: "scenario",
+          situation: "Tu es au centre commercial et tu vois des sneakers en promo à -50% (150€ au lieu de 300€). Tu n'en avais pas besoin et tu as déjà dépensé 80% de ton budget 'Envies' ce mois-ci. Que fais-tu ?",
+          choices: [
+            { text: "J'achète — c'est une affaire à -50%, je ne peux pas rater ça", isGood: false, explanation: "L'urgence créée par la promo est artificielle. Tu dépasses ton budget et 150€ pour des sneakers non prévues = pas une économie." },
+            { text: "Je note le modèle et j'attends le mois prochain si j'en ai toujours envie", isGood: true, explanation: "La règle des 48h/30 jours : si tu en as encore envie plus tard, c'est un vrai désir. Sinon, tu as évité une dépense impulsive." },
+            { text: "Je pioche dans mon épargne pour cette fois", isGood: false, explanation: "L'épargne n'est pas une tirelire pour les promos. Chaque euro pioché dans l'épargne pour une envie = un euro qui ne travaille pas pour toi." }
+          ],
+          mindyMessage: "Une promo que tu n'avais pas prévue n'est pas une économie. C'est une dépense. 💸"
         }
       ]
     }
@@ -617,6 +725,26 @@ const lessons = [
           title: "Où le placer ?",
           content: "Cet argent doit rester accessible immédiatement sur un Livret A ou LDDS. Pas sous le matelas !",
           mindyMessage: "Sous le matelas, les mites ne sont pas de bons conseillers financiers. 🦗"
+        },
+        {
+          type: "budget_allocator",
+          totalBudget: 2000,
+          categories: [
+            { label: "Livret A", icon: "🏦", targetPercent: 60, minPercent: 40, maxPercent: 80 },
+            { label: "LDDS", icon: "🌱", targetPercent: 25, minPercent: 10, maxPercent: 40 },
+            { label: "Compte courant", icon: "💳", targetPercent: 15, minPercent: 5, maxPercent: 30 }
+          ],
+          explanation: "L'épargne de précaution doit être répartie entre supports liquides et sécurisés. Le Livret A est prioritaire (taux garanti, disponibilité immédiate). Le LDDS complète. Garder un minimum sur le compte courant pour les urgences immédiates."
+        },
+        {
+          type: "scenario",
+          situation: "Ta machine à laver tombe en panne. La réparation coûte 400€. Tu as 6 000€ d'épargne de précaution sur ton Livret A et tes dépenses mensuelles sont de 1 500€. Que fais-tu ?",
+          choices: [
+            { text: "Je paie avec ma carte de crédit en 4 fois pour ne pas toucher à mon épargne", isGood: false, explanation: "Payer en 4 fois = frais potentiels + dette inutile. C'est EXACTEMENT pour ça que l'EP existe." },
+            { text: "Je pioche dans mon épargne de précaution et je la reconstitue le mois suivant", isGood: true, explanation: "C'est le but de l'EP. 400€ sur 6 000€ = tu restes au-dessus de 3 mois de dépenses. Reconstitue dès le prochain salaire." },
+            { text: "J'achète une machine neuve à crédit à 800€ plutôt que de réparer", isGood: false, explanation: "Réparer coûte 2x moins cher. Un crédit pour ça = dette évitable. Utilise ton EP intelligemment." }
+          ],
+          mindyMessage: "L'EP qui n'est jamais utilisée, c'est comme un extincteur qui n'a jamais servi. C'est bien — mais il faut savoir l'utiliser quand ça brûle. 🧯"
         }
       ]
     }
@@ -715,6 +843,28 @@ const lessons = [
           title: "Conclusion",
           content: "Pour battre l'inflation, il faut investir dans des actifs qui rapportent plus de 2% par an.",
           mindyMessage: "Félicitations, tu viens de comprendre pourquoi l'investissement est obligatoire. 🎓"
+        },
+        {
+          type: "calculator",
+          question: "Avec une inflation de 3% par an, combien vaudront 10 000€ en pouvoir d'achat réel dans 10 ans ? (Formule: 10000 × (1 - 0.03)^10, approximation)",
+          variables: ["Capital: 10 000€", "Inflation: 3%/an", "Durée: 10 ans", "Pouvoir d'achat = 10 000 × 0.97^10"],
+          answer: 7374,
+          tolerance: 50,
+          unit: "€",
+          mindyMessage: "10 000€ qui dorment = 7 374€ de pouvoir d'achat réel dans 10 ans. L'inflation mange 26% de ta valeur. 😱"
+        },
+        {
+          type: "speed_round",
+          title: "Speed Round : Pouvoir d'achat",
+          pairs: [
+            { statement: "Les actions battent historiquement l'inflation sur le long terme.", isTrue: true },
+            { statement: "Un Livret A à 3% garantit de battre l'inflation.", isTrue: false },
+            { statement: "L'immobilier est considéré comme un actif anti-inflation.", isTrue: true },
+            { statement: "Garder du cash est la meilleure stratégie en période d'inflation.", isTrue: false },
+            { statement: "Les obligations à taux fixe perdent de la valeur quand l'inflation monte.", isTrue: true },
+            { statement: "L'inflation peut être bénéfique pour les emprunteurs.", isTrue: true }
+          ],
+          timeLimitSeconds: 30
         }
       ]
     }
@@ -755,6 +905,32 @@ const lessons = [
           title: "Action",
           content: "Commencer tôt avec peu (100€/mois à 25 ans) est souvent plus efficace que commencer tard avec beaucoup (500€/mois à 45 ans).",
           mindyMessage: "Le meilleur moment pour investir, c'était hier. Le deuxième meilleur, c'est maintenant. 💎"
+        },
+        {
+          type: "calculator",
+          question: "Avec la Règle des 72 : en combien d'années ton capital double à un taux de 8% par an ? (Formule: 72 / taux)",
+          variables: ["Taux annuel: 8%", "Formule: 72 / 8"],
+          answer: 9,
+          tolerance: 0,
+          unit: "ans",
+          mindyMessage: "9 ans pour doubler. 18 ans pour quadrupler. 27 ans pour x8. La patience paie. 📈"
+        },
+        {
+          type: "price_prediction",
+          question: "Ce graphique montre la croissance d'un portefeuille ETF sur 8 trimestres. Les intérêts composés accélèrent. Quelle est la tendance ?",
+          candles: [
+            { open: 10000, high: 10400, low: 9900, close: 10300 },
+            { open: 10300, high: 10800, low: 10200, close: 10700 },
+            { open: 10700, high: 11300, low: 10600, close: 11200 },
+            { open: 11200, high: 11900, low: 11100, close: 11800 },
+            { open: 11800, high: 12600, low: 11700, close: 12500 },
+            { open: 12500, high: 13400, low: 12400, close: 13300 },
+            { open: 13300, high: 14300, low: 13200, close: 14200 },
+            { open: 14200, high: 15400, low: 14100, close: 15300 }
+          ],
+          correctAnswer: "up",
+          explanation: "Croissance exponentielle typique des intérêts composés : chaque période, les gains sont plus importants que la précédente. La courbe s'accélère avec le temps.",
+          mindyMessage: "La courbe des intérêts composés est lente au début, explosive ensuite. C'est pourquoi commencer tôt est crucial. 🚀"
         }
       ]
     }
@@ -800,6 +976,25 @@ const lessons = [
           title: "Résumé",
           content: "Les ETFs sont l'outil idéal pour l'investisseur passif long terme. Un simple ETF World peut suffire pour démarrer.",
           mindyMessage: "Tu deviens presque supportable avec toutes ces connaissances. 📈"
+        },
+        {
+          type: "news_impact",
+          headline: "Le Nikkei 225 chute de 12% en une journée — les ETF Japon enregistrent des sorties record",
+          source: "Reuters",
+          date: "2024-08-05",
+          correctImpact: "bearish",
+          explanation: "Un krach de 12% sur un indice majeur crée une panique contagieuse. Les ETF liés au Japon subissent des rachats massifs, et l'effet de contagion peut toucher les marchés mondiaux via les ETF globaux.",
+          mindyMessage: "Un krach ETF rappelle que même les fonds diversifiés ne sont pas immunisés contre les paniques de marché. 🌊"
+        },
+        {
+          type: "match_pairs",
+          pairs: [
+            { term: "ETF indiciel", definition: "Réplique un indice boursier (CAC 40, S&P 500)" },
+            { term: "ETF sectoriel", definition: "Concentré sur un secteur (tech, santé, énergie)" },
+            { term: "ETF obligataire", definition: "Investit dans des obligations d'État ou corporate" },
+            { term: "ETF à effet de levier", definition: "Multiplie les mouvements de l'indice (x2, x3) — très risqué" }
+          ],
+          mindyMessage: "Chaque type d'ETF a son usage. L'indiciel est ton meilleur ami pour démarrer. 🎯"
         }
       ]
     }
@@ -1470,6 +1665,19 @@ const lessons = [
           title: "Les Types de Rollups",
           content: "• Optimistic Rollups (Arbitrum, Optimism) : supposent que les txs sont valides, fraud proof si contesté.\n• ZK-Rollups (zkSync, Starknet) : preuve cryptographique de validité, plus sûr mais plus complexe.\n\nLes deux permettent des milliers de TPS à des frais minimes.",
           mindyMessage: "ZK = Zero Knowledge. Rien à voir avec ton niveau de connaissance actuel. 😏"
+        },
+        {
+          type: "quiz",
+          question: "Quelle est la principale différence entre un Optimistic Rollup et un ZK-Rollup ?",
+          options: ["Les Optimistic Rollups sont plus rapides", "Les ZK-Rollups utilisent des preuves cryptographiques, les Optimistic Rollups utilisent des fraud proofs avec délai de contestation", "Les Optimistic Rollups sont plus chers", "Il n'y a aucune différence technique"],
+          correctIndex: 1,
+          mindyHint: "Optimistic = on fait confiance et on conteste si besoin (7 jours). ZK = on prouve mathématiquement que tout est correct."
+        },
+        {
+          type: "flashcard",
+          front: "Optimism vs Arbitrum",
+          back: "Optimism :\n• Optimistic Rollup, fraud proofs\n• Token OP, governance active\n• Écosystème : Velodrome, Synthetix\n• Superchain vision (OP Stack)\n\nArbitrum :\n• Optimistic Rollup, Nitro tech\n• Token ARB\n• Plus gros TVL des L2 (~10B$)\n• Écosystème : GMX, Camelot, Radiant\n\nLes deux réduisent les frais de 10-100x vs Ethereum L1.",
+          category: "Layer 2"
         }
       ]
     }
@@ -1529,6 +1737,22 @@ const lessons = [
           title: "Les Risques des Stablecoins",
           content: "• Risque de contrepartie : USDT/USDC sont émis par des sociétés. Si elles font faillite ?\n• Risque de dépeg : un algorithme peut se casser (LUNA 2022)\n• Risque réglementaire : les gouvernements peuvent interdire certains stablecoins\n\n→ Diversifie entre plusieurs stablecoins, ne mets pas tout dans un seul.",
           mindyMessage: "Même le plus 'stable' des trucs peut crasher. Retiens ça pour la vie. 💀"
+        },
+        {
+          type: "news_impact",
+          headline: "Tether (USDT) perd brièvement son peg à 0.97$ suite à des rumeurs sur ses réserves",
+          source: "CoinDesk",
+          date: "2024-06-15",
+          correctImpact: "bearish",
+          explanation: "Un dépeg même temporaire de l'USDT crée une panique massive : c'est le stablecoin le plus utilisé au monde. Les traders fuient vers USDC ou DAI, la liquidité se tarit, et les prix de tous les actifs crypto chutent.",
+          mindyMessage: "USDT qui dépeg = le marché entier qui panique. C'est le pilier de la liquidité crypto. 😱"
+        },
+        {
+          type: "quiz",
+          question: "Quelle est la différence fondamentale entre USDC et DAI en termes de collatéral ?",
+          options: ["USDC est backé par des dollars réels, DAI est backé par des cryptos sur-collatéralisées", "Les deux sont backés par des dollars", "DAI est algorithmique sans collatéral", "USDC est décentralisé, DAI est centralisé"],
+          correctIndex: 0,
+          mindyHint: "USDC = Circle = dollars en banque. DAI = MakerDAO = ETH et autres cryptos verrouillés à 150%+."
         }
       ]
     }
@@ -1584,6 +1808,38 @@ const lessons = [
           title: "Stratégies selon la Phase",
           content: "🐂 Bull Market :\n• Prendre des profits progressivement\n• Réduire les positions risquées\n• Ne pas FOMO sur les pompes\n\n🐻 Bear Market :\n• DCA sur les actifs solides (BTC, ETH)\n• Garder des stablecoins pour les opportunités\n• Psychologie > technique",
           mindyMessage: "Le marché récompense la patience. Pas les gens qui 'check' le prix 40 fois par jour. 🧘"
+        },
+        {
+          type: "price_prediction",
+          question: "Le marché crypto est en baisse depuis 3 mois. Analyse ce graphique bearish et prédit le prochain mouvement.",
+          candles: [
+            { open: 48000, high: 48500, low: 45200, close: 45800 },
+            { open: 45800, high: 46900, low: 44500, close: 44800 },
+            { open: 44800, high: 45100, low: 42000, close: 42500 },
+            { open: 42500, high: 43800, low: 41800, close: 43500 },
+            { open: 43500, high: 44200, low: 41200, close: 41500 },
+            { open: 41500, high: 42000, low: 39800, close: 40200 },
+            { open: 40200, high: 41500, low: 39500, close: 39800 },
+            { open: 39800, high: 40100, low: 38500, close: 38900 }
+          ],
+          correctAnswer: "down",
+          explanation: "Tendance baissière claire : lower highs et lower lows successifs. Les chandeliers rouges dominent avec de longues mèches hautes (vendeurs rejetant chaque tentative de rebond). Le momentum est bearish.",
+          mindyMessage: "En bear market, chaque rebond est une opportunité de vente pour les gros. Ne confonds pas rebond technique et retournement. 🐻"
+        },
+        {
+          type: "speed_round",
+          title: "Speed Round : Bull & Bear",
+          pairs: [
+            { statement: "Un bear market est défini par une baisse de plus de 20%.", isTrue: true },
+            { statement: "Le DCA est inefficace en bear market.", isTrue: false },
+            { statement: "Les altcoins baissent généralement plus que Bitcoin en bear market.", isTrue: true },
+            { statement: "Warren Buffett conseille d'être avide quand les autres ont peur.", isTrue: true },
+            { statement: "Un bull market ne peut jamais durer plus de 2 ans.", isTrue: false },
+            { statement: "Le volume de trading augmente généralement dans les phases de panique.", isTrue: true },
+            { statement: "En bull market, tous les projets crypto sont de bons investissements.", isTrue: false },
+            { statement: "Le sentiment 'Extreme Greed' signale souvent un sommet de marché.", isTrue: true }
+          ],
+          timeLimitSeconds: 40
         }
       ]
     }
@@ -1640,6 +1896,19 @@ const lessons = [
           title: "PEA vs CTO : Lequel Choisir ?",
           content: "PEA :\n✅ Fiscalité réduite après 5 ans (17,2%)\n❌ Plafonné à 150k€\n❌ Limité aux actions européennes + fonds éligibles\n\nCTO (Compte-Titres Ordinaire) :\n✅ Aucun plafond\n✅ Accès à tout (actions US, ETF monde, etc.)\n❌ Fiscalité pleine : flat tax 30%\n\n→ Priorité : remplir le PEA en premier, puis déborder sur le CTO.",
           mindyMessage: "Ordre : Livret A → PEA → Assurance Vie → CTO. Tatoue-toi ça si nécessaire. 💪"
+        },
+        {
+          type: "quiz",
+          question: "Que se passe-t-il fiscalement si tu retires de l'argent de ton PEA après 5 ans ?",
+          options: ["Flat tax de 30% sur les plus-values", "Seulement 17,2% de prélèvements sociaux sur les plus-values", "Aucun impôt du tout", "Impôt sur le revenu au barème progressif"],
+          correctIndex: 1,
+          mindyHint: "Après 5 ans, tu échappes à l'impôt sur le revenu. Il reste les prélèvements sociaux : 17,2%. C'est le deal du PEA."
+        },
+        {
+          type: "flashcard",
+          front: "PEA : Les 3 règles d'or",
+          back: "1. Ouvrir le plus tôt possible — le compteur des 5 ans démarre à l'ouverture, pas au premier versement.\n\n2. Ne jamais retirer avant 5 ans — sinon clôture automatique et fiscalité pleine (30%).\n\n3. Investir en ETF éligibles — Amundi MSCI World PEA ou Lyxor S&P 500 PEA pour une diversification mondiale.",
+          category: "Fiscalité"
         }
       ]
     }
@@ -2155,7 +2424,9 @@ const lessons = [
       { type: "swipe", statement: "Avoir plusieurs crédits conso en cours améliore ton dossier de prêt immobilier.", isCorrect: false, explanation: "Faux — chaque crédit augmente ton taux d'endettement. Un crédit auto peut bloquer un prêt immo si le seuil 35% est dépassé." },
       { type: "swipe", statement: "Rembourser ses crédits conso avant une demande de prêt immo est une bonne stratégie.", isCorrect: true, explanation: "Oui — réduire tes charges mensuelles existantes augmente ta capacité d'emprunt immobilier directement." },
       { type: "reorder", title: "Optimiser son dossier (6 mois avant)", instruction: "Dans l'ordre de priorité.", words: ["Constituer l'apport (10-20% minimum)", "Zéro incident bancaire sur 3 mois", "Épargne visible et croissante", "Rembourser les crédits conso si possible", "Ne pas changer de banque juste avant"], correctOrder: [1, 2, 3, 0, 4], mindyMessage: "Un bon dossier de crédit se prépare comme un entretien. 12-24 mois à l'avance. 💼" },
-      { type: "info", title: "La Capacité d'Emprunt : Le Calcul", content: "Formule banque :\nCapacité mensuelle = (Revenus nets × 35%) - charges fixes existantes\n\nEx : 3000€ nets × 35% = 1050€ max de mensualité\nSi crédit auto : 300€/mois → capacité immo = 750€/mois\n\n→ Rembourser le crédit auto avant la demande immo = +300€/mois de capacité = ~50 000€ d'emprunt supplémentaire.", mindyMessage: "50 000€ d'emprunt en plus juste en remboursant ton crédit auto d'abord. Passe le mot. 🏠" }
+      { type: "info", title: "La Capacité d'Emprunt : Le Calcul", content: "Formule banque :\nCapacité mensuelle = (Revenus nets × 35%) - charges fixes existantes\n\nEx : 3000€ nets × 35% = 1050€ max de mensualité\nSi crédit auto : 300€/mois → capacité immo = 750€/mois\n\n→ Rembourser le crédit auto avant la demande immo = +300€/mois de capacité = ~50 000€ d'emprunt supplémentaire.", mindyMessage: "50 000€ d'emprunt en plus juste en remboursant ton crédit auto d'abord. Passe le mot. 🏠" },
+      { type: "scenario", situation: "Tu veux acheter un appartement à 250 000€. Tu gagnes 2 800€ nets/mois, tu as 20 000€ d'apport, et un crédit auto de 200€/mois qui se termine dans 8 mois. La banque te refuse le prêt. Que fais-tu ?", choices: [{ text: "J'emprunte à une autre banque immédiatement", isGood: false, explanation: "Mauvaise idée — chaque demande refusée laisse une trace. Mieux vaut optimiser ton dossier d'abord." }, { text: "J'attends 8 mois que le crédit auto soit fini, j'augmente mon apport, et je re-dépose", isGood: true, explanation: "En 8 mois : fin du crédit auto (+200€/mois de capacité), apport augmenté, historique bancaire propre. Ton dossier passe de moyen à excellent." }, { text: "Je négocie directement avec le vendeur pour baisser le prix", isGood: false, explanation: "Le prix de vente n'est pas le problème — c'est ta capacité d'emprunt. Même à prix réduit, la banque évalue tes revenus vs charges." }], mindyMessage: "Un refus n'est pas définitif. C'est un signal que ton dossier n'est pas optimisé. Reviens plus fort. 💪" },
+      { type: "match_pairs", pairs: [{ term: "Taux d'endettement", definition: "Maximum 35% des revenus nets (règle HCSF)" }, { term: "Apport personnel", definition: "10-20% du prix du bien, idéalement" }, { term: "Durée d'emprunt", definition: "25 ans maximum (règle HCSF 2022)" }, { term: "Taux nominal", definition: "Le taux d'intérêt du prêt hors assurance et frais" }], mindyMessage: "Ces 4 termes = le vocabulaire minimum pour parler à ton banquier sans te faire avoir. 🏦" }
     ]}
   }
 ];
@@ -2177,7 +2448,9 @@ const tradingLessons = [
         { type: "scenario", situation: "Tu vois un Doji apparaître après 5 chandeliers rouges consécutifs. Que fais-tu ?", choices: [{ text: "J'achète immédiatement — le Doji = signal d'achat", isGood: false, explanation: "Dangereux — le Doji indique l'indécision, pas un signal d'achat. Tu dois attendre le chandelier SUIVANT pour confirmer." }, { text: "J'attends le prochain chandelier pour confirmation", isGood: true, explanation: "Correct — un chandelier vert après le Doji confirme l'inversion. Sans confirmation, c'est du gambling." }, { text: "J'ignore, un Doji n'a pas de signification", isGood: false, explanation: "Faux — le Doji après une tendance est un signal d'alerte important. L'indécision après une baisse = les vendeurs s'épuisent." }], mindyMessage: "Un Doji sans confirmation = piège. Attends toujours le chandelier suivant. ⏳" },
         { type: "info", title: "Les 5 Patterns Clés à Retenir", content: "📌 Patterns de base à reconnaître :\n\n🟢 Marubozu vert : long corps vert sans mèches = acheteurs dominants\n🔴 Marubozu rouge : long corps rouge sans mèches = vendeurs dominants\n⚪ Doji : corps minuscule = indécision\n🔨 Hammer : corps haut + longue mèche basse = rebond potentiel\n⭐ Shooting Star : corps bas + longue mèche haute = retournement baissier\n\nRègle : toujours confirmer avec le chandelier suivant et le volume.", mindyMessage: "Les chandeliers sont ton vocabulaire de trading. Commence par ces 5, tu peux déjà lire l'essentiel du marché. 🕯️" },
         { type: "news_impact", headline: "La SEC approuve le premier ETF Bitcoin Spot aux États-Unis", source: "Bloomberg", date: "2024-01-10", correctImpact: "bullish", explanation: "L'approbation d'un ETF spot ouvre Bitcoin aux investisseurs institutionnels via Wall Street. Ça signifie des milliards de dollars potentiels entrant sur le marché — signal extrêmement bullish.", mindyMessage: "Quand Wall Street arrive, les prix suivent. L'ETF = la porte d'entrée pour les gros. 🏦" },
-        { type: "flashcard", front: "Doji", back: "Chandelier dont l'ouverture et la clôture sont quasi identiques. Signale l'indécision du marché et un possible retournement de tendance.", category: "Trading" }
+        { type: "flashcard", front: "Doji", back: "Chandelier dont l'ouverture et la clôture sont quasi identiques. Signale l'indécision du marché et un possible retournement de tendance.", category: "Trading" },
+        { type: "price_prediction", question: "Un Doji apparaît après une longue tendance baissière. Analyse le pattern et prédit le mouvement suivant.", candles: [{ open: 52000, high: 52500, low: 50800, close: 51000 }, { open: 51000, high: 51200, low: 49500, close: 49800 }, { open: 49800, high: 50100, low: 48200, close: 48500 }, { open: 48500, high: 48800, low: 47000, close: 47200 }, { open: 47200, high: 47500, low: 46000, close: 46300 }, { open: 46300, high: 46800, low: 45500, close: 45700 }, { open: 45700, high: 46100, low: 45200, close: 45300 }, { open: 45300, high: 45500, low: 44800, close: 45300 }], correctAnswer: "up", explanation: "Le dernier chandelier est un Doji (open ≈ close) après une série baissière. Cela indique l'épuisement des vendeurs et une indécision du marché. Historiquement, un Doji en fin de tendance baissière précède souvent un retournement haussier.", mindyMessage: "Doji après une baisse = les vendeurs s'essoufflent. Signal de retournement potentiel. 🕯️" },
+        { type: "match_pairs", pairs: [{ term: "Marubozu", definition: "Long corps sans mèches — domination totale acheteurs/vendeurs" }, { term: "Hammer", definition: "Petit corps en haut + longue mèche basse — rebond potentiel" }, { term: "Shooting Star", definition: "Petit corps en bas + longue mèche haute — retournement baissier" }, { term: "Engulfing", definition: "Chandelier qui 'avale' le précédent — signal de retournement" }], mindyMessage: "4 patterns. 80% des signaux de chandelier. Apprends ceux-là et tu lis le marché. 📊" }
       ]
     }
   },
@@ -2195,7 +2468,7 @@ const tradingLessons = [
         { type: "quiz", question: "Qu'est-ce qu'un 'fakeout' ou 'fausse cassure' ?", options: ["Le prix casse brièvement un niveau clé puis revient à l'intérieur", "Le marché ouvre avec un gap important", "Une zone de prix sans volume", "Un chandelier vert très long"], correctIndex: 0, mindyHint: "Le fakeout piège les traders qui ont placé des ordres stop au-dessus/dessous du niveau. Outil des market makers." },
         { type: "quiz", question: "Quelle technique utilise-t-on pour identifier les zones de support/résistance clés ?", options: ["Dessiner des lignes sur les pics et creux majeurs", "Regarder uniquement les indicateurs RSI et MACD", "Suivre les cours du pétrole", "Analyser les bilans d'entreprise"], correctIndex: 0, mindyHint: "On relie les pics (résistances) et les creux (supports) sur plusieurs timeframes. Multi-timeframe analysis." },
         { type: "info", title: "Comment Tracer tes Zones", content: "Méthode professionnelle :\n\n1. Commence par le timeframe hebdomadaire (vue macro)\n2. Descends au daily pour les zones importantes\n3. Affine en 4h pour les entrées\n\nPriorité aux zones avec :\n✅ Plusieurs touches historiques\n✅ Forte réaction de prix\n✅ Volume élevé sur le niveau\n\nOutils : TradingView (gratuit). Prends l'habitude de tracer tes zones avant d'analyser les indicateurs.", mindyMessage: "Avant tout indicateur : trace tes zones. C'est la structure du marché. Tout le reste est secondaire. 📏" },
-        { type: "price_prediction", question: "Le prix teste un support clé pour la 3ème fois. Analyse le graphique et prédit le prochain mouvement.", priceData: [52000, 50500, 48000, 49200, 48100, 49800, 48200, 50100, 48300, 49500], correctAnswer: "up", explanation: "Le support à ~48000 tient fermement (triple bottom). À chaque test, les rebonds sont de plus en plus rapides — signe de demande croissante. Le prochain mouvement probable est une cassure haussière.", mindyMessage: "Un support qui tient 3 fois, c'est du béton. Les pros achètent ici. 🧱" },
+        { type: "price_prediction", question: "Triple bottom sur support ~48k. Deux rebonds déjà confirmés. Lis le dernier chandelier et prédit la suite.", candles: [{ open: 52000, high: 53200, low: 51400, close: 50200 }, { open: 50200, high: 50800, low: 47800, close: 48400 }, { open: 48400, high: 50100, low: 47600, close: 49800 }, { open: 49800, high: 51000, low: 49200, close: 50600 }, { open: 50600, high: 51200, low: 47900, close: 48500 }, { open: 48500, high: 50200, low: 47700, close: 49900 }, { open: 49900, high: 51400, low: 49500, close: 51000 }, { open: 51000, high: 52800, low: 50400, close: 52500 }], correctAnswer: "up", explanation: "Triple bottom validé : le support ~48k a tenu 3 fois. Le dernier chandelier vert avec une longue mèche basse confirme la prise de contrôle des acheteurs. Cassure haussière en cours.", mindyMessage: "Un support qui tient 3 fois, c'est du béton. Les pros achètent ici. 🧱" },
         { type: "news_impact", headline: "Binance annonce le delisting de 15 altcoins à faible liquidité", source: "CoinDesk", date: "2024-03-15", correctImpact: "bearish", explanation: "Le delisting d'une plateforme majeure comme Binance réduit drastiquement la liquidité et l'accès aux tokens concernés. Les prix de ces altcoins chutent, et ça crée un sentiment négatif général sur les small caps.", mindyMessage: "Quand Binance delist, c'est game over pour ces tokens. La liquidité disparaît. 💀" }
       ]
     }
@@ -2213,7 +2486,9 @@ const tradingLessons = [
         { type: "calculator", question: "Sur 14 périodes, la moyenne des gains est de 8 et la moyenne des pertes est de 4. Quel est le RSI ? (formule: 100 - (100 / (1 + RS)) où RS = gains/pertes)", variables: ["Moyenne gains = 8", "Moyenne pertes = 4", "RS = 8 / 4 = 2", "RSI = 100 - (100 / (1 + 2))"], answer: 66.67, tolerance: 0.5, mindyMessage: "Un RSI à ~67 : pas encore en surachat, mais la tendance est haussière. Surveille le niveau 70." },
         { type: "quiz", question: "Qu'est-ce qu'une 'divergence baissière' sur le RSI ?", options: ["Le prix fait des plus hauts croissants mais le RSI fait des plus hauts décroissants", "Le RSI et le prix montent ensemble", "Le prix baisse mais le RSI monte", "Le RSI reste constant pendant que le prix monte"], correctIndex: 0, mindyHint: "Divergence = prix et RSI ne s'accordent pas. Prix nouveau high mais RSI plus bas = momentum s'affaiblit = signal baissier." },
         { type: "swipe", statement: "La divergence RSI est un signal plus fiable que le simple croisement de la zone 70/30.", isCorrect: true, explanation: "Oui — la divergence indique un affaiblissement du momentum avant le retournement. Beaucoup plus précis que les zones statiques 70/30." },
-        { type: "info", title: "Utiliser le RSI Correctement", content: "❌ Ne pas utiliser seul : le RSI donne de faux signaux en tendance forte\n✅ Combiner avec :\n• Supports/résistances\n• Volume (confirmation)\n• Timeframe supérieur (contexte macro)\n\n📊 Setup classique :\n1. Identifier la tendance sur le timeframe supérieur\n2. Attendre RSI en survente sur timeframe inférieur\n3. Chercher rebond sur support\n4. Entrer avec stop-loss sous le support\n\nPériode recommandée : 14 (standard), 7 pour scalping, 21 pour swing.", mindyMessage: "RSI seul = danger. RSI + support + volume = setup de qualité. Le confluent, c'est la clé. 🎯" }
+        { type: "info", title: "Utiliser le RSI Correctement", content: "❌ Ne pas utiliser seul : le RSI donne de faux signaux en tendance forte\n✅ Combiner avec :\n• Supports/résistances\n• Volume (confirmation)\n• Timeframe supérieur (contexte macro)\n\n📊 Setup classique :\n1. Identifier la tendance sur le timeframe supérieur\n2. Attendre RSI en survente sur timeframe inférieur\n3. Chercher rebond sur support\n4. Entrer avec stop-loss sous le support\n\nPériode recommandée : 14 (standard), 7 pour scalping, 21 pour swing.", mindyMessage: "RSI seul = danger. RSI + support + volume = setup de qualité. Le confluent, c'est la clé. 🎯" },
+        { type: "calculator", question: "Sur 14 périodes, tu as 5 jours de hausse moyenne de +3% et 9 jours de baisse moyenne de -1.5%. Quel est le RS puis le RSI ? (RS = moy gains/moy pertes, RSI = 100 - 100/(1+RS))", variables: ["Moyenne gains = 3", "Moyenne pertes = 1.5", "RS = 3 / 1.5 = 2", "RSI = 100 - (100 / (1 + 2)) = 100 - 33.33"], answer: 66.67, tolerance: 0.5, mindyMessage: "RSI 66.67 : en territoire haussier mais pas encore suracheté. Zone neutre-haute. 📊" },
+        { type: "price_prediction", question: "Le prix fait de nouveaux highs mais le RSI est en divergence baissière (highs décroissants). Analyse et prédit.", candles: [{ open: 40000, high: 42000, low: 39500, close: 41500 }, { open: 41500, high: 43500, low: 41200, close: 43000 }, { open: 43000, high: 44800, low: 42800, close: 44500 }, { open: 44500, high: 45200, low: 43500, close: 43800 }, { open: 43800, high: 45500, low: 43600, close: 45200 }, { open: 45200, high: 46000, low: 44200, close: 44500 }, { open: 44500, high: 46200, low: 44300, close: 45800 }, { open: 45800, high: 46500, low: 44800, close: 45000 }], correctAnswer: "down", explanation: "Divergence baissière classique : le prix atteint des sommets de plus en plus hauts mais chaque hausse est moins convaincante (longues mèches hautes, clôtures loin des plus hauts). Le momentum s'essouffle — signal de retournement baissier imminent.", mindyMessage: "Quand le prix monte mais la force s'essouffle = divergence. Le marché te prévient. Écoute-le. ⚠️" }
       ]
     }
   },
@@ -2247,7 +2522,9 @@ const tradingLessons = [
         { type: "swipe", statement: "Un 'Head & Shoulders' est un pattern de retournement baissier après une tendance haussière.", isCorrect: true, explanation: "Oui — l'épaule gauche, la tête (plus haut), l'épaule droite (plus basse que la tête) forment un H&S. Cassure de la neckline = signal de vente." },
         { type: "swipe", statement: "Un flag haussier (bull flag) indique généralement une continuation de la tendance baissière.", isCorrect: false, explanation: "Non — le bull flag est un pattern de CONTINUATION haussière. Après une forte hausse (mât), une consolidation en canal légèrement baissier (drapeau) se forme. Cassure à la hausse = reprise de la tendance." },
         { type: "quiz", question: "Quel volume confirme la cassure d'un triangle symétrique ?", options: ["Volume décroissant pendant la cassure", "Volume faible mais stable", "Volume croissant lors de la cassure (breakout)", "Le volume n'a pas d'importance pour les patterns"], correctIndex: 2, mindyHint: "Volume + breakout = confirmation. Breakout sans volume = fakeout probable. Toujours vérifier le volume." },
-        { type: "info", title: "Appliquer les Chart Patterns", content: "Règles d'or :\n1. Ne trade que les patterns sur des timeframes significatifs (H1+)\n2. Attends la confirmation (cassure + clôture au-dessus/en-dessous)\n3. Vérifie le volume au breakout\n4. Place ton stop-loss logiquement (sous l'épaule droite pour H&S, sous le drapeau pour flag)\n5. Target = hauteur du pattern projetée\n\nPatterns les plus fiables :\n🏆 Cup & Handle (continuation haussière, long terme)\n🏆 Head & Shoulders (retournement baissier)\n🏆 Bull Flag (continuation, court terme)", mindyMessage: "Les patterns ne sont pas de la magie — ce sont des niveaux de probabilité. Avec les bons filtres, l'edge est réel. 📐" }
+        { type: "info", title: "Appliquer les Chart Patterns", content: "Règles d'or :\n1. Ne trade que les patterns sur des timeframes significatifs (H1+)\n2. Attends la confirmation (cassure + clôture au-dessus/en-dessous)\n3. Vérifie le volume au breakout\n4. Place ton stop-loss logiquement (sous l'épaule droite pour H&S, sous le drapeau pour flag)\n5. Target = hauteur du pattern projetée\n\nPatterns les plus fiables :\n🏆 Cup & Handle (continuation haussière, long terme)\n🏆 Head & Shoulders (retournement baissier)\n🏆 Bull Flag (continuation, court terme)", mindyMessage: "Les patterns ne sont pas de la magie — ce sont des niveaux de probabilité. Avec les bons filtres, l'edge est réel. 📐" },
+        { type: "price_prediction", question: "Un Head & Shoulders se forme : épaule gauche, tête, épaule droite. Le prix teste la neckline. Prédit la suite.", candles: [{ open: 42000, high: 44000, low: 41800, close: 43500 }, { open: 43500, high: 46000, low: 43200, close: 45500 }, { open: 45500, high: 48500, low: 45200, close: 48000 }, { open: 48000, high: 48200, low: 44500, close: 45000 }, { open: 45000, high: 47000, low: 44800, close: 46500 }, { open: 46500, high: 46800, low: 43800, close: 44000 }, { open: 44000, high: 44500, low: 42500, close: 42800 }, { open: 42800, high: 43200, low: 41500, close: 41800 }], correctAnswer: "down", explanation: "Head & Shoulders classique : épaule gauche (~44k), tête (~48k), épaule droite (~47k), puis cassure de la neckline (~44k). Le dernier chandelier casse sous le support — signal de continuation baissière. Target = hauteur de la tête projetée vers le bas.", mindyMessage: "Le Head & Shoulders est LE pattern de retournement le plus fiable. Quand la neckline casse, les pros shortent. 📉" },
+        { type: "flashcard", front: "Bull Flag vs Bear Flag", back: "Bull Flag :\n• Apparaît après une forte hausse (le mât)\n• Consolidation en canal légèrement baissier\n• Cassure à la hausse = continuation\n\nBear Flag :\n• Apparaît après une forte baisse\n• Consolidation en canal légèrement haussier\n• Cassure à la baisse = continuation\n\nTarget dans les deux cas = hauteur du mât projetée depuis le breakout.", category: "Chart Patterns" }
       ]
     }
   },
@@ -2280,7 +2557,9 @@ const tradingLessons = [
       { type: "swipe", statement: "Le position sizing consiste à calculer la taille de position selon le risque acceptable et la distance au stop-loss.", isCorrect: true, explanation: "Formule : Taille = Risque max / Distance stop-loss. Ex: 100€ risk, stop 5% → position 2000€." },
       { type: "swipe", statement: "Un trader avec 30% de trades gagnants peut être profitable sur le long terme.", isCorrect: true, explanation: "Oui, si le Risk/Reward ratio est suffisant. 30% winrate avec RR 1:3 = très profitable. Les mathématiques ne mentent pas." },
       { type: "quiz", question: "Ratio Risk/Reward de 1:3 signifie :", options: ["3x plus de pertes que de gains", "Pour chaque 1€ risqué, on vise 3€ de gain", "Stop à 3x la taille du take profit", "Taille de position divisée par 3"], correctIndex: 1, mindyHint: "1:3 = risque 1 pour gagner 3. Un trade perdant compensé par 2 gagnants." },
-      { type: "reorder", title: "Processus d'un trade professionnel", instruction: "Dans l'ordre.", words: ["Gérer activement (trailing stop)", "Identifier le setup technique", "Calculer la taille de position", "Définir stop-loss et take-profit", "Entrer en position"], correctOrder: [1, 3, 2, 4, 0], mindyMessage: "Les amateurs calculent la taille après être entrés. Les pros avant. Grosse différence. ⚙️" }
+      { type: "reorder", title: "Processus d'un trade professionnel", instruction: "Dans l'ordre.", words: ["Gérer activement (trailing stop)", "Identifier le setup technique", "Calculer la taille de position", "Définir stop-loss et take-profit", "Entrer en position"], correctOrder: [1, 3, 2, 4, 0], mindyMessage: "Les amateurs calculent la taille après être entrés. Les pros avant. Grosse différence. ⚙️" },
+      { type: "calculator", question: "Capital: 10 000€, risque max: 2%, stop-loss à 5% du prix d'entrée. Quelle taille de position ? (Formule: risque max € / distance stop %)", variables: ["Capital: 10 000€", "Risque max: 2% = 200€", "Distance stop-loss: 5%", "Taille position = 200 / 0.05"], answer: 4000, tolerance: 0, unit: "€", mindyMessage: "4 000€ de position pour risquer maximum 200€. C'est ça le position sizing professionnel. ⚙️" },
+      { type: "scenario", situation: "Tu es en position long sur ETH. Le trade va contre toi : -3% depuis ton entrée. Ton stop-loss est à -5%. Tu commences à douter de ton analyse. Que fais-tu ?", choices: [{ text: "Je déplace mon stop-loss plus bas pour 'donner de l'air' au trade", isGood: false, explanation: "Déplacer son stop = augmenter son risque après coup. C'est la recette pour des pertes catastrophiques." }, { text: "Je respecte mon stop-loss et j'attends — le plan reste valide tant que le stop n'est pas touché", isGood: true, explanation: "Le stop-loss a été calculé AVANT l'entrée pour une bonne raison. Le respecter = discipline. Si tu doutes de tous tes trades, revois ta stratégie, pas tes stops." }, { text: "Je ferme immédiatement pour limiter la perte à -3%", isGood: false, explanation: "Couper avant le stop par peur = laisser le gain potentiel sur la table. Si ton analyse était bonne, le trade peut encore revenir." }], mindyMessage: "Ton stop-loss est ton meilleur ami. Ne le trahis jamais — sinon il ne te protègera plus. 🛡️" }
     ]}
   },
   {
@@ -2299,7 +2578,9 @@ const tradingLessons = [
         { id: "plan", content: "Respecter son plan même quand inconfortable", correctDirection: "right", explanation: "L'edge vient de la consistance, pas des décisions ad-hoc" },
         { id: "fomo", content: "Entrer parce que 'ça monte vite'", correctDirection: "left", explanation: "FOMO = acheter l'euphorie = acheter le top" }
       ], timeLimit: 40, mindyMessage: "Les pros tradent des règles, pas des sentiments. C'est boring. C'est rentable. Pick one. ⚙️" },
-      { type: "info", title: "Construire la Discipline", content: "Avant chaque session :\n☑️ Vérifier les news macro importantes\n☑️ Identifier les niveaux clés\n☑️ Définir les setups valides du jour\n\nRègles non-négociables :\n- Stop-loss posé AVANT d'entrer\n- Maximum X trades/jour\n- Pause 24h après 3 pertes consécutives\n\n→ La discipline est un muscle. Ça s'entraîne.", mindyMessage: "Les traders les plus profitables ont des journées ennuyeuses. C'est exactement l'objectif. 🎯" }
+      { type: "info", title: "Construire la Discipline", content: "Avant chaque session :\n☑️ Vérifier les news macro importantes\n☑️ Identifier les niveaux clés\n☑️ Définir les setups valides du jour\n\nRègles non-négociables :\n- Stop-loss posé AVANT d'entrer\n- Maximum X trades/jour\n- Pause 24h après 3 pertes consécutives\n\n→ La discipline est un muscle. Ça s'entraîne.", mindyMessage: "Les traders les plus profitables ont des journées ennuyeuses. C'est exactement l'objectif. 🎯" },
+      { type: "scenario", situation: "Bitcoin monte de 15% en 2 heures. Twitter explose de posts '🚀🚀🚀'. Tu n'as pas de position. Ton plan de trading ne prévoyait pas ce mouvement. Que fais-tu ?", choices: [{ text: "J'achète immédiatement — je ne veux pas rater le move", isGood: false, explanation: "FOMO classique. Acheter après +15% sans plan = acheter l'euphorie. Les whales vendent quand tu achètes dans ces moments." }, { text: "Je respecte mon plan : pas de setup = pas de trade. Je note le mouvement et j'attends un pullback", isGood: true, explanation: "Discipline exemplaire. Un mouvement de +15% est souvent suivi d'un retracement. Attendre un pullback sur un niveau clé = meilleur entry." }, { text: "J'ouvre un short pour profiter du retournement", isGood: false, explanation: "Shorter un mouvement parabolique sans confirmation = aussi risqué que le FOMO à l'achat. Le marché peut continuer à monter." }], mindyMessage: "Le FOMO a ruiné plus de comptes que n'importe quel bear market. Si tu n'as pas de plan, tu es le plan de quelqu'un d'autre. 🎭" },
+      { type: "speed_round", title: "Speed Round : Biais Cognitifs", pairs: [{ statement: "Le biais de confirmation nous pousse à chercher des infos qui confirment notre position.", isTrue: true }, { statement: "Le revenge trading est une stratégie efficace pour récupérer ses pertes.", isTrue: false }, { statement: "L'aversion à la perte fait qu'on ressent 2x plus une perte qu'un gain équivalent.", isTrue: true }, { statement: "L'overconfidence après une série de gains est un biais dangereux.", isTrue: true }, { statement: "Le biais d'ancrage n'affecte pas les traders expérimentés.", isTrue: false }, { statement: "Un trade journal aide à identifier ses biais émotionnels.", isTrue: true }, { statement: "Suivre les influenceurs crypto est une stratégie de trading fiable.", isTrue: false }, { statement: "La paralysie d'analyse (analysis paralysis) empêche de prendre des décisions.", isTrue: true }], timeLimitSeconds: 40 }
     ]}
   },
   {
