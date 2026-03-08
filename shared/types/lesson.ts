@@ -7,7 +7,7 @@
 // Step Types
 // ============================================================================
 
-export type StepType = 'info' | 'quiz' | 'swipe' | 'swipe_sequence' | 'reorder' | 'visual_pick';
+export type StepType = 'info' | 'quiz' | 'swipe' | 'swipe_sequence' | 'reorder' | 'visual_pick' | 'match_pairs' | 'fill_blank' | 'calculator' | 'scenario' | 'price_prediction' | 'speed_round' | 'budget_allocator' | 'news_impact' | 'flashcard';
 
 /**
  * Informational step - displays content with optional Mindy message
@@ -101,6 +101,128 @@ export interface Hotspot {
 }
 
 /**
+ * Match Pairs step - connect terms to definitions (2-column tap matching)
+ */
+export interface MatchPairItem {
+  term: string;
+  definition: string;
+}
+
+export interface MatchPairsStep {
+  type: 'match_pairs';
+  pairs: MatchPairItem[];
+  mindyMessage?: string;
+}
+
+/**
+ * Fill Blank step - complete a sentence by choosing from options
+ */
+export interface FillBlankStep {
+  type: 'fill_blank';
+  sentence: string;     // Use ___ as placeholder
+  answer: string;       // Correct answer text
+  choices: string[];    // 3-4 options including the correct answer
+  mindyMessage?: string;
+}
+
+/**
+ * Calculator step - numeric calculation with guided variables
+ */
+export interface CalculatorStep {
+  type: 'calculator';
+  question: string;
+  variables: string[];  // Context lines shown to user (e.g. "Achat: 0.5 ETH × 2000$ = 1000$")
+  answer: number;
+  tolerance?: number;   // Acceptable delta (default 0)
+  unit?: string;        // e.g. "$", "%"
+  mindyMessage?: string;
+}
+
+/**
+ * Scenario step - real-life situation with multiple choices and explanations
+ */
+export interface ScenarioChoice {
+  text: string;
+  isGood: boolean;
+  explanation: string;
+}
+
+export interface ScenarioStep {
+  type: 'scenario';
+  situation: string;
+  choices: ScenarioChoice[];
+  mindyMessage?: string;
+}
+
+/**
+ * Price Prediction step - sparkline chart, user predicts up or down
+ */
+export interface PricePredictionStep {
+  type: 'price_prediction';
+  question: string;
+  priceData: number[];
+  correctAnswer: 'up' | 'down';
+  explanation: string;
+  mindyMessage: string;
+}
+
+/**
+ * Speed Round step - rapid-fire true/false statements with combo multiplier
+ */
+export interface SpeedRoundPair {
+  statement: string;
+  isTrue: boolean;
+}
+
+export interface SpeedRoundStep {
+  type: 'speed_round';
+  title: string;
+  pairs: SpeedRoundPair[];
+  timeLimitSeconds: number;
+}
+
+/**
+ * Budget Allocator step - slider-based budget distribution
+ */
+export interface BudgetCategory {
+  label: string;
+  icon: string;
+  targetPercent: number;
+  minPercent: number;
+  maxPercent: number;
+}
+
+export interface BudgetAllocatorStep {
+  type: 'budget_allocator';
+  totalBudget: number;
+  categories: BudgetCategory[];
+  explanation: string;
+}
+
+/**
+ * News Impact step - headline analysis: bullish/bearish/neutral
+ */
+export interface NewsImpactStep {
+  type: 'news_impact';
+  headline: string;
+  source: string;
+  date: string;
+  correctImpact: 'bullish' | 'bearish' | 'neutral';
+  explanation: string;
+  mindyMessage: string;
+}
+
+/**
+ * Flashcard step - 3D flip card with term/definition
+ */
+export interface FlashcardStep {
+  type: 'flashcard';
+  front: string;
+  back: string;
+  category: string;
+}
+
+/**
  * Union type for all lesson step variants
  */
 export type LessonStep =
@@ -109,7 +231,16 @@ export type LessonStep =
   | SwipeStep
   | SwipeSequenceStep
   | ReorderStep
-  | VisualPickStep;
+  | VisualPickStep
+  | MatchPairsStep
+  | FillBlankStep
+  | CalculatorStep
+  | ScenarioStep
+  | PricePredictionStep
+  | SpeedRoundStep
+  | BudgetAllocatorStep
+  | NewsImpactStep
+  | FlashcardStep;
 
 /**
  * Complete lesson content structure
@@ -122,7 +253,7 @@ export interface LessonContent {
 // Enums
 // ============================================================================
 
-export type Domain = 'CRYPTO' | 'FINANCE';
+export type Domain = 'CRYPTO' | 'FINANCE' | 'TRADING';
 export type Difficulty = 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED';
 
 // ============================================================================

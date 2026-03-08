@@ -30,6 +30,15 @@ import {
   SwipeSequenceStepView,
   ReorderStepView,
   VisualPickStepView,
+  MatchPairsStepView,
+  FillBlankStepView,
+  CalculatorStepView,
+  ScenarioStepView,
+  PricePredictionStepView,
+  SpeedRoundStepView,
+  BudgetAllocatorStepView,
+  NewsImpactStepView,
+  FlashcardStepView,
 } from '@/components/steps';
 
 type ScreenState = 'loading' | 'ready' | 'playing' | 'feedback' | 'completed' | 'error';
@@ -71,7 +80,8 @@ const RETRY_MESSAGES = [
  * LessonScreen - Full lesson player with Duolingo-style error correction loop
  */
 export default function LessonScreen() {
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const { id, practice } = useLocalSearchParams<{ id: string; practice?: string }>();
+  const isPracticeMode = practice === 'true';
   const { userId, isLoading: isUserLoading } = useUser();
   const { play: playSound } = useSound();
 
@@ -306,7 +316,19 @@ export default function LessonScreen() {
 
   // Complete the lesson
   const completeLesson = useCallback(async () => {
-    if (!progress || !userId || !lesson) return;
+    if (!lesson) return;
+
+    // Practice mode: celebrate without updating server progress or awarding XP
+    if (isPracticeMode) {
+      playSound('complete');
+      setXpAwarded(0);
+      setShowConfetti(true);
+      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      setScreenState('completed');
+      return;
+    }
+
+    if (!progress || !userId) return;
 
     try {
       // Mark all steps as completed via API
@@ -340,7 +362,7 @@ export default function LessonScreen() {
       console.error('Error completing lesson:', err);
       setScreenState('completed');
     }
-  }, [progress, userId, lesson, totalSteps, playSound]);
+  }, [progress, userId, lesson, totalSteps, playSound, isPracticeMode]);
 
   // Handle continue button for info steps
   const handleContinue = useCallback(() => {
@@ -364,6 +386,24 @@ export default function LessonScreen() {
         return <ReorderStepView key={stepKey} step={currentStep} onComplete={handleStepComplete} />;
       case 'visual_pick':
         return <VisualPickStepView key={stepKey} step={currentStep} onComplete={handleStepComplete} />;
+      case 'match_pairs':
+        return <MatchPairsStepView key={stepKey} step={currentStep} onAnswer={handleStepComplete} />;
+      case 'fill_blank':
+        return <FillBlankStepView key={stepKey} step={currentStep} onAnswer={handleStepComplete} />;
+      case 'calculator':
+        return <CalculatorStepView key={stepKey} step={currentStep} onAnswer={handleStepComplete} />;
+      case 'scenario':
+        return <ScenarioStepView key={stepKey} step={currentStep} onAnswer={handleStepComplete} />;
+      case 'price_prediction':
+        return <PricePredictionStepView key={stepKey} step={currentStep} onAnswer={handleStepComplete} />;
+      case 'speed_round':
+        return <SpeedRoundStepView key={stepKey} step={currentStep} onComplete={handleStepComplete} />;
+      case 'budget_allocator':
+        return <BudgetAllocatorStepView key={stepKey} step={currentStep} onAnswer={handleStepComplete} />;
+      case 'news_impact':
+        return <NewsImpactStepView key={stepKey} step={currentStep} onAnswer={handleStepComplete} />;
+      case 'flashcard':
+        return <FlashcardStepView key={stepKey} step={currentStep} onContinue={handleContinue} />;
       default:
         return null;
     }
@@ -419,13 +459,23 @@ export default function LessonScreen() {
           </Animated.View>
 
           <Animated.View style={styles.lessonInfo} entering={FadeInUp.delay(200)}>
+            {isPracticeMode && (
+              <View style={styles.practiceModeBanner}>
+                <Text style={styles.practiceModeText}>🔄 Mode Pratique — Aucun XP</Text>
+              </View>
+            )}
             <Text style={styles.lessonTitle}>{lesson.title}</Text>
             <View style={styles.lessonMeta}>
-              <View style={[styles.badge, { backgroundColor: lesson.domain === 'CRYPTO' ? '#39FF14' : '#58A6FF' }]}>
+              <View style={[styles.badge, {
+                backgroundColor:
+                  lesson.domain === 'CRYPTO' ? '#39FF14'
+                  : lesson.domain === 'TRADING' ? '#FF8C00'
+                  : '#58A6FF'
+              }]}>
                 <Text style={styles.badgeText}>{lesson.domain}</Text>
               </View>
               <Text style={styles.metaText}>{totalSteps} steps</Text>
-              <Text style={styles.metaText}>+{lesson.xpReward} XP</Text>
+              {!isPracticeMode && <Text style={styles.metaText}>+{lesson.xpReward} XP</Text>}
             </View>
           </Animated.View>
         </View>
@@ -547,7 +597,16 @@ export default function LessonScreen() {
 
         <View style={styles.completedContent}>
           <Animated.View entering={FadeIn.duration(400)}>
-            <MindyMessage message="Tu as tout déchiré ! Leçon bouclée sans erreur." mood="hype" />
+            <MindyMessage
+              message={
+                erroredSteps.size === 0
+                  ? "Perfect run. Zéro erreur. Tu m'impressionnes. 🔥"
+                  : erroredSteps.size <= 2
+                  ? "Bien joué, quelques ratés mais tu t'es corrigé. Ça compte."
+                  : "On va dire que tu avais faim. Reviens une fois reposé. 😅"
+              }
+              mood={erroredSteps.size === 0 ? 'hype' : erroredSteps.size <= 2 ? 'neutral' : 'roast'}
+            />
           </Animated.View>
 
           <Animated.View style={styles.completedCard} entering={FadeInUp.delay(300)}>
@@ -557,45 +616,97 @@ export default function LessonScreen() {
               <View style={[StyleSheet.absoluteFill, styles.androidBlur]} />
             )}
             <LinearGradient
-              colors={['rgba(57, 255, 20, 0.12)', 'rgba(22, 27, 34, 0.95)']}
+              colors={isPracticeMode
+                ? ['rgba(88, 166, 255, 0.12)', 'rgba(22, 27, 34, 0.95)']
+                : ['rgba(57, 255, 20, 0.12)', 'rgba(22, 27, 34, 0.95)']}
               style={StyleSheet.absoluteFill}
             />
-            <View style={styles.completedBorder} />
+            <View style={[styles.completedBorder, isPracticeMode && { borderColor: '#58A6FF' }]} />
+
+            {isPracticeMode && (
+              <Animated.View entering={FadeIn.delay(200)} style={styles.practiceBadge}>
+                <Text style={styles.practiceBadgeText}>🔄 PRACTICE MODE</Text>
+              </Animated.View>
+            )}
 
             <Animated.View entering={BounceIn.delay(400)} style={styles.completedIconContainer}>
-              <Icon name="trophy" size={52} color="#FFD700" />
+              <Icon name="trophy" size={52} color={isPracticeMode ? '#58A6FF' : '#FFD700'} />
             </Animated.View>
 
             <Animated.Text entering={FadeInUp.delay(500)} style={styles.completedTitle}>
-              Leçon Terminée !
+              {isPracticeMode ? 'Pratique Terminée !' : 'Leçon Terminée !'}
             </Animated.Text>
             <Text style={styles.completedLesson}>{lesson.title}</Text>
 
-            <Animated.View entering={FadeInUp.delay(600)} style={styles.xpReward}>
-              <XpCounter value={xpAwarded || lesson.xpReward} showPlus size="large" />
-            </Animated.View>
+            {isPracticeMode ? (
+              <Animated.View entering={FadeInUp.delay(600)} style={styles.practiceCompleteMsg}>
+                <Text style={styles.practiceCompleteMsgText}>
+                  Tu maîtrises ce sujet. Aucun XP en mode pratique.
+                </Text>
+              </Animated.View>
+            ) : (
+              <Animated.View entering={FadeInUp.delay(600)} style={styles.xpReward}>
+                <XpCounter value={xpAwarded || lesson.xpReward} showPlus size="large" />
+              </Animated.View>
+            )}
 
             {/* Stats */}
             <Animated.View entering={FadeInUp.delay(700)} style={styles.completionStats}>
-              <View style={styles.statItem}>
-                <Icon name="check" size={16} color="#39FF14" />
-                <Text style={styles.statText}>{totalSteps} steps</Text>
-              </View>
-              {streak > 0 && (
-                <View style={styles.statItem}>
-                  <Icon name="flame" size={16} color="#FF6B35" />
-                  <Text style={styles.statText}>{streak} max</Text>
-                </View>
-              )}
+              {(() => {
+                const accuracy = totalSteps > 0
+                  ? Math.round(((totalSteps - erroredSteps.size) / totalSteps) * 100)
+                  : 100;
+                const accuracyColor = accuracy >= 80 ? '#39FF14' : accuracy >= 50 ? '#FFD700' : '#F85149';
+                const perfect = erroredSteps.size === 0;
+                return (
+                  <>
+                    <View style={styles.statItem}>
+                      <Icon name="target" size={16} color={accuracyColor} />
+                      <Text style={[styles.statText, { color: accuracyColor, fontWeight: '700' }]}>
+                        {accuracy}% précision
+                      </Text>
+                    </View>
+                    <View style={styles.statItem}>
+                      <Icon name="check" size={16} color="#39FF14" />
+                      <Text style={styles.statText}>{totalSteps - erroredSteps.size}/{totalSteps} corrects</Text>
+                    </View>
+                    {streak > 0 && (
+                      <View style={styles.statItem}>
+                        <Icon name="flame" size={16} color="#FF6B35" />
+                        <Text style={styles.statText}>{streak} streak max</Text>
+                      </View>
+                    )}
+                    {perfect && (
+                      <View style={[styles.statItem, { backgroundColor: 'rgba(57,255,20,0.1)', borderRadius: 8, paddingHorizontal: 10, paddingVertical: 4 }]}>
+                        <Icon name="sparkles" size={14} color="#FFD700" />
+                        <Text style={[styles.statText, { color: '#FFD700', fontWeight: '700' }]}>
+                          Perfect run! 🏆
+                        </Text>
+                      </View>
+                    )}
+                  </>
+                );
+              })()}
             </Animated.View>
           </Animated.View>
         </View>
 
         <Animated.View entering={FadeInUp.delay(800)} style={styles.footer}>
-          <Pressable style={styles.primaryButton} onPress={() => router.back()}>
-            <Text style={styles.primaryButtonText}>Continuer</Text>
+          <Pressable style={[styles.primaryButton, isPracticeMode && { backgroundColor: '#58A6FF' }]} onPress={() => router.back()}>
+            <Text style={styles.primaryButtonText}>
+              {isPracticeMode ? 'Retour aux leçons' : 'Continuer'}
+            </Text>
             <Icon name="arrow-right" size={18} color="#0D1117" />
           </Pressable>
+          {!isPracticeMode && (
+            <Pressable
+              style={styles.practiceAgainButton}
+              onPress={() => router.replace(`/lesson/${id}?practice=true`)}
+            >
+              <Icon name="refresh" size={16} color="#8B949E" />
+              <Text style={styles.practiceAgainText}>Pratiquer encore (sans XP)</Text>
+            </Pressable>
+          )}
         </Animated.View>
       </SafeAreaView>
     );
@@ -1009,6 +1120,46 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 4,
   },
+  practiceModeBanner: {
+    backgroundColor: 'rgba(88, 166, 255, 0.12)',
+    borderRadius: 10,
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(88, 166, 255, 0.3)',
+  },
+  practiceModeText: {
+    fontFamily: 'JetBrainsMono',
+    fontSize: 12,
+    color: '#58A6FF',
+    textAlign: 'center',
+  },
+  practiceBadge: {
+    backgroundColor: 'rgba(88, 166, 255, 0.15)',
+    borderRadius: 8,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    marginBottom: 12,
+    alignSelf: 'center',
+  },
+  practiceBadgeText: {
+    fontFamily: 'JetBrainsMono',
+    fontSize: 11,
+    color: '#58A6FF',
+    fontWeight: '700',
+  },
+  practiceCompleteMsg: {
+    marginTop: 20,
+    paddingHorizontal: 8,
+  },
+  practiceCompleteMsgText: {
+    fontFamily: 'Inter',
+    fontSize: 13,
+    color: '#8B949E',
+    textAlign: 'center',
+    lineHeight: 20,
+  },
   completionStats: {
     flexDirection: 'row',
     gap: 32,
@@ -1041,5 +1192,22 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '700',
     color: '#0D1117',
+  },
+  practiceAgainButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    paddingVertical: 14,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: '#30363D',
+    backgroundColor: 'transparent',
+    marginTop: 10,
+  },
+  practiceAgainText: {
+    fontFamily: 'Inter',
+    fontSize: 14,
+    color: '#8B949E',
   },
 });

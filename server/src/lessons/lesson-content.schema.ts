@@ -114,6 +114,131 @@ const VisualPickStepSchema = z.object({
 );
 
 /**
+ * Match Pairs step - connect terms to definitions
+ */
+const MatchPairItemSchema = z.object({
+  term: z.string().min(1),
+  definition: z.string().min(1),
+});
+
+const MatchPairsStepSchema = z.object({
+  type: z.literal('match_pairs'),
+  pairs: z.array(MatchPairItemSchema).min(2, 'At least 2 pairs required').max(6),
+  mindyMessage: z.string().optional(),
+});
+
+/**
+ * Fill Blank step - complete a sentence from choices
+ */
+const FillBlankStepSchema = z.object({
+  type: z.literal('fill_blank'),
+  sentence: z.string().min(1, 'Sentence is required'),
+  answer: z.string().min(1, 'Answer is required'),
+  choices: z.array(z.string().min(1)).min(2).max(4),
+  mindyMessage: z.string().optional(),
+}).refine(
+  (data) => data.choices.includes(data.answer),
+  { message: 'answer must be included in choices' }
+);
+
+/**
+ * Calculator step - numeric calculation with guided variables
+ */
+const CalculatorStepSchema = z.object({
+  type: z.literal('calculator'),
+  question: z.string().min(1, 'Question is required'),
+  variables: z.array(z.string().min(1)),
+  answer: z.number(),
+  tolerance: z.number().min(0).optional(),
+  unit: z.string().optional(),
+  mindyMessage: z.string().optional(),
+});
+
+/**
+ * Scenario step - real-life situation with choices and explanations
+ */
+const ScenarioChoiceSchema = z.object({
+  text: z.string().min(1),
+  isGood: z.boolean(),
+  explanation: z.string().min(1),
+});
+
+const ScenarioStepSchema = z.object({
+  type: z.literal('scenario'),
+  situation: z.string().min(1, 'Situation is required'),
+  choices: z.array(ScenarioChoiceSchema).min(2).max(4),
+  mindyMessage: z.string().optional(),
+});
+
+/**
+ * Price Prediction step - sparkline chart, user predicts up or down
+ */
+const PricePredictionStepSchema = z.object({
+  type: z.literal('price_prediction'),
+  question: z.string().min(1, 'Question is required'),
+  priceData: z.array(z.number()).min(3, 'At least 3 price points required'),
+  correctAnswer: z.enum(['up', 'down']),
+  explanation: z.string().min(1, 'Explanation is required'),
+  mindyMessage: z.string().min(1, 'Mindy message is required'),
+});
+
+/**
+ * Speed Round step - rapid-fire true/false with combo
+ */
+const SpeedRoundPairSchema = z.object({
+  statement: z.string().min(1),
+  isTrue: z.boolean(),
+});
+
+const SpeedRoundStepSchema = z.object({
+  type: z.literal('speed_round'),
+  title: z.string().min(1, 'Title is required'),
+  pairs: z.array(SpeedRoundPairSchema).min(4, 'At least 4 pairs required'),
+  timeLimitSeconds: z.number().int().min(10).max(120),
+});
+
+/**
+ * Budget Allocator step - slider-based budget distribution
+ */
+const BudgetCategorySchema = z.object({
+  label: z.string().min(1),
+  icon: z.string().min(1),
+  targetPercent: z.number().min(0).max(100),
+  minPercent: z.number().min(0).max(100),
+  maxPercent: z.number().min(0).max(100),
+});
+
+const BudgetAllocatorStepSchema = z.object({
+  type: z.literal('budget_allocator'),
+  totalBudget: z.number().min(1),
+  categories: z.array(BudgetCategorySchema).min(2, 'At least 2 categories required'),
+  explanation: z.string().min(1, 'Explanation is required'),
+});
+
+/**
+ * News Impact step - headline analysis
+ */
+const NewsImpactStepSchema = z.object({
+  type: z.literal('news_impact'),
+  headline: z.string().min(1, 'Headline is required'),
+  source: z.string().min(1, 'Source is required'),
+  date: z.string().min(1, 'Date is required'),
+  correctImpact: z.enum(['bullish', 'bearish', 'neutral']),
+  explanation: z.string().min(1, 'Explanation is required'),
+  mindyMessage: z.string().min(1, 'Mindy message is required'),
+});
+
+/**
+ * Flashcard step - 3D flip card
+ */
+const FlashcardStepSchema = z.object({
+  type: z.literal('flashcard'),
+  front: z.string().min(1, 'Front text is required'),
+  back: z.string().min(1, 'Back text is required'),
+  category: z.string().min(1, 'Category is required'),
+});
+
+/**
  * Union of all step types
  * Note: Using z.union instead of z.discriminatedUnion because some schemas
  * use .refine() which returns ZodEffects, incompatible with discriminatedUnion
@@ -125,6 +250,15 @@ export const LessonStepSchema = z.union([
   SwipeSequenceStepSchema,
   ReorderStepSchema,
   VisualPickStepSchema,
+  MatchPairsStepSchema,
+  FillBlankStepSchema,
+  CalculatorStepSchema,
+  ScenarioStepSchema,
+  PricePredictionStepSchema,
+  SpeedRoundStepSchema,
+  BudgetAllocatorStepSchema,
+  NewsImpactStepSchema,
+  FlashcardStepSchema,
 ]);
 
 // ============================================================================
@@ -149,7 +283,7 @@ export const LessonContentSchema = z.object({
  */
 export const CreateLessonSchema = z.object({
   title: z.string().min(1, 'Title is required').max(200),
-  domain: z.enum(['CRYPTO', 'FINANCE']),
+  domain: z.enum(['CRYPTO', 'FINANCE', 'TRADING']),
   difficulty: z.enum(['BEGINNER', 'INTERMEDIATE', 'ADVANCED']),
   content: LessonContentSchema,
   xpReward: z.number().int().min(0).default(50),
@@ -161,7 +295,7 @@ export const CreateLessonSchema = z.object({
  */
 export const UpdateLessonSchema = z.object({
   title: z.string().min(1).max(200).optional(),
-  domain: z.enum(['CRYPTO', 'FINANCE']).optional(),
+  domain: z.enum(['CRYPTO', 'FINANCE', 'TRADING']).optional(),
   difficulty: z.enum(['BEGINNER', 'INTERMEDIATE', 'ADVANCED']).optional(),
   content: LessonContentSchema.optional(),
   xpReward: z.number().int().min(0).optional(),
