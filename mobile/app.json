@@ -8,6 +8,10 @@
     "scheme": "mindy",
     "userInterfaceStyle": "dark",
     "newArchEnabled": true,
+    "runtimeVersion": { "policy": "sdkVersion" },
+    "updates": {
+      "url": "https://u.expo.dev/REPLACE_WITH_PROJECT_ID_AFTER_EAS_INIT"
+    },
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",

@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: mindy-api
+    runtime: node
+    plan: free
+    region: frankfurt
+    rootDir: server
+    buildCommand: |
+      cd ../shared && npm install && npm run build && \
+      cd ../server && npm install && npx prisma generate && npm run build && npx prisma migrate deploy
+    startCommand: npm run start:prod
+    healthCheckPath: /api/docs
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NODE_VERSION
+        value: "20"
+      - key: DATABASE_URL
+        sync: false
+      - key: PORT
+        value: "10000"
