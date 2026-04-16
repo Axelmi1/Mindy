@@ -8,9 +8,12 @@
     "scheme": "mindy",
     "userInterfaceStyle": "dark",
     "newArchEnabled": true,
-    "runtimeVersion": { "policy": "sdkVersion" },
+    "platforms": ["ios", "android"],
+    "runtimeVersion": {
+      "policy": "sdkVersion"
+    },
     "updates": {
-      "url": "https://u.expo.dev/REPLACE_WITH_PROJECT_ID_AFTER_EAS_INIT"
+      "url": "https://u.expo.dev/ad1323b4-1656-49bd-8e63-d2ccdb64b6ec"
     },
     "splash": {
       "image": "./assets/splash-icon.png",
@@ -33,22 +36,12 @@
           "action": "VIEW",
           "autoVerify": true,
           "data": [
-            {
-              "scheme": "mindy"
-            },
-            {
-              "scheme": "https",
-              "host": "mindy.app"
-            }
+            { "scheme": "mindy" },
+            { "scheme": "https", "host": "mindy.app" }
           ],
           "category": ["BROWSABLE", "DEFAULT"]
         }
       ]
-    },
-    "web": {
-      "bundler": "metro",
-      "output": "static",
-      "favicon": "./assets/favicon.png"
     },
     "plugins": [
       "expo-router",
@@ -65,6 +58,13 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "ad1323b4-1656-49bd-8e63-d2ccdb64b6ec"
+      }
+    },
+    "owner": "axel877"
   }
 }
