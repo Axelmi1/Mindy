@@ -6,8 +6,8 @@ services:
     region: frankfurt
     rootDir: server
     buildCommand: |
-      cd ../shared && npm install && npm run build && \
-      cd ../server && npm install && npx prisma generate && npm run build && npx prisma migrate deploy
+      cd ../shared && npm install --legacy-peer-deps && npm run build && \
+      cd ../server && npm install --legacy-peer-deps && npx prisma generate && npm run build && npx prisma migrate deploy
     startCommand: npm run start:prod
     healthCheckPath: /api/docs
     autoDeploy: true
