@@ -179,28 +179,81 @@ export class ProgressService {
     });
 
     // If lesson just completed, award XP and update streak
+    let comboCount = 0;
+    let comboMultiplier = 1.0;
+    let bonusXp = 0;
+
     if (isCompleted && !progress.isCompleted) {
-      await this.usersService.addXp(progress.userId, lesson.xpReward);
+      // ── Combo Multiplier ─────────────────────────────────────────────────
+      // Count LESSON_COMPLETED events in the last 2 hours for this user
+      const sessionStart = new Date(Date.now() - 2 * 60 * 60 * 1000);
+      const recentCompletions = await this.prisma.analyticsEvent.count({
+        where: {
+          userId: progress.userId,
+          eventType: 'LESSON_COMPLETED',
+          timestamp: { gte: sessionStart },
+        },
+      });
+
+      // This lesson is about to be the (recentCompletions + 1)th in session
+      comboCount = recentCompletions + 1;
+
+      if (comboCount >= 5) {
+        comboMultiplier = 2.0;      // ×2 after 5+ lessons in session
+      } else if (comboCount >= 3) {
+        comboMultiplier = 1.5;      // ×1.5 after 3+ lessons in session
+      }
+
+      const baseXp = lesson.xpReward;
+      const totalXp = Math.round(baseXp * comboMultiplier);
+      bonusXp = totalXp - baseXp;
+
+      await this.usersService.addXp(progress.userId, totalXp);
       await this.usersService.updateStreak(progress.userId);
-      // Record XP for weekly leaderboard
-      await this.leaderboardService.recordXp(progress.userId, lesson.xpReward);
+      // Record XP for weekly leaderboard (including combo bonus)
+      await this.leaderboardService.recordXp(progress.userId, totalXp);
 
       // Track lesson completion analytics
       await this.analyticsService.track(progress.userId, 'LESSON_COMPLETED', {
         lessonId: progress.lessonId,
         lessonTitle: lesson.title,
         domain: lesson.domain,
-        xpAwarded: lesson.xpReward,
+        xpAwarded: totalXp,
+        comboCount,
+        comboMultiplier,
       });
+
+      // Track combo bonus event if applicable
+      if (comboMultiplier > 1.0) {
+        await this.analyticsService.track(progress.userId, 'COMBO_BONUS', {
+          lessonId: progress.lessonId,
+          comboCount,
+          comboMultiplier,
+          bonusXp,
+          baseXp,
+        });
+      }
 
       // Check achievements for lesson completion
       await this.achievementCheckerService.checkAndUnlock(progress.userId, 'lesson_completed');
+
+      // If this is a master quiz, also fire master_quiz_completed trigger
+      if (lesson.isMasterQuiz) {
+        await this.achievementCheckerService.checkAndUnlock(
+          progress.userId,
+          'master_quiz_completed',
+          { domain: lesson.domain },
+        );
+      }
     }
 
     return {
       ...updatedProgress,
       justCompleted: isCompleted && !progress.isCompleted,
-      xpAwarded: isCompleted && !progress.isCompleted ? lesson.xpReward : 0,
+      xpAwarded: isCompleted && !progress.isCompleted ? Math.round(lesson.xpReward * comboMultiplier) : 0,
+      comboCount: isCompleted && !progress.isCompleted ? comboCount : 0,
+      comboMultiplier: isCompleted && !progress.isCompleted ? comboMultiplier : 1.0,
+      bonusXp: isCompleted && !progress.isCompleted ? bonusXp : 0,
     };
   }
 
@@ -265,6 +318,66 @@ export class ProgressService {
   }
 
   /**
+   * Get activity heatmap data for a user (last N days).
+   * Uses LESSON_COMPLETED analytics events as the source of truth.
+   * Returns one entry per calendar day: { date, count, xpEarned }
+   */
+  async getActivityHeatmap(
+    userId: string,
+    days = 56,
+  ): Promise<{ date: string; count: number; xpEarned: number }[]> {
+    await this.usersService.findById(userId);
+
+    // Use UTC throughout to avoid timezone drift (server runs in UTC+7 Bangkok)
+    const now = new Date();
+    const since = new Date(
+      Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() - days + 1),
+    );
+
+    // Pull LESSON_COMPLETED events from analytics — they carry xpAwarded in eventData
+    const events = await this.prisma.analyticsEvent.findMany({
+      where: {
+        userId,
+        eventType: 'LESSON_COMPLETED',
+        timestamp: { gte: since },
+      },
+      select: {
+        timestamp: true,
+        eventData: true,
+      },
+      orderBy: { timestamp: 'asc' },
+    });
+
+    // Build map: date → { count, xpEarned } — keys are UTC date strings (YYYY-MM-DD)
+    const dateMap = new Map<string, { count: number; xpEarned: number }>();
+
+    for (const ev of events) {
+      const dateKey = ev.timestamp.toISOString().slice(0, 10);
+      const existing = dateMap.get(dateKey) ?? { count: 0, xpEarned: 0 };
+      const xp =
+        ev.eventData && typeof ev.eventData === 'object' && !Array.isArray(ev.eventData)
+          ? ((ev.eventData as Record<string, unknown>).xpAwarded as number) ?? 0
+          : 0;
+      dateMap.set(dateKey, {
+        count: existing.count + 1,
+        xpEarned: existing.xpEarned + xp,
+      });
+    }
+
+    // Fill all N days (including zero-activity days) — fully UTC
+    const result: { date: string; count: number; xpEarned: number }[] = [];
+    for (let i = 0; i < days; i++) {
+      const d = new Date(since);
+      d.setUTCDate(d.getUTCDate() + i);
+      const dateKey = d.toISOString().slice(0, 10);
+      const entry = dateMap.get(dateKey) ?? { count: 0, xpEarned: 0 };
+      result.push({ date: dateKey, ...entry });
+    }
+
+    return result;
+  }
+
+  /**
    * Delete progress
    */
   async delete(id: string) {
@@ -273,6 +386,40 @@ export class ProgressService {
     return this.prisma.userProgress.delete({
       where: { id },
     });
+  }
+
+  /**
+   * Get the current combo status for a user.
+   * Returns count of LESSON_COMPLETED events in the last 2 hours + derived multiplier.
+   * Used by the Learn screen to display the active combo indicator.
+   */
+  async getCurrentCombo(userId: string): Promise<{
+    comboCount: number;
+    comboMultiplier: number;
+    active: boolean;
+  }> {
+    const sessionStart = new Date(Date.now() - 2 * 60 * 60 * 1000);
+
+    const recentCompletions = await this.prisma.analyticsEvent.count({
+      where: {
+        userId,
+        eventType: 'LESSON_COMPLETED',
+        timestamp: { gte: sessionStart },
+      },
+    });
+
+    let comboMultiplier = 1.0;
+    if (recentCompletions >= 5) {
+      comboMultiplier = 2.0;
+    } else if (recentCompletions >= 3) {
+      comboMultiplier = 1.5;
+    }
+
+    return {
+      comboCount: recentCompletions,
+      comboMultiplier,
+      active: recentCompletions >= 3,
+    };
   }
 }
 

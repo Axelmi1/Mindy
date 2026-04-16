@@ -42,7 +42,7 @@ export class LessonsService {
     limit?: number;
     offset?: number;
   }) {
-    const { domain, difficulty, limit = 20, offset = 0 } = options || {};
+    const { domain, difficulty, limit = 200, offset = 0 } = options || {};
 
     return this.prisma.lesson.findMany({
       where: {

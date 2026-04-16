@@ -1,7 +1,9 @@
+import { ApiTags } from '@nestjs/swagger';
 import { Controller, Get, Post, Param } from '@nestjs/common';
 import { AchievementsService } from './achievements.service';
 import { AchievementCheckerService } from './achievement-checker.service';
 
+@ApiTags('achievements')
 @Controller('achievements')
 export class AchievementsController {
   constructor(

@@ -16,8 +16,20 @@ export interface User {
     streakFreezes: number;
     soundEnabled: boolean;
     lastActiveAt: string | null;
+    preferredDomain: string | null;
+    userGoal: string | null;
     createdAt: string;
     updatedAt: string;
+}
+/**
+ * Per-domain lesson completion breakdown
+ */
+export interface DomainStats {
+    domain: 'CRYPTO' | 'FINANCE' | 'TRADING';
+    completed: number;
+    total: number;
+    label: string;
+    emoji: string;
 }
 /**
  * User stats for dashboard display
@@ -35,6 +47,10 @@ export interface UserStats {
     totalLessons: number;
     achievementsUnlocked: number;
     referralCode: string | null;
+    /** Weekly leaderboard rank (null if user hasn't earned XP this week) */
+    userRank: number | null;
+    /** Completion breakdown by domain */
+    domainStats: DomainStats[];
 }
 /**
  * User progress on a specific lesson

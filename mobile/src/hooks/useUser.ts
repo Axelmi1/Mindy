@@ -83,33 +83,42 @@ export function useUser() {
     }
   }, [API_URL]);
 
-  // Create a new anonymous user
-  const initUser = useCallback(async () => {
+  // Create a new user (optionally with custom username + onboarding choices)
+  const initUser = useCallback(async (
+    customUsername?: string,
+    preferences?: { preferredDomain?: string; userGoal?: string }
+  ) => {
     setState(prev => ({ ...prev, isLoading: true }));
 
     try {
       // First check if we already have a valid user
       const storedUserId = await AsyncStorage.getItem(USER_ID_KEY);
-      if (storedUserId) {
+      if (storedUserId && !customUsername) {
         try {
           const verifyResponse = await fetch(`${API_URL}/users/${storedUserId}`);
           if (verifyResponse.ok) {
-            setState({ userId: storedUserId, isLoading: false, isLoggedIn: true, error: null });
+            const data = await verifyResponse.json();
+            const username = data?.data?.username ?? null;
+            setState({ userId: storedUserId, username, isLoading: false, isLoggedIn: true, error: null });
             return;
           }
         } catch {
           // Continue to create new user
         }
-        await AsyncStorage.removeItem(USER_ID_KEY);
+        await AsyncStorage.multiRemove([USER_ID_KEY, USERNAME_KEY]);
       }
 
-      // Create new anonymous user
+      const ts = Date.now();
+      const finalUsername = customUsername?.trim() || `user_${ts.toString(36)}`;
+      const finalEmail = `${finalUsername.toLowerCase().replace(/[^a-z0-9]/g, '_')}_${ts}@mindy.app`;
+
+      // Create new user
       const response = await fetch(`${API_URL}/users`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          email: `anon_${Date.now()}@mindy.app`,
-          username: `anon_${Date.now().toString(36)}`,
+          email: finalEmail,
+          username: finalUsername,
         }),
       });
 
@@ -121,9 +130,31 @@ export function useUser() {
       const userId = result.data.id;
       const username = result.data.username ?? null;
 
+      // Save onboarding preferences (domain + goal) if provided
+      if (preferences && (preferences.preferredDomain || preferences.userGoal)) {
+        try {
+          await fetch(`${API_URL}/users/${userId}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              preferredDomain: preferences.preferredDomain,
+              userGoal: preferences.userGoal,
+            }),
+          });
+        } catch {
+          // Non-blocking — preferences are nice-to-have
+        }
+      }
+
       await AsyncStorage.multiSet([
         [USER_ID_KEY, userId],
         ...(username ? [[USERNAME_KEY, username] as [string, string]] : []),
+        ...(preferences?.preferredDomain
+          ? [['@mindy/preferred_domain', preferences.preferredDomain] as [string, string]]
+          : []),
+        ...(preferences?.userGoal
+          ? [['@mindy/user_goal', preferences.userGoal] as [string, string]]
+          : []),
       ]);
       setState({ userId, username, isLoading: false, isLoggedIn: true, error: null });
     } catch (err) {

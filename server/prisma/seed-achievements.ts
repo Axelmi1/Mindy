@@ -84,6 +84,54 @@ const achievements = [
     orderIndex: 11,
   },
 
+  // LEARNING - Trading Domain
+  {
+    key: 'trading_pro',
+    name: 'Trading Pro',
+    description: 'Complete all 10 Trading lessons',
+    category: 'LEARNING',
+    requirementType: 'TRADING_LESSONS_COMPLETED',
+    requirementValue: 10,
+    xpReward: 200,
+    rarity: 'RARE',
+    orderIndex: 12,
+  },
+
+  // MASTER QUIZ ACHIEVEMENTS (Legendary)
+  {
+    key: 'crypto_master_quiz',
+    name: '🏆 Crypto Legend',
+    description: 'Pass the Crypto Master Quiz — prove your mastery',
+    category: 'LEARNING',
+    requirementType: 'CRYPTO_MASTER_QUIZ_COMPLETED',
+    requirementValue: 1,
+    xpReward: 500,
+    rarity: 'LEGENDARY',
+    orderIndex: 50,
+  },
+  {
+    key: 'finance_master_quiz',
+    name: '🏆 Finance Legend',
+    description: 'Pass the Finance Master Quiz — prove your mastery',
+    category: 'LEARNING',
+    requirementType: 'FINANCE_MASTER_QUIZ_COMPLETED',
+    requirementValue: 1,
+    xpReward: 500,
+    rarity: 'LEGENDARY',
+    orderIndex: 51,
+  },
+  {
+    key: 'trading_master_quiz',
+    name: '🏆 Trading Legend',
+    description: 'Pass the Trading Master Quiz — prove your mastery',
+    category: 'LEARNING',
+    requirementType: 'TRADING_MASTER_QUIZ_COMPLETED',
+    requirementValue: 1,
+    xpReward: 500,
+    rarity: 'LEGENDARY',
+    orderIndex: 52,
+  },
+
   // LEARNING - Daily Challenges
   {
     key: 'first_challenge',

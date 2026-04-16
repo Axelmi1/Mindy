@@ -1,3 +1,4 @@
+import { ApiTags, ApiOperation, ApiParam, ApiQuery, ApiResponse as SwaggerApiResponse, ApiBody } from '@nestjs/swagger';
 import {
   Controller,
   Get,
@@ -9,8 +10,12 @@ import {
   Query,
   HttpCode,
   HttpStatus,
+  Res,
 } from '@nestjs/common';
+import type { Response } from 'express';
 import { ProgressService } from './progress.service';
+import { ProgressExportService } from './progress-export.service';
+import { WeeklyRecapService } from './weekly-recap.service';
 import type {
   ApiResponse,
   UserProgress,
@@ -20,14 +25,25 @@ import type {
   CompleteStepDto,
 } from '@mindy/shared';
 
+@ApiTags('progress')
 @Controller('progress')
 export class ProgressController {
-  constructor(private readonly progressService: ProgressService) {}
+  constructor(
+    private readonly progressService: ProgressService,
+    private readonly exportService: ProgressExportService,
+    private readonly weeklyRecapService: WeeklyRecapService,
+  ) {}
 
   /**
    * POST /api/progress
    * Start tracking progress for a lesson
    */
+  @ApiOperation({
+    summary: 'Start a lesson (create progress record)',
+    description: 'Creates a UserProgress row for the given user+lesson pair. Throws 409 if already started.',
+  })
+  @SwaggerApiResponse({ status: 201, description: 'Progress record created' })
+  @SwaggerApiResponse({ status: 409, description: 'Progress already exists for this user+lesson pair' })
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async create(
@@ -45,6 +61,9 @@ export class ProgressController {
    * GET /api/progress/user/:userId
    * Get all progress for a user
    */
+  @ApiOperation({ summary: 'Get all lesson progress for a user' })
+  @ApiParam({ name: 'userId', description: 'User ID' })
+  @SwaggerApiResponse({ status: 200, description: 'Array of progress records with embedded lesson metadata' })
   @Get('user/:userId')
   async findByUser(
     @Param('userId') userId: string,
@@ -68,6 +87,8 @@ export class ProgressController {
    * GET /api/progress/user/:userId/current
    * Get user's current/in-progress lesson
    */
+  @ApiOperation({ summary: 'Get user\'s current in-progress lesson', description: 'Returns the most recently started lesson that is not yet completed.' })
+  @ApiParam({ name: 'userId', description: 'User ID' })
   @Get('user/:userId/current')
   async getCurrentLesson(@Param('userId') userId: string): Promise<
     ApiResponse<{
@@ -90,6 +111,19 @@ export class ProgressController {
           }
         : { lesson: null, progress: null },
     };
+  }
+
+  /**
+   * GET /api/progress/user/:userId/combo
+   * Get the user's current combo count and multiplier (lessons in last 2h)
+   */
+  @ApiOperation({ summary: 'Get current combo status for a user (lessons completed in last 2h)' })
+  @ApiParam({ name: 'userId', description: 'User ID' })
+  @SwaggerApiResponse({ status: 200, description: 'Combo count, multiplier, and active flag' })
+  @Get('user/:userId/combo')
+  async getCurrentCombo(@Param('userId') userId: string) {
+    const combo = await this.progressService.getCurrentCombo(userId);
+    return { success: true, data: combo };
   }
 
   /**
@@ -121,6 +155,17 @@ export class ProgressController {
     };
   }
 
+  @ApiOperation({ summary: 'Get activity heatmap (last N days)', description: 'Returns one entry per calendar day with lesson count and XP earned. Use days=56 for 8-week GitHub-style heatmap.' })
+  @Get('user/:userId/activity')
+  async getActivityHeatmap(
+    @Param('userId') userId: string,
+    @Query('days') days?: string,
+  ): Promise<ApiResponse<{ date: string; count: number; xpEarned: number }[]>> {
+    const daysNum = days ? Math.min(parseInt(days, 10), 365) : 56;
+    const data = await this.progressService.getActivityHeatmap(userId, daysNum);
+    return { success: true, data };
+  }
+
   /**
    * PATCH /api/progress/:id
    * Update progress
@@ -142,6 +187,20 @@ export class ProgressController {
    * POST /api/progress/:id/complete-step
    * Mark a single step as completed
    */
+  @ApiOperation({
+    summary: 'Complete a step within a lesson',
+    description: [
+      'Marks step `stepIndex` as done. When **all** steps are completed:',
+      '- `isCompleted` becomes `true`',
+      '- XP is awarded to the user (and leaderboard updated)',
+      '- User streak is updated',
+      '- `justCompleted` is `true` in the response',
+      'Re-submitting an already-completed step is idempotent (no double XP).',
+    ].join('\n'),
+  })
+  @ApiParam({ name: 'id', description: 'Progress record ID' })
+  @SwaggerApiResponse({ status: 200, description: 'Step recorded. Check `justCompleted` and `xpAwarded` in response.' })
+  @SwaggerApiResponse({ status: 404, description: 'Progress not found or step index out of range' })
   @Post(':id/complete-step')
   async completeStep(
     @Param('id') id: string,
@@ -167,6 +226,8 @@ export class ProgressController {
    * POST /api/progress/:id/reset
    * Reset progress (for retrying a lesson)
    */
+  @ApiOperation({ summary: 'Reset lesson progress (practice mode)', description: 'Clears all completed steps and sets isCompleted to false. XP is NOT revoked.' })
+  @ApiParam({ name: 'id', description: 'Progress record ID' })
   @Post(':id/reset')
   async resetProgress(@Param('id') id: string): Promise<ApiResponse<UserProgress>> {
     const progress = await this.progressService.resetProgress(id);
@@ -190,6 +251,42 @@ export class ProgressController {
       data: { id },
       message: 'Progress deleted',
     };
+  }
+
+  /**
+   * GET /api/progress/:userId/weekly-recap
+   * Get the current week's learning recap with stats and motivation.
+   */
+  @Get(':userId/weekly-recap')
+  @ApiOperation({ summary: 'Get weekly learning recap for a user' })
+  @ApiParam({ name: 'userId', description: 'User ID' })
+  async getWeeklyRecap(@Param('userId') userId: string) {
+    return { data: await this.weeklyRecapService.getWeeklyRecap(userId) };
+  }
+
+  /**
+   * GET /api/progress/:userId/export/pdf
+   * Export user progress as a PDF report (Pro feature).
+   */
+  @Get(':userId/export/pdf')
+  @ApiOperation({ summary: 'Export progress report as PDF (Pro only)' })
+  @ApiParam({ name: 'userId', description: 'User ID' })
+  @SwaggerApiResponse({ status: 200, description: 'PDF file download' })
+  @SwaggerApiResponse({ status: 403, description: 'Requires Pro subscription' })
+  async exportPdf(
+    @Param('userId') userId: string,
+    @Res() res: Response,
+  ) {
+    const pdfBuffer = await this.exportService.generateProgressPdf(userId);
+    const filename = `mindy-progress-${userId}-${Date.now()}.pdf`;
+
+    res.set({
+      'Content-Type': 'application/pdf',
+      'Content-Disposition': `attachment; filename="${filename}"`,
+      'Content-Length': pdfBuffer.length,
+    });
+
+    res.end(pdfBuffer);
   }
 
   /**

@@ -173,10 +173,17 @@ const ScenarioStepSchema = z.object({
 /**
  * Price Prediction step - sparkline chart, user predicts up or down
  */
+const CandleSchema = z.object({
+  open: z.number(),
+  high: z.number(),
+  low: z.number(),
+  close: z.number(),
+});
+
 const PricePredictionStepSchema = z.object({
   type: z.literal('price_prediction'),
   question: z.string().min(1, 'Question is required'),
-  priceData: z.array(z.number()).min(3, 'At least 3 price points required'),
+  candles: z.array(CandleSchema).min(3, 'At least 3 candles required'),
   correctAnswer: z.enum(['up', 'down']),
   explanation: z.string().min(1, 'Explanation is required'),
   mindyMessage: z.string().min(1, 'Mindy message is required'),
@@ -239,6 +246,94 @@ const FlashcardStepSchema = z.object({
 });
 
 /**
+ * Word Scramble step - unscramble letters to form a term
+ */
+const WordScrambleStepSchema = z.object({
+  type: z.literal('word_scramble'),
+  word: z.string().min(1, 'Word is required'),
+  hint: z.string().min(1, 'Hint is required'),
+  scrambled: z.array(z.string().min(1)).min(2, 'At least 2 letters required'),
+  mindyMessage: z.string().min(1, 'Mindy message is required'),
+});
+
+/**
+ * Drag Sort step - sort cards in correct order
+ */
+const DragSortItemSchema = z.object({
+  id: z.string().min(1),
+  label: z.string().min(1),
+  emoji: z.string().min(1),
+  value: z.string().optional(),
+});
+
+const DragSortStepSchema = z.object({
+  type: z.literal('drag_sort'),
+  question: z.string().min(1, 'Question is required'),
+  items: z.array(DragSortItemSchema).min(3, 'At least 3 items required').max(7),
+  correctOrder: z.array(z.number().int().min(0)),
+  explanation: z.string().min(1, 'Explanation is required'),
+  mindyMessage: z.string().min(1, 'Mindy message is required'),
+}).refine(
+  (data) => data.correctOrder.length === data.items.length,
+  { message: 'correctOrder must have same length as items' }
+);
+
+/**
+ * Spot the Scam step - identify the fraudulent card
+ */
+const ScamCardSchema = z.object({
+  id: z.string().min(1),
+  type: z.enum(['tweet', 'email', 'site']),
+  content: z.string().min(1),
+  sender: z.string().min(1),
+  isScam: z.boolean(),
+  redFlags: z.array(z.string()).optional(),
+});
+
+const SpotTheScamStepSchema = z.object({
+  type: z.literal('spot_the_scam'),
+  question: z.string().min(1, 'Question is required'),
+  cards: z.array(ScamCardSchema).min(2, 'At least 2 cards required').max(4),
+  explanation: z.string().min(1, 'Explanation is required'),
+  mindyMessage: z.string().min(1, 'Mindy message is required'),
+}).refine(
+  (data) => data.cards.filter(c => c.isScam).length === 1,
+  { message: 'Exactly one card must be a scam' }
+);
+
+/**
+ * Connect Dots step - match terms to definitions
+ */
+const ConnectDotsPairSchema = z.object({
+  term: z.string().min(1),
+  definition: z.string().min(1),
+});
+
+const ConnectDotsStepSchema = z.object({
+  type: z.literal('connect_dots'),
+  pairs: z.array(ConnectDotsPairSchema).min(2, 'At least 2 pairs required').max(5),
+  mindyMessage: z.string().min(1, 'Mindy message is required'),
+});
+
+/**
+ * Timeline Builder step - place events in chronological order
+ */
+const TimelineEventSchema = z.object({
+  id: z.string().min(1),
+  label: z.string().min(1),
+  year: z.string().min(1),
+  emoji: z.string().min(1),
+});
+
+const TimelineBuilderStepSchema = z.object({
+  type: z.literal('timeline_builder'),
+  title: z.string().min(1, 'Title is required'),
+  events: z.array(TimelineEventSchema).min(3, 'At least 3 events required').max(8),
+  explanation: z.string().min(1, 'Explanation is required'),
+  mindyMessage: z.string().min(1, 'Mindy message is required'),
+});
+
+/**
  * Union of all step types
  * Note: Using z.union instead of z.discriminatedUnion because some schemas
  * use .refine() which returns ZodEffects, incompatible with discriminatedUnion
@@ -259,6 +354,11 @@ export const LessonStepSchema = z.union([
   BudgetAllocatorStepSchema,
   NewsImpactStepSchema,
   FlashcardStepSchema,
+  WordScrambleStepSchema,
+  DragSortStepSchema,
+  SpotTheScamStepSchema,
+  ConnectDotsStepSchema,
+  TimelineBuilderStepSchema,
 ]);
 
 // ============================================================================

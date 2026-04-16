@@ -7,7 +7,7 @@
 // Step Types
 // ============================================================================
 
-export type StepType = 'info' | 'quiz' | 'swipe' | 'swipe_sequence' | 'reorder' | 'visual_pick' | 'match_pairs' | 'fill_blank' | 'calculator' | 'scenario' | 'price_prediction' | 'speed_round' | 'budget_allocator' | 'news_impact' | 'flashcard';
+export type StepType = 'info' | 'quiz' | 'swipe' | 'swipe_sequence' | 'reorder' | 'visual_pick' | 'match_pairs' | 'fill_blank' | 'calculator' | 'scenario' | 'price_prediction' | 'speed_round' | 'budget_allocator' | 'news_impact' | 'flashcard' | 'word_scramble' | 'drag_sort' | 'spot_the_scam' | 'connect_dots' | 'timeline_builder';
 
 /**
  * Informational step - displays content with optional Mindy message
@@ -157,10 +157,18 @@ export interface ScenarioStep {
 /**
  * Price Prediction step - sparkline chart, user predicts up or down
  */
+export interface Candle {
+  open: number;
+  high: number;
+  low: number;
+  close: number;
+}
+
 export interface PricePredictionStep {
   type: 'price_prediction';
   question: string;
-  priceData: number[];
+  /** OHLC candlestick data — the last candle is hidden, user predicts next direction */
+  candles: Candle[];
   correctAnswer: 'up' | 'down';
   explanation: string;
   mindyMessage: string;
@@ -223,6 +231,90 @@ export interface FlashcardStep {
 }
 
 /**
+ * Word Scramble step - unscramble letters to form a financial term
+ */
+export interface WordScrambleStep {
+  type: 'word_scramble';
+  word: string;
+  hint: string;
+  scrambled: string[];
+  mindyMessage: string;
+}
+
+/**
+ * Drag Sort step - sort cards in the correct logical order
+ */
+export interface DragSortItem {
+  id: string;
+  label: string;
+  emoji: string;
+  value?: string;
+  /** Items with the same group can be in any order relative to each other */
+  group?: string;
+}
+
+export interface DragSortStep {
+  type: 'drag_sort';
+  question: string;
+  items: DragSortItem[];
+  correctOrder: number[];
+  explanation: string;
+  mindyMessage: string;
+}
+
+/**
+ * Spot the Scam step - identify the fraudulent card among 4
+ */
+export interface ScamCard {
+  id: string;
+  type: 'tweet' | 'email' | 'site';
+  content: string;
+  sender: string;
+  isScam: boolean;
+  redFlags?: string[];
+}
+
+export interface SpotTheScamStep {
+  type: 'spot_the_scam';
+  question: string;
+  cards: ScamCard[];
+  explanation: string;
+  mindyMessage: string;
+}
+
+/**
+ * Connect Dots step - match terms to definitions by drawing connections
+ */
+export interface ConnectDotsPair {
+  term: string;
+  definition: string;
+}
+
+export interface ConnectDotsStep {
+  type: 'connect_dots';
+  pairs: ConnectDotsPair[];
+  mindyMessage: string;
+}
+
+/**
+ * Timeline Builder step - place historical events in chronological order
+ */
+export interface TimelineEvent {
+  id: string;
+  label: string;
+  year: string;
+  emoji: string;
+}
+
+export interface TimelineBuilderStep {
+  type: 'timeline_builder';
+  title: string;
+  events: TimelineEvent[];
+  explanation: string;
+  mindyMessage: string;
+}
+
+/**
  * Union type for all lesson step variants
  */
 export type LessonStep =
@@ -240,7 +332,12 @@ export type LessonStep =
   | SpeedRoundStep
   | BudgetAllocatorStep
   | NewsImpactStep
-  | FlashcardStep;
+  | FlashcardStep
+  | WordScrambleStep
+  | DragSortStep
+  | SpotTheScamStep
+  | ConnectDotsStep
+  | TimelineBuilderStep;
 
 /**
  * Complete lesson content structure
@@ -269,4 +366,6 @@ export interface Lesson {
   xpReward: number;
   orderIndex: number;
   createdAt: string;
+  /** True for the domain Master Quiz — unlocked only when all regular lessons are done */
+  isMasterQuiz?: boolean;
 }

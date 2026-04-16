@@ -1,6 +1,8 @@
+import { ApiTags } from '@nestjs/swagger';
 import { Controller, Get, Post, Param } from '@nestjs/common';
 import { DailyChallengeService } from './daily-challenge.service';
 
+@ApiTags('daily-challenge')
 @Controller('daily-challenge')
 export class DailyChallengeController {
   constructor(private readonly dailyChallengeService: DailyChallengeService) {}

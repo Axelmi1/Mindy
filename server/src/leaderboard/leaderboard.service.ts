@@ -6,7 +6,12 @@ export interface LeaderboardEntry {
   userId: string;
   username: string;
   xpEarned: number;
+  xpDelta: number;      // XP delta vs last week (positive = improved, negative = worse)
+  lastWeekXp: number;   // XP earned last week
+  totalXp: number;      // All-time XP (used for league badge)
   isCurrentUser: boolean;
+  /** Rank position change vs last week (positive = moved UP, negative = moved DOWN, null = new entry) */
+  rankDelta: number | null;
 }
 
 @Injectable()
@@ -26,7 +31,7 @@ export class LeaderboardService {
     const weekEnd = new Date(weekStart);
     weekEnd.setDate(weekEnd.getDate() + 7);
 
-    // Get top entries for this week
+    // Get top entries for this week (include user totalXp for league badge)
     const topEntries = await this.prisma.weeklyXp.findMany({
       where: { weekStart },
       include: {
@@ -34,6 +39,7 @@ export class LeaderboardService {
           select: {
             id: true,
             username: true,
+            xp: true,
           },
         },
       },
@@ -41,14 +47,50 @@ export class LeaderboardService {
       take: limit,
     });
 
-    // Build leaderboard with ranks
-    const leaderboard: LeaderboardEntry[] = topEntries.map((entry, index) => ({
-      rank: index + 1,
-      userId: entry.userId,
-      username: entry.user.username,
-      xpEarned: entry.xpEarned,
-      isCurrentUser: entry.userId === userId,
-    }));
+    // Get last week's XP for all top users to compute delta
+    const lastWeekStart = new Date(weekStart);
+    lastWeekStart.setDate(lastWeekStart.getDate() - 7);
+
+    const topUserIds = topEntries.map((e) => e.userId);
+    const lastWeekEntries = await this.prisma.weeklyXp.findMany({
+      where: {
+        weekStart: lastWeekStart,
+        userId: { in: topUserIds },
+      },
+      select: { userId: true, xpEarned: true },
+    });
+    const lastWeekMap = new Map(lastWeekEntries.map((e) => [e.userId, e.xpEarned]));
+
+    // Build last week's rank map: sort last-week entries by xpEarned desc and assign ranks
+    // We query all last-week entries (not just top N) so rank positions are accurate
+    const allLastWeekEntries = await this.prisma.weeklyXp.findMany({
+      where: { weekStart: lastWeekStart },
+      select: { userId: true, xpEarned: true },
+      orderBy: { xpEarned: 'desc' },
+    });
+    const lastWeekRankMap = new Map<string, number>(
+      allLastWeekEntries.map((e, idx) => [e.userId, idx + 1]),
+    );
+
+    // Build leaderboard with ranks, deltas, rankDelta, and total XP for league badge
+    const leaderboard: LeaderboardEntry[] = topEntries.map((entry, index) => {
+      const currentRank = index + 1;
+      const lastWeekXp = lastWeekMap.get(entry.userId) ?? 0;
+      const lastWeekRank = lastWeekRankMap.get(entry.userId) ?? null;
+      // rankDelta > 0 means moved UP (better rank = lower number), < 0 moved DOWN
+      const rankDelta = lastWeekRank !== null ? lastWeekRank - currentRank : null;
+      return {
+        rank: currentRank,
+        userId: entry.userId,
+        username: entry.user.username,
+        xpEarned: entry.xpEarned,
+        xpDelta: entry.xpEarned - lastWeekXp,
+        lastWeekXp,
+        totalXp: entry.user.xp,
+        isCurrentUser: entry.userId === userId,
+        rankDelta,
+      };
+    });
 
     // Find current user's position if not in top entries
     let userPosition: LeaderboardEntry | null = null;
@@ -65,7 +107,7 @@ export class LeaderboardService {
         },
         include: {
           user: {
-            select: { username: true },
+            select: { username: true, xp: true },
           },
         },
       });
@@ -79,12 +121,25 @@ export class LeaderboardService {
           },
         });
 
+        // Get user's last week XP for delta
+        const userLastWeek = await this.prisma.weeklyXp.findUnique({
+          where: { userId_weekStart: { userId, weekStart: lastWeekStart } },
+          select: { xpEarned: true },
+        });
+        const userLastWeekXp = userLastWeek?.xpEarned ?? 0;
+
+        const userCurrentRank = usersAbove + 1;
+        const userLastWeekRank = lastWeekRankMap.get(userId) ?? null;
         userPosition = {
-          rank: usersAbove + 1,
+          rank: userCurrentRank,
           userId,
           username: userEntry.user.username,
           xpEarned: userEntry.xpEarned,
+          xpDelta: userEntry.xpEarned - userLastWeekXp,
+          lastWeekXp: userLastWeekXp,
+          totalXp: userEntry.user.xp,
           isCurrentUser: true,
+          rankDelta: userLastWeekRank !== null ? userLastWeekRank - userCurrentRank : null,
         };
       }
     } else {
@@ -121,6 +176,47 @@ export class LeaderboardService {
         xpEarned: xpAmount,
       },
     });
+  }
+
+  /**
+   * Get user's XP history for the last N weeks (default 8).
+   * Returns weeks in ascending order (oldest first).
+   * Missing weeks are filled with xpEarned = 0.
+   */
+  async getWeeklyXpHistory(
+    userId: string,
+    weeks = 8,
+  ): Promise<Array<{ weekStart: Date; xpEarned: number; label: string }>> {
+    const weekStart = this.getWeekStart(new Date());
+
+    // Fetch up to `weeks` past entries (oldest first)
+    const records = await this.prisma.weeklyXp.findMany({
+      where: { userId },
+      orderBy: { weekStart: 'desc' },
+      take: weeks,
+      select: { weekStart: true, xpEarned: true },
+    });
+
+    // Build a map for fast lookups
+    const recordMap = new Map(
+      records.map((r) => [r.weekStart.toISOString().slice(0, 10), r.xpEarned]),
+    );
+
+    // Build full array of N weeks (ascending)
+    const result: Array<{ weekStart: Date; xpEarned: number; label: string }> = [];
+    for (let i = weeks - 1; i >= 0; i--) {
+      const ws = new Date(weekStart);
+      ws.setUTCDate(ws.getUTCDate() - i * 7);
+      const key = ws.toISOString().slice(0, 10);
+      const label = ws.toLocaleDateString('fr-FR', {
+        month: 'short',
+        day: 'numeric',
+        timeZone: 'UTC',
+      });
+      result.push({ weekStart: ws, xpEarned: recordMap.get(key) ?? 0, label });
+    }
+
+    return result;
   }
 
   /**
@@ -163,21 +259,23 @@ export class LeaderboardService {
   }
 
   /**
-   * Get the Monday of the current week (week start)
+   * Get the Sunday of the current week (week start) — fully UTC to avoid
+   * timezone drift on servers running in non-UTC locales (e.g. Bangkok UTC+7).
+   * Uses Sunday-start to stay consistent with stored data.
    */
   private getWeekStart(date: Date): Date {
-    const d = new Date(date);
-    const day = d.getDay();
-    const diff = d.getDate() - day + (day === 0 ? -6 : 1); // Adjust for Sunday
-    return new Date(d.getFullYear(), d.getMonth(), diff);
+    const day = date.getUTCDay(); // 0 = Sunday
+    return new Date(
+      Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate() - day),
+    );
   }
 
   /**
-   * Get milliseconds until next Monday
+   * Get milliseconds until next Sunday midnight UTC
    */
   private getTimeUntilWeekEnd(weekStart: Date): number {
     const nextWeekStart = new Date(weekStart);
-    nextWeekStart.setDate(nextWeekStart.getDate() + 7);
+    nextWeekStart.setUTCDate(nextWeekStart.getUTCDate() + 7);
     return nextWeekStart.getTime() - Date.now();
   }
 }

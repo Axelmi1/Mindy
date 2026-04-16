@@ -13,3 +13,8 @@ export { SpeedRoundStepView } from './SpeedRoundStepView';
 export { BudgetAllocatorStepView } from './BudgetAllocatorStepView';
 export { NewsImpactStepView } from './NewsImpactStepView';
 export { FlashcardStepView } from './FlashcardStepView';
+export { WordScrambleStepView } from './WordScrambleStepView';
+export { DragSortStepView } from './DragSortStepView';
+export { SpotTheScamStepView } from './SpotTheScamStepView';
+export { ConnectDotsStepView } from './ConnectDotsStepView';
+export { TimelineBuilderStepView } from './TimelineBuilderStepView';

@@ -1,3 +1,4 @@
+import { ApiTags, ApiOperation, ApiParam, ApiQuery, ApiResponse as SwaggerApiResponse } from '@nestjs/swagger';
 import {
   Controller,
   Get,
@@ -14,6 +15,7 @@ import { LessonsService } from './lessons.service';
 import { Domain, Difficulty } from '@prisma/client';
 import type { ApiResponse, Lesson, LessonContent } from '@mindy/shared';
 
+@ApiTags('lessons')
 @Controller('lessons')
 export class LessonsController {
   constructor(private readonly lessonsService: LessonsService) {}
@@ -22,6 +24,8 @@ export class LessonsController {
    * POST /api/lessons
    * Create a new lesson (validated with Zod)
    */
+  @ApiOperation({ summary: 'Create a new lesson', description: 'Validated with Zod. The `content` field must contain a `steps` array (INFO, QUIZ, MATCH_PAIRS, FILL_BLANK, CALCULATOR, SCENARIO).' })
+  @SwaggerApiResponse({ status: 201, description: 'Lesson created' })
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async create(@Body() createLessonDto: unknown): Promise<ApiResponse<Lesson>> {
@@ -37,6 +41,12 @@ export class LessonsController {
    * GET /api/lessons
    * Get all lessons with optional filters
    */
+  @ApiOperation({ summary: 'List lessons with optional domain/difficulty filters' })
+  @ApiQuery({ name: 'domain', required: false, enum: ['CRYPTO', 'FINANCE', 'TRADING'], description: 'Filter by domain' })
+  @ApiQuery({ name: 'difficulty', required: false, enum: ['BEGINNER', 'INTERMEDIATE', 'ADVANCED'], description: 'Filter by difficulty' })
+  @ApiQuery({ name: 'limit', required: false, example: 20 })
+  @ApiQuery({ name: 'offset', required: false, example: 0 })
+  @SwaggerApiResponse({ status: 200, description: 'Array of Lesson objects (70 total in production)' })
   @Get()
   async findAll(
     @Query('domain') domain?: Domain,
@@ -61,6 +71,10 @@ export class LessonsController {
    * GET /api/lessons/:id
    * Get a lesson by ID
    */
+  @ApiOperation({ summary: 'Get lesson by ID (includes full step content)' })
+  @ApiParam({ name: 'id', description: 'Lesson ID (CUID)' })
+  @SwaggerApiResponse({ status: 200, description: 'Lesson with full content' })
+  @SwaggerApiResponse({ status: 404, description: 'Lesson not found' })
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<ApiResponse<Lesson>> {
     const lesson = await this.lessonsService.findById(id);
@@ -74,6 +88,9 @@ export class LessonsController {
    * GET /api/lessons/domain/:domain
    * Get lessons by domain with optional user progress
    */
+  @ApiOperation({ summary: 'Get lessons by domain', description: 'Pass ?userId= to embed the user\'s completion status on each lesson.' })
+  @ApiParam({ name: 'domain', enum: ['CRYPTO', 'FINANCE', 'TRADING'] })
+  @ApiQuery({ name: 'userId', required: false })
   @Get('domain/:domain')
   async findByDomain(
     @Param('domain') domain: Domain,

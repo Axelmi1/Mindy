@@ -113,6 +113,27 @@ const lessons = [
           category: "Bitcoin"
         },
         {
+          type: "word_scramble",
+          word: "BITCOIN",
+          hint: "La première cryptomonnaie décentralisée, créée en 2009.",
+          scrambled: ["I", "B", "T", "O", "C", "N", "I"],
+          mindyMessage: "Remets ces lettres dans l'ordre. C'est la base de tout."
+        },
+        {
+          type: "timeline_builder",
+          title: "Histoire du Bitcoin",
+          events: [
+            { id: "e1", label: "Whitepaper publié", year: "2008", emoji: "📄" },
+            { id: "e2", label: "Genesis Block miné", year: "2009", emoji: "⛏️" },
+            { id: "e3", label: "Pizza Day (10k BTC)", year: "2010", emoji: "🍕" },
+            { id: "e4", label: "Mt. Gox hacké", year: "2014", emoji: "💥" },
+            { id: "e5", label: "ATH $69k", year: "2021", emoji: "🚀" },
+            { id: "e6", label: "ETF Bitcoin approuvé", year: "2024", emoji: "🏦" }
+          ],
+          explanation: "Du whitepaper de Satoshi en 2008 à l'approbation des ETFs en 2024, Bitcoin a traversé 16 ans d'évolution majeure.",
+          mindyMessage: "L'histoire de BTC en 6 dates. Tu devrais les connaître par cœur."
+        },
+        {
           type: "info",
           title: "À retenir",
           content: "Bitcoin est rare, sécurisé et appartient à ses utilisateurs. C'est la base de tout l'écosystème crypto.",
@@ -230,6 +251,13 @@ const lessons = [
           mindyMessage: "Perds tes clés, perds ton argent. Simple, non ?"
         },
         {
+          type: "fill_blank",
+          sentence: "Un hardware wallet comme le Ledger Nano coûte environ ___ € et stocke vos clés privées hors-ligne.",
+          answer: "80",
+          choices: ["20", "80", "300", "1000"],
+          mindyMessage: "80€ pour protéger potentiellement des milliers d'euros de crypto. C'est l'investissement le plus rentable que tu feras."
+        },
+        {
           type: "swipe_sequence",
           title: "Hot vs Cold Wallet",
           instruction: "Classe ces types de stockage.",
@@ -252,10 +280,32 @@ const lessons = [
           mindyHint: "Hors ligne = hors de portée des hackers."
         },
         {
+          type: "match_pairs",
+          pairs: [
+            { term: "MetaMask", definition: "Hot wallet gratuit, extension navigateur + app mobile" },
+            { term: "Ledger Nano", definition: "Hardware wallet français, puce sécurisée, ~80-150€" },
+            { term: "Trezor", definition: "Premier hardware wallet (2014), open-source, fabriqué en Tchéquie" },
+            { term: "Trust Wallet", definition: "Hot wallet mobile, propriété de Binance" },
+            { term: "Rabby Wallet", definition: "Hot wallet avec simulation de transactions avant signature" }
+          ],
+          mindyMessage: "Chaque wallet a sa spécialité. MetaMask pour la DeFi, Ledger pour le stockage, Rabby pour la sécurité. Choisis en connaissance de cause. 🔧"
+        },
+        {
           type: "info",
           title: "Sécurité maximum",
           content: "Le Cold Wallet est le plus sûr car il n'est jamais relié à internet, sauf pour signer une transaction.",
           mindyMessage: "Bravo, tu es désormais moins vulnérable. 🛡️"
+        },
+        {
+          type: "spot_the_scam",
+          title: "Repère les arnaques wallet",
+          items: [
+            { text: "Un DM Twitter te propose de 'valider ton wallet' en entrant ta seed phrase sur un site", isScam: true, explanation: "Arnaque classique. Personne ne valide un wallet avec une seed phrase. JAMAIS." },
+            { text: "MetaMask te demande de signer une transaction pour échanger des tokens sur Uniswap", isScam: false, explanation: "Normal : signer une transaction (pas partager ta seed) est le fonctionnement standard de MetaMask." },
+            { text: "Un site airdrop te demande de 'connecter ton wallet ET approuver un contrat pour un montant illimité'", isScam: true, explanation: "Red flag : une approbation illimitée donne au contrat le droit de vider tes tokens. Toujours limiter les approvals." },
+            { text: "Ledger Live te demande de confirmer une transaction sur l'écran de ton Ledger", isScam: false, explanation: "C'est le fonctionnement normal. L'écran du Ledger te montre les détails de la transaction pour vérification." }
+          ],
+          mindyMessage: "La règle : si ça demande ta seed phrase, c'est une arnaque. Si ça demande une approbation illimitée, c'est suspect. 🚨"
         },
         {
           type: "scenario",
@@ -268,10 +318,43 @@ const lessons = [
           mindyMessage: "Règle d'or : PERSONNE ne doit JAMAIS voir ta seed phrase. Ni MetaMask, ni Binance, ni même Mindy. 🔐"
         },
         {
+          type: "connect_dots",
+          pairs: [
+            { term: "Seed Phrase", definition: "12 ou 24 mots qui permettent de restaurer un wallet" },
+            { term: "Clé privée", definition: "Nombre secret de 256 bits qui signe les transactions" },
+            { term: "Clé publique", definition: "Dérivée de la clé privée, sert à vérifier les signatures" },
+            { term: "Adresse", definition: "Version raccourcie partageable (commence par 0x sur Ethereum)" },
+            { term: "Token Approval", definition: "Autorisation donnée à un smart contract d'accéder à vos tokens" }
+          ],
+          mindyMessage: "Seed → Clé privée → Clé publique → Adresse. C'est à sens unique. Protège le début de la chaîne."
+        },
+        {
           type: "flashcard",
           front: "Hot Wallet vs Cold Wallet",
           back: "Hot Wallet : connecté à Internet (MetaMask, Trust Wallet). Pratique mais vulnérable aux hacks.\n\nCold Wallet : hors-ligne (Ledger, Trezor). Sécurité maximale, idéal pour le stockage long terme.\n\nRègle : Hot wallet = dépenses quotidiennes. Cold wallet = épargne crypto.",
           category: "Sécurité Crypto"
+        },
+        {
+          type: "word_scramble",
+          word: "LEDGER",
+          hint: "Marque française de hardware wallet, leader mondial. Fondé en 2014 à Paris par Éric Larchevêque.",
+          scrambled: ["G", "L", "E", "R", "D", "E"],
+          mindyMessage: "Ledger = cocorico. Un des rares succès tech français en crypto. Protège tes clés avec fierté. 🇫🇷"
+        },
+        {
+          type: "speed_round",
+          title: "Speed Round : Wallets Crypto",
+          pairs: [
+            { statement: "Un wallet crypto stocke directement vos cryptomonnaies.", isTrue: false },
+            { statement: "MetaMask est un hot wallet disponible en extension navigateur et app mobile.", isTrue: true },
+            { statement: "Un cold wallet est connecté en permanence à Internet.", isTrue: false },
+            { statement: "Ledger a été fondé en France en 2014.", isTrue: true },
+            { statement: "Partager son adresse publique permet à quelqu'un de voler vos cryptos.", isTrue: false },
+            { statement: "Une token approval illimitée est toujours sans danger.", isTrue: false },
+            { statement: "Le Ledger Nano stocke la clé privée dans une puce sécurisée (Secure Element).", isTrue: true },
+            { statement: "Un paper wallet est considéré comme un cold wallet.", isTrue: true }
+          ],
+          timeLimitSeconds: 40
         }
       ]
     }
@@ -287,27 +370,109 @@ const lessons = [
         {
           type: "info",
           title: "La porte d'entrée",
-          content: "Les plateformes comme Binance ou Coinbase sont des CEX (Centralized Exchanges). Elles permettent d'acheter de la crypto avec des Euros.",
-          mindyMessage: "Le supermarché de la crypto. N'y laisse pas ton caddie."
+          content: "Les plateformes comme Binance, Coinbase ou Kraken sont des CEX (Centralized Exchanges). Elles permettent d'acheter de la crypto avec des Euros via virement bancaire ou carte. En 2024, Binance traite plus de 15 milliards $ de volume quotidien.",
+          mindyMessage: "Le supermarché de la crypto. N'y laisse pas ton caddie. 🛒"
         },
         {
           type: "swipe",
           statement: "Sur un CEX, c'est la plateforme qui possède techniquement vos clés privées.",
           isCorrect: true,
-          explanation: "Si la plateforme ferme, vous risquez de tout perdre. Not your keys, not your coins."
+          explanation: "Si la plateforme ferme, vous risquez de tout perdre. FTX en novembre 2022 a fait perdre 8 milliards $ à ses utilisateurs. Not your keys, not your coins."
+        },
+        {
+          type: "fill_blank",
+          sentence: "L'exchange FTX a fait faillite en novembre ___, causant la perte de 8 milliards de dollars.",
+          answer: "2022",
+          choices: ["2020", "2021", "2022", "2023"],
+          mindyMessage: "Sam Bankman-Fried en prison. Ses utilisateurs sans leurs cryptos. La leçon est claire."
         },
         {
           type: "quiz",
           question: "Que signifie 'KYC' sur un exchange ?",
           options: ["Keep Your Crypto", "Know Your Customer", "Key Yield Calculation", "Krypto Yearly Charge"],
           correctIndex: 1,
-          mindyHint: "C'est la vérification d'identité obligatoire."
+          mindyHint: "C'est la vérification d'identité obligatoire. Passeport, selfie, la totale."
+        },
+        {
+          type: "match_pairs",
+          pairs: [
+            { term: "Binance", definition: "Plus gros CEX mondial par volume (fondé en 2017)" },
+            { term: "Coinbase", definition: "CEX américain coté au NASDAQ depuis 2021" },
+            { term: "Kraken", definition: "CEX fondé en 2011, réputé pour sa sécurité" },
+            { term: "Bitstamp", definition: "Plus ancien CEX encore actif (fondé en 2011 en Slovénie)" }
+          ],
+          mindyMessage: "Connais tes exchanges comme tu connais tes restaurants. Certains sont fiables, d'autres... moins. 🍽️"
+        },
+        {
+          type: "scenario",
+          situation: "Tu viens d'acheter 0.5 BTC sur Binance. Un ami te dit de tout laisser sur la plateforme car c'est plus simple. Que fais-tu ?",
+          choices: [
+            { text: "Je laisse tout sur Binance, c'est le plus gros exchange au monde", isGood: false, explanation: "FTX aussi était 'trop gros pour tomber'. Aucun CEX n'est garanti à 100%. Pour du long terme, transfère vers ton propre wallet." },
+            { text: "Je transfère mes BTC vers mon hardware wallet personnel", isGood: true, explanation: "Excellente décision. Sur ton wallet, TU contrôles les clés privées. Même si Binance a des problèmes, tes BTC sont en sécurité." },
+            { text: "Je les répartis entre 5 exchanges différents pour diversifier le risque", isGood: false, explanation: "Mieux que tout sur un seul, mais 5 risques de contrepartie ≠ 0 risque. Un wallet personnel reste la meilleure option pour le long terme." }
+          ],
+          mindyMessage: "Not your keys, not your coins. C'est pas un slogan, c'est une leçon à 8 milliards de dollars. 🔑"
+        },
+        {
+          type: "swipe_sequence",
+          title: "CEX ou DEX ?",
+          instruction: "Identifie si cette caractéristique correspond à un CEX ou un DEX.",
+          leftLabel: "CEX",
+          rightLabel: "DEX",
+          cards: [
+            { id: "1", content: "Vérification d'identité (KYC) obligatoire", correctDirection: "left" },
+            { id: "2", content: "Pas besoin de compte, juste un wallet", correctDirection: "right" },
+            { id: "3", content: "Service client disponible", correctDirection: "left" },
+            { id: "4", content: "Smart contracts gèrent les échanges", correctDirection: "right" },
+            { id: "5", content: "Dépôt en euros par virement bancaire", correctDirection: "left" }
+          ],
+          timeLimit: 40,
+          mindyMessage: "CEX = facilité. DEX = liberté. À toi de choisir ton camp. ⚔️"
+        },
+        {
+          type: "speed_round",
+          title: "Speed Round : Les Exchanges",
+          pairs: [
+            { statement: "Binance a été fondé par Changpeng Zhao (CZ) en 2017.", isTrue: true },
+            { statement: "Un CEX peut geler vos fonds sans votre accord.", isTrue: true },
+            { statement: "Les frais de trading sur un CEX sont généralement plus élevés que sur un DEX.", isTrue: false },
+            { statement: "Coinbase est coté en bourse au NASDAQ depuis avril 2021.", isTrue: true },
+            { statement: "Le KYC protège les utilisateurs contre le vol de crypto.", isTrue: false },
+            { statement: "Mt. Gox, premier grand exchange Bitcoin, a perdu 850 000 BTC en 2014.", isTrue: true },
+            { statement: "Sur un CEX, vous pouvez toujours retirer vos fonds instantanément.", isTrue: false },
+            { statement: "Les CEX utilisent un carnet d'ordres (order book) pour matcher acheteurs et vendeurs.", isTrue: true }
+          ],
+          timeLimitSeconds: 45
+        },
+        {
+          type: "flashcard",
+          front: "Maker vs Taker",
+          back: "Maker : place un ordre limite qui n'est pas exécuté immédiatement → ajoute de la liquidité au carnet d'ordres. Frais réduits (souvent 0.1%).\n\nTaker : place un ordre au marché exécuté immédiatement → retire de la liquidité. Frais plus élevés (souvent 0.1-0.2%).\n\nAstuce : utilise toujours des ordres limites pour payer moins de frais.",
+          category: "Crypto"
+        },
+        {
+          type: "word_scramble",
+          word: "CUSTODY",
+          hint: "Terme anglais pour la garde de vos actifs. Sur un CEX, c'est la plateforme qui a la 'custody' de vos cryptos.",
+          scrambled: ["Y", "C", "T", "U", "S", "O", "D"],
+          mindyMessage: "Self-custody > third-party custody. Toujours. 🔐"
+        },
+        {
+          type: "connect_dots",
+          pairs: [
+            { term: "Order Book", definition: "Carnet d'ordres qui liste les achats et ventes en attente" },
+            { term: "Spread", definition: "Écart entre le meilleur prix d'achat et de vente" },
+            { term: "Liquidité", definition: "Volume de tokens disponibles pour l'échange" },
+            { term: "Slippage", definition: "Différence entre le prix attendu et le prix d'exécution" },
+            { term: "Market Order", definition: "Ordre exécuté immédiatement au meilleur prix disponible" }
+          ],
+          mindyMessage: "Le vocabulaire du trading. Si tu comprends ces 5 termes, t'es déjà au-dessus de 90% des débutants."
         },
         {
           type: "info",
           title: "Résumé",
-          content: "Les CEX sont pratiques pour débuter, mais risqués pour le stockage long terme. Transférez vos cryptos vers votre propre wallet.",
-          mindyMessage: "Tu apprends vite, petit scarabée. 🐛"
+          content: "Les CEX sont pratiques pour débuter : interface simple, achat en euros, service client. Mais ils comportent un risque de contrepartie (FTX, Mt. Gox). Règle d'or : n'y laissez que ce que vous tradez activement. Transférez le reste vers votre propre wallet.",
+          mindyMessage: "Tu apprends vite, petit scarabée. Maintenant, va sécuriser tes cryptos. 🐛"
         }
       ]
     }
@@ -323,18 +488,8 @@ const lessons = [
         {
           type: "info",
           title: "Le Graal",
-          content: "Votre phrase de récupération (Seed Phrase) de 12 ou 24 mots est la clé ultime de votre coffre-fort crypto.",
-          mindyMessage: "C'est plus important que ton code de CB."
-        },
-        {
-          type: "scenario",
-          situation: "Tu reçois un email du 'support Ledger'. Il t'explique qu'un problème de sécurité nécessite de vérifier ta seed phrase de 24 mots sur leur site.",
-          choices: [
-            { text: "Je clique sur le lien et saisis ma seed pour sécuriser mon wallet", isGood: false, explanation: "ARNAQUE. Tu viens de donner toutes tes cryptos au pirate. Personne ne te demande JAMAIS ta seed en ligne." },
-            { text: "Je signale l'email comme phishing et je l'ignore", isGood: true, explanation: "Réflexe parfait. Ledger, MetaMask ou tout wallet ne demandera JAMAIS ta seed. C'est une règle absolue." },
-            { text: "Je contacte le vrai support Ledger pour vérifier si l'email est authentique", isGood: true, explanation: "Bonne initiative. Même si tu es sûr que c'est un scam, reporter aide à protéger d'autres users." }
-          ],
-          mindyMessage: "Ta seed = tes fonds. Personne ne la demande. Point. 🔒"
+          content: "En cryptographie, une clé privée est un nombre secret de 256 bits qui prouve que vous êtes le propriétaire de vos cryptos. Votre phrase de récupération (Seed Phrase) de 12 ou 24 mots est une version lisible de cette clé. Elle suit le standard BIP-39 créé en 2013.\n\nClé privée → Clé publique → Adresse\nCe processus est à sens unique : impossible de retrouver la clé privée à partir de l'adresse.",
+          mindyMessage: "C'est plus important que ton code de CB. Littéralement. Ton code de CB est annulable. Ta seed, non. 🔑"
         },
         {
           type: "fill_blank",
@@ -344,9 +499,93 @@ const lessons = [
           mindyMessage: "Seed = clé maître. Adresse publique = ok à partager. Ne confonds jamais les deux."
         },
         {
+          type: "quiz",
+          question: "Combien de mots contient une seed phrase standard selon BIP-39 ?",
+          options: ["8 ou 16 mots", "12 ou 24 mots", "6 ou 12 mots", "24 ou 48 mots"],
+          correctIndex: 1,
+          mindyHint: "12 mots = 128 bits d'entropie. 24 mots = 256 bits. La plupart des wallets utilisent 12 ou 24."
+        },
+        {
+          type: "scenario",
+          situation: "Tu reçois un email du 'support Ledger'. Il t'explique qu'un problème de sécurité nécessite de vérifier ta seed phrase de 24 mots sur leur site.",
+          choices: [
+            { text: "Je clique sur le lien et saisis ma seed pour sécuriser mon wallet", isGood: false, explanation: "ARNAQUE. Tu viens de donner toutes tes cryptos au pirate. Personne ne te demande JAMAIS ta seed en ligne. En 2023, les utilisateurs Ledger ont perdu des millions à cause de ce type de phishing." },
+            { text: "Je signale l'email comme phishing et je l'ignore", isGood: true, explanation: "Réflexe parfait. Ledger, MetaMask ou tout wallet ne demandera JAMAIS ta seed. C'est une règle absolue." },
+            { text: "Je contacte le vrai support Ledger pour vérifier si l'email est authentique", isGood: true, explanation: "Bonne initiative. Même si tu es sûr que c'est un scam, reporter aide à protéger d'autres users." }
+          ],
+          mindyMessage: "Ta seed = tes fonds. Personne ne la demande. Point. 🔒"
+        },
+        {
+          type: "match_pairs",
+          pairs: [
+            { term: "Clé privée", definition: "Nombre secret de 256 bits qui signe les transactions" },
+            { term: "Clé publique", definition: "Dérivée de la clé privée, utilisée pour vérifier les signatures" },
+            { term: "Adresse", definition: "Version raccourcie de la clé publique, partageable" },
+            { term: "Seed phrase", definition: "12 ou 24 mots représentant la clé privée de façon lisible" },
+            { term: "BIP-39", definition: "Standard de 2048 mots pour générer des seed phrases" }
+          ],
+          mindyMessage: "Clé privée → clé publique → adresse. À sens unique. Comme le temps, ça ne revient pas en arrière. ⏳"
+        },
+        {
+          type: "swipe",
+          statement: "Il est sûr de stocker sa seed phrase dans les notes de son téléphone.",
+          isCorrect: false,
+          explanation: "JAMAIS sur un appareil connecté à Internet. Si ton téléphone est piraté ou volé, c'est game over. La seed doit être écrite sur papier ou gravée sur métal, et stockée hors ligne."
+        },
+        {
+          type: "spot_the_scam",
+          title: "Repère les arnaques à la seed phrase",
+          items: [
+            { text: "Un site te demande ta seed pour 'synchroniser' ton wallet", isScam: true, explanation: "Aucun service légitime ne demande jamais votre seed phrase. Synchronisation = vol." },
+            { text: "MetaMask te demande ta seed quand tu réinstalles l'extension", isScam: false, explanation: "Normal : MetaMask a besoin de ta seed pour restaurer ton wallet localement. Vérifie bien que tu es sur le VRAI site metamask.io." },
+            { text: "Un 'airdrop' gratuit qui demande de connecter ton wallet ET entrer ta seed", isScam: true, explanation: "Un airdrop légitime ne demande JAMAIS ta seed. Connecter le wallet suffit pour les vrais airdrops." },
+            { text: "Tu écris ta seed sur une plaque en acier pour la protéger du feu", isScam: false, explanation: "Excellente pratique de sécurité. Les plaques métal (Cryptosteel, Billfodl) résistent au feu et à l'eau." }
+          ],
+          mindyMessage: "Si quelqu'un te demande ta seed en ligne, c'est un scam. 100% du temps. Sans exception. 🚨"
+        },
+        {
+          type: "info",
+          title: "Comment stocker sa seed ?",
+          content: "Les méthodes de stockage, de la pire à la meilleure :\n\n❌ Screenshot sur téléphone (hackable)\n❌ Fichier texte sur PC (hackable)\n❌ Email à soi-même (hackable)\n⚠️ Papier dans un tiroir (risque feu/eau)\n✅ Papier plastifié dans un coffre\n✅ Plaque métallique (Cryptosteel ~60€, résiste au feu 1200°C)\n✅ Split en 2-3 parties stockées à des endroits différents (méthode Shamir)",
+          mindyMessage: "Ta seed vaut potentiellement des milliers d'euros. Protège-la comme un bijou de famille. 💎"
+        },
+        {
+          type: "speed_round",
+          title: "Speed Round : Sécurité des Clés",
+          pairs: [
+            { statement: "Une seed phrase de 24 mots offre 256 bits d'entropie.", isTrue: true },
+            { statement: "On peut retrouver une clé privée à partir d'une adresse publique.", isTrue: false },
+            { statement: "Un hardware wallet (Ledger, Trezor) stocke la clé privée hors ligne.", isTrue: true },
+            { statement: "Partager sa clé publique permet à quelqu'un de voler vos cryptos.", isTrue: false },
+            { statement: "Le standard BIP-39 utilise une liste de 2048 mots anglais.", isTrue: true },
+            { statement: "Il est recommandé de photographier sa seed phrase comme backup.", isTrue: false },
+            { statement: "Perdre sa seed phrase = perdre définitivement l'accès à ses cryptos.", isTrue: true },
+            { statement: "MetaMask stocke votre seed phrase sur les serveurs de ConsenSys.", isTrue: false }
+          ],
+          timeLimitSeconds: 45
+        },
+        {
+          type: "word_scramble",
+          word: "ENTROPY",
+          hint: "Mesure du caractère aléatoire d'une clé. Plus il y en a, plus la clé est sécurisée. 256 bits pour une seed de 24 mots.",
+          scrambled: ["R", "E", "N", "T", "Y", "O", "P"],
+          mindyMessage: "L'entropie, c'est le chaos qui protège tes cryptos. Plus c'est aléatoire, mieux c'est. 🎲"
+        },
+        {
+          type: "connect_dots",
+          pairs: [
+            { term: "Ledger Nano", definition: "Hardware wallet français, leader du marché (~120€)" },
+            { term: "Trezor", definition: "Premier hardware wallet (2014), open source" },
+            { term: "MetaMask", definition: "Wallet logiciel (extension navigateur), gratuit" },
+            { term: "Paper Wallet", definition: "Clés imprimées sur papier, 100% hors ligne" },
+            { term: "Multisig", definition: "Wallet nécessitant plusieurs signatures pour valider" }
+          ],
+          mindyMessage: "Chaque type de wallet a ses avantages. L'important c'est de comprendre les compromis sécurité/praticité."
+        },
+        {
           type: "info",
           title: "Règle d'or",
-          content: "Ne donnez JAMAIS votre phrase à personne, pas même au support client. Celui qui a la seed a les fonds.",
+          content: "Ne donnez JAMAIS votre seed phrase à personne, pas même au support client. Celui qui a la seed a les fonds. En 2023, James Howells a perdu l'accès à 7 500 BTC (environ 500 millions $) enterrés dans une décharge car il a jeté le disque dur contenant sa clé privée.\n\nBackup ta seed. Protège ta seed. C'est la seule chose entre toi et la perte définitive.",
           mindyMessage: "Même moi je ne te la demanderai pas. Promis. 😇"
         }
       ]
@@ -408,6 +647,27 @@ const lessons = [
           front: "TVL (Total Value Locked)",
           back: "TVL = valeur totale des actifs déposés dans un protocole DeFi. C'est l'indicateur #1 de confiance.\n\nExemples (2024) :\n• Lido : ~35 milliards $\n• Aave : ~12 milliards $\n• Un rug pull random : 500k$ max\n\nPlus le TVL est élevé et stable, plus le protocole est fiable.",
           category: "DeFi"
+        },
+        {
+          type: "drag_sort",
+          question: "Classe ces protocoles DeFi par TVL (du plus grand au plus petit) :",
+          items: [
+            { id: "d1", label: "Lido", emoji: "🔵", value: "~35 milliards $" },
+            { id: "d2", label: "Aave", emoji: "👻", value: "~12 milliards $" },
+            { id: "d3", label: "Uniswap", emoji: "🦄", value: "~5 milliards $" },
+            { id: "d4", label: "Curve", emoji: "🔶", value: "~2 milliards $" },
+            { id: "d5", label: "SushiSwap", emoji: "🍣", value: "~500 millions $" }
+          ],
+          correctOrder: [0, 1, 2, 3, 4],
+          explanation: "Lido domine grâce au staking liquide d'ETH. Le TVL est l'indicateur clé pour évaluer la confiance dans un protocole.",
+          mindyMessage: "Tu connais tes protocoles ? On va voir ça. 🧪"
+        },
+        {
+          type: "word_scramble",
+          word: "STAKING",
+          hint: "Bloquer ses cryptos pour valider le réseau et gagner des récompenses.",
+          scrambled: ["T", "S", "K", "A", "G", "N", "I"],
+          mindyMessage: "Un concept fondamental en DeFi. Trouve le mot !"
         }
       ]
     }
@@ -423,21 +683,38 @@ const lessons = [
         {
           type: "info",
           title: "Non-Fungible Tokens",
-          content: "Un NFT est un titre de propriété numérique unique. Contrairement à un Bitcoin, un NFT ne peut pas être échangé contre un autre identique.",
-          mindyMessage: "Ce n'est pas juste des images de singes, je te jure. 🐵"
+          content: "Un NFT (Non-Fungible Token) est un titre de propriété numérique unique inscrit sur une blockchain. Contrairement à un Bitcoin (fongible = interchangeable), chaque NFT est unique et identifiable.\n\nLes NFTs utilisent principalement le standard ERC-721 sur Ethereum, créé en janvier 2018. Le premier projet NFT majeur était CryptoPunks (Larva Labs, juin 2017) : 10 000 avatars pixélisés générés algorithmiquement.",
+          mindyMessage: "Ce n'est pas juste des images de singes, je te jure. Enfin... ça l'a été un moment. 🐵"
         },
         {
           type: "quiz",
           question: "Que signifie 'Fongible' ?",
           options: ["Unique au monde", "Interchangeable", "Périssable", "Illégal"],
           correctIndex: 1,
-          mindyHint: "Un billet de 10€ est fongible : n'importe lequel a la même valeur."
+          mindyHint: "Un billet de 10€ est fongible : n'importe lequel a la même valeur. Un tableau de Picasso ne l'est pas."
+        },
+        {
+          type: "fill_blank",
+          sentence: "Le standard ___ sur Ethereum permet de créer des NFTs (tokens non-fongibles).",
+          answer: "ERC-721",
+          choices: ["ERC-20", "ERC-721", "BIP-39", "ERC-1155"],
+          mindyMessage: "ERC-20 = tokens fongibles (comme USDT). ERC-721 = NFTs. ERC-1155 = les deux à la fois. Retiens ça."
         },
         {
           type: "swipe",
           statement: "Acheter un NFT vous donne automatiquement les droits d'auteur de l'œuvre.",
           isCorrect: false,
-          explanation: "Faux ! Vous possédez le token, pas nécessairement les droits. Lisez toujours les conditions."
+          explanation: "Faux ! Vous possédez le token on-chain, pas nécessairement les droits de propriété intellectuelle. Bored Ape Yacht Club est une exception notable : ils accordent les droits commerciaux aux holders."
+        },
+        {
+          type: "scenario",
+          situation: "Un projet NFT promet des rendements de 500% en 3 mois. Le site est en ligne depuis 2 semaines, l'équipe est anonyme, et ils demandent de mint avec un contrat non vérifié sur Etherscan.",
+          choices: [
+            { text: "Je mint rapidement avant que le prix monte", isGood: false, explanation: "Red flags partout : équipe anonyme + promesses irréalistes + contrat non vérifié = rug pull quasi certain. En 2022, les rug pulls NFT ont coûté plus de 100M$ aux acheteurs." },
+            { text: "Je vérifie le contrat sur Etherscan, l'historique de l'équipe, et la communauté avant toute décision", isGood: true, explanation: "DYOR (Do Your Own Research). Contrat vérifié, équipe doxxée, communauté active, roadmap réaliste = minimum requis avant de mint." },
+            { text: "Je demande à la communauté Discord du projet si c'est fiable", isGood: false, explanation: "Les communautés Discord de projets scam sont remplies de bots et de faux témoignages. C'est comme demander au vendeur si son produit est bon." }
+          ],
+          mindyMessage: "Si ça semble trop beau pour être vrai, c'est que ça l'est. Surtout en NFT. 🚩"
         },
         {
           type: "swipe_sequence",
@@ -449,16 +726,66 @@ const lessons = [
             { id: "1", content: "Une œuvre d'art numérique", correctDirection: "right" },
             { id: "2", content: "Un Bitcoin", correctDirection: "left" },
             { id: "3", content: "Un ticket de concert unique", correctDirection: "right" },
-            { id: "4", content: "Un skin de jeu vidéo", correctDirection: "right" }
+            { id: "4", content: "Un skin de jeu vidéo", correctDirection: "right" },
+            { id: "5", content: "Un stablecoin (USDT)", correctDirection: "left" },
+            { id: "6", content: "Un nom de domaine ENS (.eth)", correctDirection: "right" }
           ],
-          timeLimit: 30,
-          mindyMessage: "Les NFTs sont partout, ouvre les yeux !"
+          timeLimit: 35,
+          mindyMessage: "Les NFTs sont partout, ouvre les yeux ! Et non, un Bitcoin n'est PAS un NFT — il est fongible."
+        },
+        {
+          type: "match_pairs",
+          pairs: [
+            { term: "CryptoPunks", definition: "10 000 avatars pixélisés, premier projet NFT majeur (2017)" },
+            { term: "Bored Ape (BAYC)", definition: "Collection de 10 000 singes, floor price ATH ~150 ETH (2022)" },
+            { term: "Art Blocks", definition: "Plateforme d'art génératif on-chain" },
+            { term: "OpenSea", definition: "Plus grande marketplace NFT, fondée en 2017" },
+            { term: "Azuki", definition: "Collection manga/anime de 10 000 NFTs (2022)" }
+          ],
+          mindyMessage: "L'histoire des NFTs en 5 noms. CryptoPunks et BAYC ont défini le marché. 🎨"
+        },
+        {
+          type: "news_impact",
+          headline: "OpenSea annonce le passage aux royalties optionnelles pour les créateurs",
+          source: "The Block",
+          date: "2023-08-17",
+          correctImpact: "bearish",
+          explanation: "Les royalties (2.5-10% sur chaque revente) étaient un revenu clé pour les créateurs NFT. En les rendant optionnelles, OpenSea réduit l'incitation pour les artistes à créer sur la plateforme et fragilise le modèle économique de l'écosystème NFT.",
+          mindyMessage: "Sans royalties, les créateurs perdent leur revenu passif. Mauvais signal pour l'adoption long terme. 💔"
+        },
+        {
+          type: "speed_round",
+          title: "Speed Round : NFTs",
+          pairs: [
+            { statement: "Le standard ERC-721 a été créé pour les tokens non-fongibles sur Ethereum.", isTrue: true },
+            { statement: "Quand vous achetez un NFT, l'image est stockée directement sur la blockchain.", isTrue: false },
+            { statement: "Les gas fees sur Ethereum peuvent rendre le minting d'un NFT très coûteux.", isTrue: true },
+            { statement: "Un NFT brûlé (burned) peut être récupéré par le créateur original.", isTrue: false },
+            { statement: "Bored Ape Yacht Club accorde les droits commerciaux à ses holders.", isTrue: true },
+            { statement: "Les NFTs ne peuvent exister que sur Ethereum.", isTrue: false },
+            { statement: "Le 'floor price' est le prix le plus bas d'un NFT dans une collection.", isTrue: true },
+            { statement: "Le premier tweet de Jack Dorsey s'est vendu comme NFT pour 2.9M$ en 2021.", isTrue: true }
+          ],
+          timeLimitSeconds: 45
+        },
+        {
+          type: "flashcard",
+          front: "Où est stockée l'image d'un NFT ?",
+          back: "L'image d'un NFT n'est PAS sur la blockchain (trop coûteux). Le token on-chain contient un lien (URI) vers l'image.\n\nStockage possible :\n• IPFS (InterPlanetary File System) — décentralisé, recommandé ✅\n• Arweave — stockage permanent on-chain ✅\n• Serveur centralisé (AWS, etc.) — si le serveur tombe, l'image disparaît ❌\n\nToujours vérifier OÙ est hébergée l'image avant d'acheter un NFT cher.",
+          category: "Crypto"
+        },
+        {
+          type: "word_scramble",
+          word: "MINTING",
+          hint: "Action de créer un NFT sur la blockchain. Comme 'frapper' une pièce de monnaie.",
+          scrambled: ["N", "M", "I", "G", "T", "N", "I"],
+          mindyMessage: "Mint = créer. Burn = détruire. Le cycle de vie d'un NFT en deux mots. 🔨"
         },
         {
           type: "info",
           title: "L'avenir des NFTs",
-          content: "Les NFTs peuvent représenter de l'art, de l'immobilier, des diplômes ou même des objets dans un jeu vidéo.",
-          mindyMessage: "Bientôt ta maison sera sur la blockchain. En attendant, range ta chambre. 🏠"
+          content: "Au-delà de l'art et des PFPs, les cas d'usage réels des NFTs :\n\n🎫 Billetterie : tickets de concert infalsifiables (GET Protocol)\n🏠 Immobilier : tokenisation de propriétés (RealT)\n🎓 Diplômes : certifications vérifiables on-chain (MIT)\n🎮 Gaming : objets in-game interopérables (Loot, Axie)\n🆔 Identité : Soulbound Tokens non-transférables (proposé par Vitalik Buterin)\n📜 Brevets : preuve d'antériorité horodatée\n\nLe marché NFT est passé de 41B$ en 2022 à ~9B$ en 2023. La bulle spéculative est passée, les cas d'usage réels restent.",
+          mindyMessage: "Bientôt ta maison sera sur la blockchain. En attendant, concentre-toi sur les vrais use cases, pas les singes. 🏠"
         }
       ]
     }
@@ -478,11 +805,29 @@ const lessons = [
           mindyMessage: "Pendant que tu dors, ton wallet travaille. Intelligent. 😴"
         },
         {
+          type: "fill_blank",
+          sentence: "Pour devenir validateur solo sur Ethereum, il faut staker un minimum de ___ ETH.",
+          answer: "32",
+          choices: ["1", "10", "32", "100"],
+          mindyMessage: "32 ETH (~80 000€ en 2024). C'est cher, d'où le succès des pools de staking comme Lido et Rocket Pool."
+        },
+        {
           type: "quiz",
           question: "Quelle est la différence entre Proof of Work et Proof of Stake ?",
           options: ["Aucune", "PoW utilise du calcul, PoS utilise des jetons bloqués", "PoS est plus ancien", "PoW est plus écologique"],
           correctIndex: 1,
           mindyHint: "Bitcoin mine, Ethereum stake."
+        },
+        {
+          type: "match_pairs",
+          pairs: [
+            { term: "Solo Staking", definition: "32 ETH minimum, nœud personnel, contrôle total" },
+            { term: "Liquid Staking (Lido)", definition: "Dès 0.01 ETH, reçoit stETH en échange, utilisable en DeFi" },
+            { term: "Pooled Staking (Rocket Pool)", definition: "Dès 0.01 ETH, plus décentralisé que Lido" },
+            { term: "CEX Staking (Coinbase)", definition: "Simple mais custodial — la plateforme contrôle tes clés" },
+            { term: "Restaking (EigenLayer)", definition: "Restaker ses ETH déjà stakés pour sécuriser d'autres protocoles" }
+          ],
+          mindyMessage: "Du solo staking au restaking, chaque option a son rapport risque/récompense. Choisis selon tes moyens et ta tolérance au risque. 🎯"
         },
         {
           type: "swipe",
@@ -491,10 +836,26 @@ const lessons = [
           explanation: "Le slashing est une pénalité qui détruit une partie des tokens stakés en cas de mauvais comportement."
         },
         {
+          type: "scenario",
+          situation: "Tu as 10 ETH et tu veux les staker pour gagner du rendement. Un ami te conseille de tout mettre sur Lido (stETH, ~4% APY). Mais tu as aussi entendu parler de Rocket Pool (rETH) et d'EigenLayer (restaking). Que fais-tu ?",
+          choices: [
+            { text: "Je diversifie : 50% Lido (stETH) + 30% Rocket Pool (rETH) + 20% EigenLayer", isGood: true, explanation: "Excellente approche. Lido offre la meilleure liquidité DeFi (stETH intégré partout). Rocket Pool est plus décentralisé. EigenLayer ajoute du rendement via restaking mais avec un risque supplémentaire. Diversifier réduit le risque de smart contract." },
+            { text: "100% Lido — c'est le plus gros protocole, donc le plus sûr", isGood: false, explanation: "Lido est le plus gros mais pas le plus sûr. 33%+ du staking ETH = risque de centralisation. Un bug dans un contrat Lido affecterait tous tes ETH. Diversifier est toujours plus prudent." },
+            { text: "100% EigenLayer — le restaking offre le meilleur rendement", isGood: false, explanation: "EigenLayer offre du rendement supplémentaire mais ajoute des couches de risque (smart contract risk multiplié, slashing conditions supplémentaires). C'est le plus risqué des trois. Ne jamais mettre tous ses œufs dans le panier le plus risqué." }
+          ],
+          mindyMessage: "Diversifier ses sources de staking = réduire le risque de smart contract. Un seul protocole hacké ne te ruine pas. 🧩"
+        },
+        {
           type: "info",
           title: "Bilan",
           content: "Le staking est une alternative écologique au minage et permet de générer des revenus passifs.",
           mindyMessage: "Fais pousser tes tokens comme des tomates. 🍅"
+        },
+        {
+          type: "flashcard",
+          front: "APY vs APR — Quelle différence ?",
+          back: "📊 APR (Annual Percentage Rate) = taux simple, sans compounding\nExemple : 10% APR sur 1 000$ = 100$ de gains/an\n\n📈 APY (Annual Percentage Yield) = taux avec compounding (intérêts sur les intérêts)\nExemple : 10% APY sur 1 000$ > 100$ car les rewards sont réinvesties\n\n⚠️ Les protocoles DeFi affichent souvent l'APY pour paraître plus attractifs.\nUn APY de 100% ≠ doubler son argent si les rewards sont en tokens inflationnistes.\n\nRègle : regarde toujours EN QUOI tu es payé. 4% APY en ETH > 100% APY en token random qui perd 90%.",
+          category: "Staking"
         },
         {
           type: "calculator",
@@ -506,6 +867,13 @@ const lessons = [
           mindyMessage: "0.225 ETH gratuits pour avoir sécurisé le réseau. Pas mal pour du revenu passif. 💰"
         },
         {
+          type: "word_scramble",
+          word: "SLASHING",
+          hint: "Pénalité qui détruit une partie des tokens stakés si un validateur se comporte mal ou est hors-ligne trop longtemps.",
+          scrambled: ["L", "S", "H", "A", "S", "G", "N", "I"],
+          mindyMessage: "Le slashing est le bâton du staking. La carotte c'est le yield. Sois un bon validateur. ⚖️"
+        },
+        {
           type: "news_impact",
           headline: "Lido Finance détient désormais 33% de tout l'ETH staké — seuil critique de centralisation",
           source: "CoinDesk",
@@ -513,6 +881,21 @@ const lessons = [
           correctImpact: "bearish",
           explanation: "Un seul protocole contrôlant 33%+ du staking Ethereum menace la décentralisation du réseau. C'est le seuil à partir duquel des attaques théoriques deviennent possibles. Signal négatif pour la gouvernance Ethereum.",
           mindyMessage: "La décentralisation, c'est le pilier d'Ethereum. Quand Lido devient trop gros, c'est un problème systémique. ⚠️"
+        },
+        {
+          type: "speed_round",
+          title: "Speed Round : Staking & Yield",
+          pairs: [
+            { statement: "Le solo staking Ethereum nécessite 32 ETH minimum.", isTrue: true },
+            { statement: "Le liquid staking permet de garder la liquidité de ses tokens stakés.", isTrue: true },
+            { statement: "Un APY de 1000% est forcément une arnaque.", isTrue: false },
+            { statement: "Le slashing peut se produire si un validateur est hors-ligne trop longtemps.", isTrue: true },
+            { statement: "stETH (Lido) peut toujours être échangé 1:1 contre de l'ETH.", isTrue: false },
+            { statement: "Ethereum est passé en Proof of Stake avec 'The Merge' en septembre 2022.", isTrue: true },
+            { statement: "Le restaking (EigenLayer) n'ajoute aucun risque supplémentaire.", isTrue: false },
+            { statement: "Rocket Pool est considéré plus décentralisé que Lido.", isTrue: true }
+          ],
+          timeLimitSeconds: 45
         }
       ]
     }
@@ -548,6 +931,29 @@ const lessons = [
           mindyMessage: "Tu progresses, je vais peut-être t'épargner."
         },
         {
+          type: "spot_the_scam",
+          question: "Un de ces messages est un scam. Lequel ?",
+          cards: [
+            { id: "s1", type: "tweet", content: "Bitcoin halving prévu pour avril 2024. Historiquement, le prix monte dans les 12-18 mois suivants.", sender: "@CoinDesk", isScam: false },
+            { id: "s2", type: "email", content: "Votre compte Binance a été compromis ! Cliquez ici immédiatement pour sécuriser vos fonds : binance-secure-login.xyz", sender: "security@binance-alert.com", isScam: true, redFlags: ["Domaine suspect (.xyz au lieu de .com)", "Urgence artificielle", "Email non-officiel (binance-alert.com)"] },
+            { id: "s3", type: "tweet", content: "Nouveau rapport de Grayscale sur les tendances DeFi 2024. Lien dans la bio.", sender: "@Grayscale", isScam: false },
+            { id: "s4", type: "site", content: "CoinGecko - Classement des cryptos par capitalisation et volume.", sender: "coingecko.com", isScam: false }
+          ],
+          explanation: "Les scams utilisent l'urgence, des domaines similaires mais faux, et se font passer pour des services connus. Toujours vérifier l'URL et l'expéditeur.",
+          mindyMessage: "Un vrai détective crypto vérifie CHAQUE détail. 🔍"
+        },
+        {
+          type: "connect_dots",
+          pairs: [
+            { term: "Phishing", definition: "Faux site imitant un vrai pour voler vos identifiants" },
+            { term: "2FA", definition: "Double vérification pour protéger un compte" },
+            { term: "Seed phrase", definition: "12-24 mots pour restaurer un wallet" },
+            { term: "Approval", definition: "Autorisation donnée à un smart contract" },
+            { term: "Hardware wallet", definition: "Appareil physique pour stocker ses clés hors ligne" }
+          ],
+          mindyMessage: "Relie chaque terme de sécurité à sa définition. Pas le droit à l'erreur ici."
+        },
+        {
           type: "quiz",
           question: "Qu'est-ce qu'une 'approval' en DeFi ?",
           options: ["Un like sur Twitter", "Une autorisation donnée à un smart contract", "Une validation KYC", "Un type de NFT"],
@@ -578,6 +984,13 @@ const lessons = [
           mindyMessage: "C'est là qu'on voit si un projet va tenir ou s'écraser. 📊"
         },
         {
+          type: "fill_blank",
+          sentence: "La 'Circulating Supply' de Bitcoin est d'environ 19.6 millions sur un maximum de ___ millions de BTC.",
+          answer: "21",
+          choices: ["10", "21", "50", "100"],
+          mindyMessage: "21 millions max. Point final. C'est codé en dur dans le protocole depuis 2009. La rareté absolue."
+        },
+        {
           type: "quiz",
           question: "Que se passe-t-il lors d'un 'Token Burn' ?",
           options: ["Le prix baisse automatiquement", "Des jetons sont détruits définitivement", "On crée plus de jetons", "Le réseau s'arrête"],
@@ -585,10 +998,31 @@ const lessons = [
           mindyHint: "Moins d'offre + même demande = ? 🔥"
         },
         {
+          type: "match_pairs",
+          pairs: [
+            { term: "Circulating Supply", definition: "Tokens actuellement en circulation sur le marché" },
+            { term: "Total Supply", definition: "Tous les tokens créés (incluant ceux lockés/non circulants)" },
+            { term: "Max Supply", definition: "Nombre maximum de tokens qui existeront jamais" },
+            { term: "Fully Diluted Valuation", definition: "Market Cap si TOUS les tokens étaient en circulation" },
+            { term: "Token Unlock", definition: "Date à laquelle des tokens lockés deviennent vendables" }
+          ],
+          mindyMessage: "FDV vs Market Cap : un projet peut avoir une Market Cap de 100M$ mais une FDV de 10 milliards. Ça signifie que 99% des tokens n'ont pas encore été libérés. Danger. ⚠️"
+        },
+        {
           type: "swipe",
           statement: "Un 'Vesting' empêche les créateurs de vendre tous leurs jetons d'un coup.",
           isCorrect: true,
           explanation: "Le vesting libère les tokens progressivement, protégeant les investisseurs contre un dump massif."
+        },
+        {
+          type: "scenario",
+          situation: "Tu analyses un nouveau projet DeFi. Les tokenomics montrent : 40% pour l'équipe (vesting 6 mois), 30% pour les VCs (vesting 3 mois), 20% en vente publique, 10% en réserves. Le premier unlock massif est dans 3 mois. Que penses-tu ?",
+          choices: [
+            { text: "Red flag majeur — 70% pour les insiders avec un vesting très court, le dump est programmé", isGood: true, explanation: "40% team + 30% VCs = 70% pour les insiders. Vesting de 3-6 mois = très court (la norme saine est 2-4 ans). Quand ces tokens seront débloqués, la pression de vente sera massive. Le prix va probablement chuter." },
+            { text: "Normal — les équipes et VCs méritent une grande part pour leur travail", isGood: false, explanation: "Les équipes et VCs doivent être récompensés, mais 70% avec un vesting < 1 an = mauvais alignement d'intérêts. Ils peuvent dump et partir. La norme saine : team < 20%, vesting 2-4 ans." },
+            { text: "Positif — beaucoup de tokens pour les développeurs signifie un projet bien financé", isGood: false, explanation: "Bien financé ≠ bien aligné. Si l'équipe peut vendre tout dans 6 mois, leur motivation à développer le projet long terme est quasi-nulle." }
+          ],
+          mindyMessage: "Vérifie token.unlocks.app avant chaque investissement. Un unlock massif = un dump programmé. 📅"
         },
         {
           type: "reorder",
@@ -599,10 +1033,57 @@ const lessons = [
           mindyMessage: "DYOR level: Expert. 🧠"
         },
         {
+          type: "calculator",
+          question: "Un token a une Circulating Supply de 500 millions et un prix de 0.40$. Quelle est sa Market Cap ? (Formule: supply × prix)",
+          variables: ["Circulating Supply: 500 000 000 tokens", "Prix: 0.40$", "Market Cap = 500 000 000 × 0.40"],
+          answer: 200000000,
+          tolerance: 100000,
+          unit: "$",
+          mindyMessage: "200 millions de Market Cap. Maintenant compare avec la FDV (Total Supply × prix). Si la FDV est 10x plus grande, 90% des tokens ne sont pas encore en circulation. Attention au dump. 📊"
+        },
+        {
+          type: "price_prediction",
+          question: "Un token DeFi subit un unlock massif de 20% de la supply totale. Analyse le graphique et prédis le mouvement suivant.",
+          candles: [
+            { open: 8.50, high: 8.80, low: 8.30, close: 8.60 },
+            { open: 8.60, high: 8.90, low: 8.40, close: 8.70 },
+            { open: 8.70, high: 8.75, low: 7.90, close: 8.00 },
+            { open: 8.00, high: 8.10, low: 7.40, close: 7.50 },
+            { open: 7.50, high: 7.80, low: 7.20, close: 7.30 },
+            { open: 7.30, high: 7.50, low: 6.80, close: 6.90 },
+            { open: 6.90, high: 7.10, low: 6.50, close: 6.60 },
+            { open: 6.60, high: 6.80, low: 6.20, close: 6.30 }
+          ],
+          correctAnswer: "down",
+          explanation: "Tendance baissière claire après l'unlock : lower highs et lower lows consécutifs. La pression de vente des insiders écrase le prix. Les volumes élevés sur les chandelier rouges confirment les ventes massives. Les unlocks sont bearish tant que le marché absorbe les ventes.",
+          mindyMessage: "Un unlock de 20% de la supply = tsunami de vente. Le graphique ne ment jamais. Fuis avant les cliff unlocks. 🏃"
+        },
+        {
+          type: "flashcard",
+          front: "Modèles de tokenomics : Inflationnaire vs Déflationnaire",
+          back: "📈 Inflationnaire (nouveaux tokens créés en permanence) :\n• Ethereum post-Merge : ~0.5%/an d'émission, MAIS l'EIP-1559 burn rend ETH net-déflationniste quand le réseau est actif\n• Polkadot (DOT) : ~7.5%/an d'inflation pour récompenser les stakers\n\n📉 Déflationniste (tokens détruits progressivement) :\n• BNB : burn trimestriel par Binance (objectif : réduire de 200M à 100M BNB)\n• LUNA classic : burn massif post-crash\n\n⚖️ Hybride :\n• Ethereum : émission + burn = potentiellement déflationniste\n\n→ Ni l'un ni l'autre n'est intrinsèquement meilleur. Ce qui compte : l'utilité réelle du token justifie-t-elle la demande ?",
+          category: "Tokenomics"
+        },
+        {
           type: "info",
           title: "Analyse Finale",
           content: "Regardez toujours la Market Cap plutôt que le prix unitaire. Un token à 0.001€ peut être plus cher qu'un token à 1000€.",
           mindyMessage: "Tu parles comme un pro. Attention à l'ego maintenant."
+        },
+        {
+          type: "speed_round",
+          title: "Speed Round : Tokenomics",
+          pairs: [
+            { statement: "La Market Cap = prix du token × circulating supply.", isTrue: true },
+            { statement: "Un token à 0.001$ est toujours moins cher qu'un token à 100$.", isTrue: false },
+            { statement: "Le vesting protège les investisseurs contre les dumps d'insiders.", isTrue: true },
+            { statement: "Ethereum est devenu potentiellement déflationniste grâce à l'EIP-1559 (burn des gas fees).", isTrue: true },
+            { statement: "La FDV (Fully Diluted Valuation) est toujours égale à la Market Cap.", isTrue: false },
+            { statement: "Un token avec 90% de supply détenue par l'équipe est un red flag.", isTrue: true },
+            { statement: "Le burn de tokens garantit automatiquement une hausse du prix.", isTrue: false },
+            { statement: "Le site token.unlocks.app permet de suivre les calendriers de vesting.", isTrue: true }
+          ],
+          timeLimitSeconds: 45
         }
       ]
     }
@@ -684,6 +1165,47 @@ const lessons = [
             { text: "Je pioche dans mon épargne pour cette fois", isGood: false, explanation: "L'épargne n'est pas une tirelire pour les promos. Chaque euro pioché dans l'épargne pour une envie = un euro qui ne travaille pas pour toi." }
           ],
           mindyMessage: "Une promo que tu n'avais pas prévue n'est pas une économie. C'est une dépense. 💸"
+        },
+        {
+          type: "drag_sort",
+          question: "Classe ces dépenses par priorité dans un budget (du plus urgent au moins urgent) :",
+          items: [
+            { id: "b1", label: "Loyer", emoji: "🏠", value: "Besoin vital", group: "besoins_vitaux" },
+            { id: "b2", label: "Alimentation", emoji: "🍎", value: "Besoin vital", group: "besoins_vitaux" },
+            { id: "b3", label: "Épargne d'urgence", emoji: "🛡️", value: "Se payer en premier" },
+            { id: "b4", label: "Transport", emoji: "🚗", value: "Besoin courant" },
+            { id: "b5", label: "Loisirs", emoji: "🎮", value: "Envie", group: "envies" },
+            { id: "b6", label: "Shopping mode", emoji: "👕", value: "Envie", group: "envies" }
+          ],
+          correctOrder: [0, 1, 2, 3, 4, 5],
+          explanation: "Loyer et alimentation d'abord (survie — ordre entre eux peu importe), épargne en 3e (se payer en premier), transport, puis les envies dans n'importe quel ordre.",
+          mindyMessage: "La hiérarchie des dépenses. Si tu la respectes, tu es déjà devant 80% des gens. 📋"
+        },
+        {
+          type: "timeline_builder",
+          title: "L'évolution de la gestion financière",
+          events: [
+            { id: "f1", label: "Première banque moderne (Monte dei Paschi)", year: "1472", emoji: "🏛️" },
+            { id: "f2", label: "Premier budget gouvernemental (UK)", year: "1760", emoji: "📜" },
+            { id: "f3", label: "Première carte de crédit (Diners Club)", year: "1950", emoji: "💳" },
+            { id: "f4", label: "Premier tableur (VisiCalc)", year: "1979", emoji: "📊" },
+            { id: "f5", label: "PayPal lancé", year: "1998", emoji: "💰" },
+            { id: "f6", label: "Apps budget (Mint, YNAB)", year: "2006", emoji: "📱" }
+          ],
+          explanation: "Du comptoir d'une banque italienne aux apps sur smartphone — la gestion financière a toujours été une question d'outils et de discipline.",
+          mindyMessage: "600 ans de finance résumés en 6 dates. Le budget, c'est pas nouveau. 📚"
+        },
+        {
+          type: "spot_the_scam",
+          question: "Un de ces emails est une arnaque. Lequel ?",
+          cards: [
+            { id: "fb1", type: "email", content: "Votre relevé mensuel est disponible dans votre espace client. Connectez-vous sur notre site pour le consulter.", sender: "info@mabanque.fr", isScam: false },
+            { id: "fb2", type: "email", content: "URGENT: Votre compte sera bloqué dans 24h ! Cliquez ici pour mettre à jour vos informations bancaires immédiatement.", sender: "securite@ma-banque-alerte.com", isScam: true, redFlags: ["Urgence artificielle (24h)", "Domaine suspect (ma-banque-alerte.com)", "Demande de données bancaires par email"] },
+            { id: "fb3", type: "tweet", content: "Nouvelle étude INSEE : le taux d'épargne des Français atteint 17% en 2024.", sender: "@INSEE_Stat", isScam: false },
+            { id: "fb4", type: "site", content: "Comparateur de livrets d'épargne — taux actualisés février 2024.", sender: "moneyvox.fr", isScam: false }
+          ],
+          explanation: "Les banques ne demandent JAMAIS vos identifiants par email. L'urgence artificielle et les domaines suspects sont les premiers red flags.",
+          mindyMessage: "Même en finance classique, les arnaques existent. Vérifie toujours l'expéditeur. 🔒"
         }
       ]
     }
@@ -703,12 +1225,26 @@ const lessons = [
           mindyMessage: "C'est pour quand la vie décide de te mettre une baffe. 👋"
         },
         {
+          type: "fill_blank",
+          sentence: "Les experts recommandent une épargne de précaution couvrant ___ à 6 mois de dépenses mensuelles.",
+          answer: "3",
+          choices: ["1", "3", "9", "12"],
+          mindyMessage: "3 mois minimum si tu as un CDI stable. 6 mois si tu es freelance ou en CDD. C'est non-négociable."
+        },
+        {
           type: "calculator",
           question: "Tes dépenses mensuelles sont de 1 800€. Quel est le montant minimum de ton fonds d'urgence (3 mois) ?",
           variables: ["Dépenses mensuelles: 1 800€", "Mois recommandés: minimum 3"],
           answer: 5400,
           unit: "€",
           mindyMessage: "5 400€ minimum pour dormir tranquille. Commence par là avant toute bourse."
+        },
+        {
+          type: "quiz",
+          question: "Quel est le taux du Livret A en France en 2024 ?",
+          options: ["1%", "2%", "3%", "5%"],
+          correctIndex: 2,
+          mindyHint: "Le taux du Livret A est fixé par la Banque de France. Il a été relevé en 2023 face à l'inflation."
         },
         {
           type: "scenario",
@@ -721,10 +1257,27 @@ const lessons = [
           mindyMessage: "L'EP n'est PAS un investissement. C'est un bouclier. 🛡️"
         },
         {
+          type: "swipe",
+          statement: "Le LEP (Livret d'Épargne Populaire) est accessible à tous les Français sans condition de revenus.",
+          isCorrect: false,
+          explanation: "Faux ! Le LEP est réservé aux ménages modestes (revenu fiscal de référence < 21 393€ pour 1 part en 2024). Son taux est de 5% net, bien supérieur au Livret A (3%). Si tu y es éligible, c'est le meilleur placement sans risque."
+        },
+        {
           type: "info",
           title: "Où le placer ?",
           content: "Cet argent doit rester accessible immédiatement sur un Livret A ou LDDS. Pas sous le matelas !",
           mindyMessage: "Sous le matelas, les mites ne sont pas de bons conseillers financiers. 🦗"
+        },
+        {
+          type: "match_pairs",
+          pairs: [
+            { term: "Livret A", definition: "3% net, plafond 22 950€, garanti par l'État" },
+            { term: "LDDS", definition: "3% net, plafond 12 000€, même fonctionnement que le Livret A" },
+            { term: "LEP", definition: "5% net, sous conditions de revenus, plafond 10 000€" },
+            { term: "Livret Jeune", definition: "Taux ≥ Livret A, réservé aux 12-25 ans, plafond 1 600€" },
+            { term: "Compte courant", definition: "0% d'intérêt, aucun plafond, liquidité totale" }
+          ],
+          mindyMessage: "Chaque livret a ses règles. LEP > Livret A si tu es éligible. Et le compte courant ne rapporte RIEN, jamais. 📋"
         },
         {
           type: "budget_allocator",
@@ -737,6 +1290,12 @@ const lessons = [
           explanation: "L'épargne de précaution doit être répartie entre supports liquides et sécurisés. Le Livret A est prioritaire (taux garanti, disponibilité immédiate). Le LDDS complète. Garder un minimum sur le compte courant pour les urgences immédiates."
         },
         {
+          type: "flashcard",
+          front: "Fonds de Garantie des Dépôts (FGDR)",
+          back: "Le FGDR est le filet de sécurité du système bancaire français :\n\n🏦 Garantie dépôts : 100 000€ par personne et par banque\n📋 Couvre : comptes courants, livrets, épargne logement\n🛡️ Livrets réglementés (Livret A, LDDS, LEP) : garantis à 100% par l'État, SANS plafond FGDR\n\nAstuce : si tu as plus de 100 000€, répartis entre plusieurs banques.\n\nTemps d'indemnisation : 7 jours ouvrables max.\n\nCréé en 1999 après la directive européenne sur la garantie des dépôts.",
+          category: "Finance"
+        },
+        {
           type: "scenario",
           situation: "Ta machine à laver tombe en panne. La réparation coûte 400€. Tu as 6 000€ d'épargne de précaution sur ton Livret A et tes dépenses mensuelles sont de 1 500€. Que fais-tu ?",
           choices: [
@@ -745,6 +1304,21 @@ const lessons = [
             { text: "J'achète une machine neuve à crédit à 800€ plutôt que de réparer", isGood: false, explanation: "Réparer coûte 2x moins cher. Un crédit pour ça = dette évitable. Utilise ton EP intelligemment." }
           ],
           mindyMessage: "L'EP qui n'est jamais utilisée, c'est comme un extincteur qui n'a jamais servi. C'est bien — mais il faut savoir l'utiliser quand ça brûle. 🧯"
+        },
+        {
+          type: "speed_round",
+          title: "Speed Round : Épargne de Précaution",
+          pairs: [
+            { statement: "L'épargne de précaution doit couvrir 3 à 6 mois de dépenses.", isTrue: true },
+            { statement: "Le Livret A a un plafond de dépôt de 22 950€ pour les particuliers.", isTrue: true },
+            { statement: "Investir son épargne de précaution en crypto est une bonne idée si on est jeune.", isTrue: false },
+            { statement: "Le LEP offre un taux supérieur au Livret A mais est sous conditions de revenus.", isTrue: true },
+            { statement: "Le FGDR garantit les dépôts jusqu'à 100 000€ par personne et par banque.", isTrue: true },
+            { statement: "L'épargne de précaution doit être constituée AVANT tout investissement.", isTrue: true },
+            { statement: "Un freelance devrait avoir une épargne de précaution plus importante qu'un CDI.", isTrue: true },
+            { statement: "Laisser 10 000€ sur un compte courant est une bonne stratégie d'épargne.", isTrue: false }
+          ],
+          timeLimitSeconds: 40
         }
       ]
     }
@@ -760,26 +1334,109 @@ const lessons = [
         {
           type: "info",
           title: "Les bases bancaires",
-          content: "Le compte courant sert aux dépenses quotidiennes. Les livrets (Livret A, LDDS) servent à épargner sans risque avec un petit taux d'intérêt.",
-          mindyMessage: "Le B-A-BA. On ne peut pas tous être des traders de Wall Street. 📈"
+          content: "Le compte courant sert aux dépenses quotidiennes : salaire, loyer, courses. Il ne rapporte RIEN (0% d'intérêt).\n\nLes livrets réglementés servent à épargner sans risque :\n• Livret A : 3% net d'impôt (taux 2024)\n• LDDS : 3% net, plafond 12 000€\n• LEP : 5% net, sous conditions de revenus\n\nTous sont garantis par l'État français jusqu'à 100 000€ par personne et par banque (FGDR).",
+          mindyMessage: "Le B-A-BA. On ne peut pas tous être des traders de Wall Street. Mais on peut au moins ne pas laisser dormir son argent à 0%. 📈"
         },
         {
           type: "swipe",
           statement: "Un découvert bancaire est une forme de crédit gratuit.",
           isCorrect: false,
-          explanation: "C'est un crédit TRÈS coûteux avec des agios qui peuvent dépasser 15% par an !"
+          explanation: "C'est un crédit TRÈS coûteux avec des agios qui peuvent dépasser 15% par an ! Un découvert de 500€ pendant 1 mois peut coûter 6-8€ de frais. Ça paraît peu, mais multiplié sur l'année c'est un gouffre."
         },
         {
           type: "quiz",
           question: "Quel est le plafond du Livret A en 2024 ?",
           options: ["10 000€", "22 950€", "50 000€", "Illimité"],
           correctIndex: 1,
-          mindyHint: "C'est un nombre bizarre, mais c'est le bon."
+          mindyHint: "C'est un nombre bizarre, mais c'est le bon. Et ce plafond n'a pas changé depuis 2013."
+        },
+        {
+          type: "fill_blank",
+          sentence: "Le taux du Livret A en 2024 est de ___% net d'impôt.",
+          answer: "3",
+          choices: ["1", "2", "3", "5"],
+          mindyMessage: "3% net. C'est pas la fortune, mais c'est garanti par l'État et sans impôt. Pas mal pour zéro risque."
+        },
+        {
+          type: "match_pairs",
+          pairs: [
+            { term: "Livret A", definition: "Plafond 22 950€, taux 3%, disponible pour tous" },
+            { term: "LDDS", definition: "Plafond 12 000€, taux 3%, finance le développement durable" },
+            { term: "LEP", definition: "Plafond 10 000€, taux 5%, réservé aux revenus modestes" },
+            { term: "Livret Jeune", definition: "12-25 ans, plafond 1 600€, taux ≥ Livret A" },
+            { term: "Compte courant", definition: "Pas de plafond, taux 0%, pour les dépenses quotidiennes" }
+          ],
+          mindyMessage: "5 produits bancaires de base. Si tu ne connais pas la différence, ton banquier t'adore. 🏦"
+        },
+        {
+          type: "scenario",
+          situation: "Tu as 25 000€ d'épargne. Ton banquier te propose de tout mettre sur un 'super livret' à 4% pendant 3 mois, puis 0.5% ensuite. Que fais-tu ?",
+          choices: [
+            { text: "J'accepte, 4% c'est mieux que le Livret A", isGood: false, explanation: "Piège classique : le taux boosté de 4% ne dure que 3 mois. Ensuite 0.5% = bien en dessous du Livret A (3%). Sur un an, tu gagnes MOINS qu'avec un simple Livret A." },
+            { text: "Je remplis d'abord mon Livret A (22 950€) et mon LDDS (12 000€) à 3% garanti", isGood: true, explanation: "Bonne stratégie : 3% garanti toute l'année > 4% pendant 3 mois puis 0.5%. Les livrets réglementés battent presque toujours les offres commerciales sur un an." },
+            { text: "Je refuse et je mets tout sur mon compte courant en attendant mieux", isGood: false, explanation: "0% sur ton compte courant = tu perds de l'argent à cause de l'inflation (~2-4%/an). Chaque euro qui dort sur un compte courant perd du pouvoir d'achat." }
+          ],
+          mindyMessage: "Les banques adorent les taux boostés temporaires. C'est du marketing, pas de la finance. 🎣"
+        },
+        {
+          type: "swipe_sequence",
+          title: "Frais bancaires : normal ou abusif ?",
+          instruction: "Ces frais sont-ils normaux ou abusifs ?",
+          leftLabel: "ABUSIF",
+          rightLabel: "NORMAL",
+          cards: [
+            { id: "1", content: "2€/mois pour une carte bancaire classique", correctDirection: "right" },
+            { id: "2", content: "8€ par virement SEPA instantané", correctDirection: "left" },
+            { id: "3", content: "Commission d'intervention de 8€ par opération en découvert", correctDirection: "right" },
+            { id: "4", content: "50€ de frais pour clôturer un compte", correctDirection: "left" },
+            { id: "5", content: "Cotisation annuelle de 45€ pour une carte Visa Premier", correctDirection: "right" }
+          ],
+          timeLimit: 40,
+          mindyMessage: "Les banques en ligne (Boursorama, Fortuneo) n'ont AUCUN de ces frais. Juste une info. 😏"
+        },
+        {
+          type: "speed_round",
+          title: "Speed Round : Banque & Livrets",
+          pairs: [
+            { statement: "Le Livret A est exonéré d'impôts et de prélèvements sociaux.", isTrue: true },
+            { statement: "On peut avoir plusieurs Livrets A dans des banques différentes.", isTrue: false },
+            { statement: "Le FGDR garantit les dépôts jusqu'à 100 000€ par personne et par banque.", isTrue: true },
+            { statement: "Le LEP (Livret d'Épargne Populaire) est accessible à tous.", isTrue: false },
+            { statement: "Les intérêts du Livret A sont calculés par quinzaine (1er et 16 du mois).", isTrue: true },
+            { statement: "Un virement SEPA standard est toujours payant.", isTrue: false },
+            { statement: "Les banques en ligne proposent souvent des frais réduits ou nuls.", isTrue: true },
+            { statement: "Le plafond du LDDS est de 22 950€, comme le Livret A.", isTrue: false }
+          ],
+          timeLimitSeconds: 45
+        },
+        {
+          type: "flashcard",
+          front: "FGDR (Fonds de Garantie des Dépôts et de Résolution)",
+          back: "Organisme qui garantit vos dépôts bancaires en France.\n\n• Jusqu'à 100 000€ par personne et par banque\n• Couvre : comptes courants, livrets non réglementés, comptes à terme\n• Les livrets réglementés (Livret A, LDDS, LEP) sont garantis SÉPARÉMENT et INTÉGRALEMENT par l'État\n\nConcrètement : si votre banque fait faillite, vous récupérez votre argent sous 7 jours ouvrés.",
+          category: "Finance"
+        },
+        {
+          type: "connect_dots",
+          pairs: [
+            { term: "Agios", definition: "Intérêts facturés quand votre compte est à découvert" },
+            { term: "RIB", definition: "Relevé d'Identité Bancaire, nécessaire pour recevoir des virements" },
+            { term: "IBAN", definition: "Numéro international du compte, commence par FR76 en France" },
+            { term: "SEPA", definition: "Espace de paiement européen unifié pour les virements" },
+            { term: "BIC/SWIFT", definition: "Code d'identification de la banque (8 ou 11 caractères)" }
+          ],
+          mindyMessage: "Le jargon bancaire n'est pas sorcier. Mais les banques comptent sur le fait que tu ne le comprennes pas. 📋"
+        },
+        {
+          type: "word_scramble",
+          word: "EPARGNE",
+          hint: "Action de mettre de l'argent de côté pour le futur. Les livrets réglementés sont le premier étage de la fusée.",
+          scrambled: ["P", "E", "A", "G", "R", "N", "E"],
+          mindyMessage: "Épargner n'est pas sexy. Mais être fauché encore moins. 💪"
         },
         {
           type: "info",
-          title: "Résumé",
-          content: "Évitez le découvert comme la peste. Utilisez les livrets pour votre épargne de sécurité avant d'investir.",
+          title: "Résumé & Ordre de remplissage",
+          content: "Étape 1 : Ouvrir un compte courant (si pas déjà fait)\nÉtape 2 : Remplir le LEP si éligible (5% net, imbattable)\nÉtape 3 : Remplir le Livret A jusqu'à 22 950€ (3% net)\nÉtape 4 : Remplir le LDDS jusqu'à 12 000€ (3% net)\nÉtape 5 : Au-delà → Assurance-Vie, PEA, investissements\n\nTotal garanti sans risque : jusqu'à ~45 000€ à 3-5% net d'impôt. Pas besoin d'être Warren Buffett pour commencer.",
           mindyMessage: "Le banquier t'aime quand tu es à découvert. Ne lui fais pas ce plaisir. 😉"
         }
       ]
@@ -884,6 +1541,13 @@ const lessons = [
           mindyMessage: "C'est une boule de neige. Plus ça roule, plus ça grossit. ☃️"
         },
         {
+          type: "fill_blank",
+          sentence: "La Règle des ___ permet d'estimer le nombre d'années pour doubler son capital : on divise ce nombre par le taux de rendement annuel.",
+          answer: "72",
+          choices: ["36", "48", "72", "100"],
+          mindyMessage: "72 / taux = années pour doubler. À 8% → 9 ans. À 12% → 6 ans. Simple, puissant, indispensable."
+        },
+        {
           type: "calculator",
           question: "Tu investis 10 000€ à 7% par an pendant 10 ans. Combien as-tu au bout de 10 ans ? (formule: capital × (1.07)^10, arrondi à l'euro)",
           variables: ["Capital initial: 10 000€", "Taux annuel: 7%", "Durée: 10 ans", "Formule: 10 000 × (1.07)^10"],
@@ -893,12 +1557,29 @@ const lessons = [
           mindyMessage: "Ton argent a presque doublé en 10 ans sans rien faire. C'est ça la magie des intérêts composés. 🚀"
         },
         {
+          type: "quiz",
+          question: "Alice investit 200€/mois de 25 à 35 ans (10 ans) puis arrête. Bob investit 200€/mois de 35 à 65 ans (30 ans). À 65 ans, à 7%/an, qui a le plus ?",
+          options: ["Bob — il a investi 3x plus longtemps", "Alice — elle a commencé 10 ans plus tôt", "Ils ont le même montant", "Impossible à calculer"],
+          correctIndex: 1,
+          mindyHint: "Alice a investi 24 000€ (10 ans). Bob 72 000€ (30 ans). Mais les intérêts composés d'Alice travaillent 30 ans de plus..."
+        },
+        {
           type: "reorder",
           title: "Facteurs de richesse",
           instruction: "Classe ces facteurs par importance pour les intérêts composés.",
           words: ["Montant initial", "Taux de rendement", "Durée (temps)", "Régularité des versements"],
           correctOrder: [2, 1, 3, 0],
           mindyMessage: "Le temps est ton meilleur allié, même si tu vieillis."
+        },
+        {
+          type: "scenario",
+          situation: "Tu as 25 ans et 300€/mois à investir. Tu hésites entre : placer en Livret A (3% garanti) ou en ETF World (rendement historique ~8%/an mais volatil). Horizon : retraite (40 ans). Que choisis-tu ?",
+          choices: [
+            { text: "100% Livret A — sécurité d'abord, je ne veux pas perdre d'argent", isGood: false, explanation: "En 40 ans à 3%, 300€/mois = ~277 000€. En ETF à 8%, 300€/mois = ~1 050 000€. La différence : 773 000€. Sur 40 ans, la volatilité court terme est lissée. Le vrai risque à 25 ans, c'est de NE PAS investir." },
+            { text: "Principalement en ETF World (80%) avec un peu de Livret A (20%) pour l'épargne de précaution", isGood: true, explanation: "Optimal. Les ETF World ont toujours été positifs sur 15+ ans historiquement. À 25 ans avec 40 ans devant toi, l'exposition actions est ton meilleur allié. Le Livret A couvre les urgences." },
+            { text: "100% ETF — je suis jeune, pas besoin de filet de sécurité", isGood: false, explanation: "L'exposition actions est bonne à 25 ans, mais 0€ d'épargne de précaution = danger. Une urgence te forcerait à vendre tes ETF, potentiellement à perte. Garde toujours 3-6 mois de dépenses en sécurité." }
+          ],
+          mindyMessage: "À 25 ans, le temps est ton super-pouvoir. 300€/mois pendant 40 ans à 8% = plus d'un million d'euros. Fais le calcul et pleure de joie. 💎"
         },
         {
           type: "info",
@@ -916,6 +1597,17 @@ const lessons = [
           mindyMessage: "9 ans pour doubler. 18 ans pour quadrupler. 27 ans pour x8. La patience paie. 📈"
         },
         {
+          type: "match_pairs",
+          pairs: [
+            { term: "Intérêts simples", definition: "Intérêts calculés uniquement sur le capital initial" },
+            { term: "Intérêts composés", definition: "Intérêts calculés sur le capital + intérêts accumulés" },
+            { term: "DCA (Dollar Cost Averaging)", definition: "Investir un montant fixe à intervalles réguliers" },
+            { term: "Règle des 72", definition: "72 / taux = nombre d'années pour doubler le capital" },
+            { term: "Effet boule de neige", definition: "Accélération exponentielle des gains avec le temps" }
+          ],
+          mindyMessage: "Intérêts simples = linéaire. Intérêts composés = exponentiel. Sur 30 ans, la différence est abyssale. 📈"
+        },
+        {
           type: "price_prediction",
           question: "Ce graphique montre la croissance d'un portefeuille ETF sur 8 trimestres. Les intérêts composés accélèrent. Quelle est la tendance ?",
           candles: [
@@ -931,6 +1623,27 @@ const lessons = [
           correctAnswer: "up",
           explanation: "Croissance exponentielle typique des intérêts composés : chaque période, les gains sont plus importants que la précédente. La courbe s'accélère avec le temps.",
           mindyMessage: "La courbe des intérêts composés est lente au début, explosive ensuite. C'est pourquoi commencer tôt est crucial. 🚀"
+        },
+        {
+          type: "speed_round",
+          title: "Speed Round : Intérêts Composés",
+          pairs: [
+            { statement: "À 7% par an, un capital double en environ 10 ans (règle des 72).", isTrue: true },
+            { statement: "Les intérêts composés sont plus avantageux sur des courtes durées.", isTrue: false },
+            { statement: "Warren Buffett a fait 99% de sa fortune après ses 50 ans grâce aux intérêts composés.", isTrue: true },
+            { statement: "Investir 100€/mois à 25 ans rapporte plus que 500€/mois à 45 ans (à 8%/an, horizon retraite).", isTrue: true },
+            { statement: "Les frais de gestion de 2% par an n'ont qu'un impact négligeable sur 30 ans.", isTrue: false },
+            { statement: "Le DCA (investir un montant fixe chaque mois) est compatible avec les intérêts composés.", isTrue: true },
+            { statement: "L'inflation annule complètement les intérêts composés.", isTrue: false },
+            { statement: "Un rendement de 10%/an transforme 10 000€ en 174 000€ en 30 ans.", isTrue: true }
+          ],
+          timeLimitSeconds: 40
+        },
+        {
+          type: "flashcard",
+          front: "L'impact dévastateur des frais sur les intérêts composés",
+          back: "Les frais semblent anodins mais se composent aussi :\n\n100 000€ investis pendant 30 ans à 8% brut :\n\n• Frais 0.3% (ETF) → 868 000€ net\n• Frais 1.5% (fonds actif banque) → 580 000€ net\n• Frais 2.5% (assurance-vie chargée) → 432 000€ net\n\nDifférence entre 0.3% et 2.5% de frais = 436 000€ perdus sur 30 ans !\n\n→ Chaque 0.1% de frais compte. Les ETF à bas frais (0.1-0.3%) sont mathématiquement supérieurs aux fonds actifs (1-2.5%).",
+          category: "Finance"
         }
       ]
     }
@@ -1010,8 +1723,8 @@ const lessons = [
         {
           type: "info",
           title: "Bonne vs Mauvaise Dette",
-          content: "La bonne dette finance un actif qui prend de la valeur (immobilier, études). La mauvaise dette finance de la consommation qui perd de la valeur (TV, vacances).",
-          mindyMessage: "Si ça perd de la valeur, ne l'achète pas à crédit. 💸"
+          content: "La bonne dette finance un actif qui prend de la valeur ou génère des revenus (immobilier locatif, études, entreprise). La mauvaise dette finance de la consommation qui perd de la valeur immédiatement (TV, vacances, dernier iPhone).\n\nEn France, le taux d'endettement moyen des ménages est de 66% de leur revenu disponible (Banque de France, 2023). Le surendettement touche environ 120 000 dossiers par an.",
+          mindyMessage: "Si ça perd de la valeur, ne l'achète pas à crédit. Simple mais 90% des gens l'oublient. 💸"
         },
         {
           type: "swipe_sequence",
@@ -1024,23 +1737,86 @@ const lessons = [
             { id: "2", content: "Prêt étudiant", correctDirection: "right" },
             { id: "3", content: "Dette de carte de crédit", correctDirection: "left" },
             { id: "4", content: "Crédit immobilier locatif", correctDirection: "right" },
-            { id: "5", content: "Crédit conso pour un iPhone", correctDirection: "left" }
+            { id: "5", content: "Crédit conso pour un iPhone", correctDirection: "left" },
+            { id: "6", content: "Prêt pour créer son entreprise", correctDirection: "right" }
           ],
           timeLimit: 45,
-          mindyMessage: "Tu piges enfin la différence."
+          mindyMessage: "Tu piges enfin la différence. La dette est un outil, pas un mode de vie."
+        },
+        {
+          type: "quiz",
+          question: "Quel est le taux d'usure en France (taux maximum légal) pour un crédit conso > 6 000€ au T1 2024 ?",
+          options: ["5.5%", "10.5%", "21.8%", "6.5%"],
+          correctIndex: 2,
+          mindyHint: "Le taux d'usure est publié trimestriellement par la Banque de France. Pour le crédit conso, il est étonnamment élevé."
+        },
+        {
+          type: "fill_blank",
+          sentence: "En France, le taux d'endettement maximum recommandé par le HCSF est de ___% des revenus nets.",
+          answer: "35",
+          choices: ["25", "33", "35", "50"],
+          mindyMessage: "35% depuis janvier 2022. Avant c'était 33%. Concrètement : si tu gagnes 2000€ net, tes mensualités max = 700€."
+        },
+        {
+          type: "scenario",
+          situation: "Tu as 3 crédits : un crédit auto (TAEG 6%, reste 5 000€), un crédit revolving (TAEG 19%, reste 2 000€), et un prêt étudiant (TAEG 1%, reste 8 000€). Tu reçois un bonus de 2 000€. Que fais-tu ?",
+          choices: [
+            { text: "Je rembourse le prêt étudiant car c'est le plus gros montant", isGood: false, explanation: "Mauvais calcul. Le prêt étudiant est à 1% = quasi gratuit. En remboursant celui-là, tu continues à payer 19% sur ton revolving." },
+            { text: "Je rembourse intégralement le crédit revolving à 19%", isGood: true, explanation: "Méthode 'avalanche' : on attaque la dette au taux le plus élevé. 19% de TAEG sur le revolving te coûte ~380€/an d'intérêts. En le soldant, tu économises immédiatement." },
+            { text: "Je répartis les 2 000€ entre les 3 crédits", isGood: false, explanation: "Répartir dilue l'impact. Concentrer sur la dette la plus chère (19%) maximise l'économie d'intérêts." }
+          ],
+          mindyMessage: "Méthode avalanche : tue la dette au taux le plus élevé en premier. Les maths ne mentent pas. 🏔️"
+        },
+        {
+          type: "match_pairs",
+          pairs: [
+            { term: "Méthode avalanche", definition: "Rembourser d'abord la dette au taux le plus élevé" },
+            { term: "Méthode boule de neige", definition: "Rembourser d'abord la plus petite dette (motivation psychologique)" },
+            { term: "Crédit revolving", definition: "Réserve d'argent rechargeable, taux souvent > 15%" },
+            { term: "Rachat de crédits", definition: "Regrouper plusieurs dettes en une seule mensualité" },
+            { term: "TAEG", definition: "Taux Annuel Effectif Global, inclut TOUS les frais du crédit" }
+          ],
+          mindyMessage: "Avalanche = mathématiquement optimal. Boule de neige = psychologiquement satisfaisant. Les deux marchent si tu t'y tiens. ❄️"
         },
         {
           type: "quiz",
           question: "Quelle stratégie pour rembourser plusieurs dettes ?",
-          options: ["Payer le minimum partout", "Rembourser d'abord la dette au plus haut taux", "Ignorer les dettes", "Emprunter plus pour rembourser"],
+          options: ["Payer le minimum partout", "Rembourser d'abord la dette au plus haut taux (méthode avalanche)", "Ignorer les dettes", "Emprunter plus pour rembourser"],
           correctIndex: 1,
-          mindyHint: "Attaquez la dette qui vous coûte le plus cher en premier."
+          mindyHint: "Attaquez la dette qui vous coûte le plus cher en premier. C'est la méthode avalanche, popularisée par le mathématicien des finances."
+        },
+        {
+          type: "speed_round",
+          title: "Speed Round : Dette & Crédit",
+          pairs: [
+            { statement: "Le crédit revolving a souvent des taux supérieurs à 15% TAEG.", isTrue: true },
+            { statement: "Le surendettement est un droit : on peut toujours effacer ses dettes.", isTrue: false },
+            { statement: "Un prêt immobilier à taux fixe protège contre la hausse des taux.", isTrue: true },
+            { statement: "La Banque de France gère les dossiers de surendettement.", isTrue: true },
+            { statement: "Un remboursement anticipé de crédit immobilier est toujours gratuit.", isTrue: false },
+            { statement: "Le TAEG inclut les intérêts, l'assurance et les frais de dossier.", isTrue: true },
+            { statement: "Avoir un crédit en cours empêche d'obtenir un prêt immobilier.", isTrue: false },
+            { statement: "En France, la durée maximale d'un prêt immobilier est de 25 ans (HCSF).", isTrue: true }
+          ],
+          timeLimitSeconds: 45
+        },
+        {
+          type: "flashcard",
+          front: "L'Effet de Levier",
+          back: "L'effet de levier utilise l'endettement pour amplifier le rendement d'un investissement.\n\nExemple : tu achètes un appartement locatif à 200 000€ avec 20 000€ d'apport et 180 000€ de crédit.\n• Le loyer rembourse le crédit\n• Si l'appart prend 10% de valeur = +20 000€\n• Rendement sur TON apport = +100% (20k sur 20k investis)\n\nAttention : l'effet de levier amplifie aussi les PERTES. Si l'appart perd 10% = tu perds 100% de ton apport.",
+          category: "Finance"
+        },
+        {
+          type: "swipe",
+          statement: "Il est toujours préférable de rembourser un prêt immobilier à 1.5% plutôt que d'investir cet argent.",
+          isCorrect: false,
+          explanation: "Pas forcément. Si ton prêt est à 1.5% et que tu peux investir à 7-8% (ETF World historique), tu gagnes plus en investissant qu'en remboursant. C'est le principe du coût d'opportunité."
         },
         {
           type: "info",
           title: "Conclusion",
-          content: "Utilisez l'effet de levier de la dette pour vous enrichir (immobilier), pas pour paraître riche (consommation).",
-          mindyMessage: "Fini de frimer avec l'argent que tu n'as pas."
+          content: "La dette est un outil puissant :\n\n✅ À utiliser pour : immobilier locatif, études, création d'entreprise\n❌ À éviter pour : consommation, lifestyle, FOMO\n\nRègles d'or :\n1. Ne jamais dépasser 35% d'endettement\n2. Toujours comparer le TAEG (pas le taux nominal)\n3. Rembourser les dettes à taux élevé en priorité\n4. Garder une épargne de précaution AVANT de rembourser par anticipation",
+          mindyMessage: "Fini de frimer avec l'argent que tu n'as pas. Utilise la dette comme un levier, pas comme une béquille. 🏗️"
         }
       ]
     }
@@ -1060,6 +1836,13 @@ const lessons = [
           mindyMessage: "L'État veut ta part du gâteau. Apprends à protéger tes miettes. 🍰"
         },
         {
+          type: "fill_blank",
+          sentence: "Le PEA (Plan d'Épargne en Actions) a un plafond de versements de ___ €, au-delà duquel il faut utiliser un compte-titres ordinaire.",
+          answer: "150 000",
+          choices: ["50 000", "100 000", "150 000", "225 000"],
+          mindyMessage: "150 000€ de plafond de versements. Les plus-values, elles, ne sont pas plafonnées. Tu peux avoir 500k€ dans un PEA."
+        },
+        {
           type: "quiz",
           question: "Après combien d'années le PEA devient-il fiscalement optimal ?",
           options: ["2 ans", "5 ans", "8 ans", "Jamais"],
@@ -1067,10 +1850,29 @@ const lessons = [
           mindyHint: "C'est un marathon, pas un sprint."
         },
         {
+          type: "calculator",
+          question: "Tu as 50 000€ de plus-values sur ton PEA après 5 ans. Combien paies-tu d'impôt ? (PEA 5+ ans : exonéré d'IR, seuls les prélèvements sociaux de 17.2% s'appliquent)",
+          variables: ["Plus-values: 50 000€", "Impôt sur le revenu (IR): 0€ (exonéré après 5 ans)", "Prélèvements sociaux: 17.2%", "Impôt total = 50 000 × 0.172"],
+          answer: 8600,
+          tolerance: 10,
+          unit: "€",
+          mindyMessage: "8 600€ au lieu de 15 000€ avec la flat tax (30%). Le PEA t'a fait économiser 6 400€ d'impôt. C'est le prix d'avoir été patient. 💰"
+        },
+        {
           type: "swipe",
           statement: "L'Assurance-Vie n'est utile que pour la succession.",
           isCorrect: false,
           explanation: "L'AV est aussi un excellent outil d'investissement avec une fiscalité avantageuse après 8 ans."
+        },
+        {
+          type: "scenario",
+          situation: "Tu as 30 ans, un salaire de 45 000€ net/an, et tu veux investir 500€/mois en bourse. Ton PEA est à 0€, ton Assurance-Vie aussi. Tu n'as pas de PER. Par où commences-tu ?",
+          choices: [
+            { text: "Je remplis d'abord le PEA avec des ETF (MSCI World, S&P 500) jusqu'au plafond", isGood: true, explanation: "Le PEA est prioritaire : après 5 ans, exonération d'IR sur les gains (seuls 17.2% de PS). À 30 ans avec un horizon long, ETF World dans le PEA = combo optimal. Tu rempliras l'AV et le PER ensuite." },
+            { text: "Je mets tout dans un PER pour défiscaliser immédiatement", isGood: false, explanation: "Le PER déduit les versements du revenu imposable MAIS bloque l'argent jusqu'à la retraite (sauf achat résidence principale). À 30 ans avec un TMI de 30%, la priorité est la liquidité du PEA." },
+            { text: "J'ouvre un compte-titres ordinaire pour avoir plus de choix de produits", isGood: false, explanation: "Le CTO offre plus de choix mais 0 avantage fiscal (flat tax 30% sur toutes les plus-values). Le PEA est strictement supérieur pour les actions européennes et ETF éligibles." }
+          ],
+          mindyMessage: "PEA d'abord. Toujours. Quand il sera plein à 150k€, on parlera de l'AV. 🏆"
         },
         {
           type: "reorder",
@@ -1081,10 +1883,42 @@ const lessons = [
           mindyMessage: "Chaque chose en son temps."
         },
         {
+          type: "match_pairs",
+          pairs: [
+            { term: "PEA", definition: "Actions EU/ETF, exo IR après 5 ans, plafond 150k€ de versements" },
+            { term: "Assurance-Vie", definition: "Multi-supports (fonds €, UC), abattement 4 600€/an après 8 ans" },
+            { term: "PER", definition: "Épargne retraite, versements déductibles du revenu imposable" },
+            { term: "Compte-Titres", definition: "Aucune restriction ni avantage fiscal, flat tax 30%" },
+            { term: "LEP", definition: "Livret d'épargne populaire, 5% net, sous conditions de revenus" }
+          ],
+          mindyMessage: "Chaque enveloppe a son rôle. Le PEA pour la croissance, l'AV pour la flexibilité, le PER pour la retraite. 📋"
+        },
+        {
+          type: "flashcard",
+          front: "Flat Tax vs Barème progressif",
+          back: "En France, les revenus du capital sont soumis au PFU (Prélèvement Forfaitaire Unique) dit 'flat tax' :\n\n📊 Flat tax = 30% (12.8% IR + 17.2% PS)\n\nMais tu peux opter pour le barème progressif si ton TMI < 30% :\n• TMI 0% → 17.2% d'imposition totale\n• TMI 11% → 28.2% total\n• TMI 30% → 47.2% total (pire que la flat tax !)\n\n→ Si TMI ≤ 11% : barème progressif gagnant\n→ Si TMI ≥ 30% : flat tax gagnante\n\nL'option barème est globale : elle s'applique à TOUS les revenus du capital de l'année.",
+          category: "Fiscalité"
+        },
+        {
           type: "info",
           title: "Stratégie",
           content: "Maximisez d'abord le PEA (plafond 150 000€), puis l'Assurance-Vie, puis le compte-titres ordinaire.",
           mindyMessage: "Tu es officiellement un adulte ennuyeux. Bravo. 🎩"
+        },
+        {
+          type: "speed_round",
+          title: "Speed Round : Fiscalité française",
+          pairs: [
+            { statement: "Le PEA est exonéré d'impôt sur le revenu après 5 ans de détention.", isTrue: true },
+            { statement: "La flat tax en France est de 30% (12.8% IR + 17.2% prélèvements sociaux).", isTrue: true },
+            { statement: "L'Assurance-Vie est bloquée pendant 8 ans.", isTrue: false },
+            { statement: "Le PER permet de déduire les versements de son revenu imposable.", isTrue: true },
+            { statement: "Les plus-values sur un compte-titres ordinaire bénéficient d'un abattement pour durée de détention.", isTrue: false },
+            { statement: "Le Livret A est exonéré d'impôt et de prélèvements sociaux.", isTrue: true },
+            { statement: "On peut avoir un PEA et un PEA-PME simultanément.", isTrue: true },
+            { statement: "Le plafond de versements sur un PEA est de 300 000€.", isTrue: false }
+          ],
+          timeLimitSeconds: 45
         }
       ]
     }
@@ -1104,6 +1938,13 @@ const lessons = [
           mindyMessage: "Devenir propriétaire avec l'argent des autres (locataires + banque). Magique. ✨"
         },
         {
+          type: "fill_blank",
+          sentence: "Le rendement locatif brut se calcule ainsi : (loyer annuel / ___) × 100.",
+          answer: "prix d'achat",
+          choices: ["loyer mensuel", "prix d'achat", "charges annuelles", "apport personnel"],
+          mindyMessage: "Rendement brut = loyer annuel / prix d'achat × 100. Vise au minimum 6-7% brut en province, 3-4% à Paris."
+        },
+        {
           type: "quiz",
           question: "Qu'est-ce qu'un cashflow positif ?",
           options: ["Le loyer égale le crédit", "Le loyer est supérieur à toutes les charges", "On a vendu le bien", "Le locataire ne paie pas"],
@@ -1111,10 +1952,29 @@ const lessons = [
           mindyHint: "C'est l'argent qui finit dans ta poche à la fin du mois."
         },
         {
+          type: "calculator",
+          question: "Tu achètes un studio à 120 000€ tout frais inclus. Le loyer est de 650€/mois. Quel est le rendement locatif brut ? (Formule: (loyer annuel / prix d'achat) × 100)",
+          variables: ["Prix d'achat: 120 000€", "Loyer mensuel: 650€", "Loyer annuel: 650 × 12 = 7 800€", "Rendement = (7 800 / 120 000) × 100"],
+          answer: 6.5,
+          tolerance: 0.1,
+          unit: "%",
+          mindyMessage: "6.5% brut. Correct, mais le rendement NET (après charges, impôts, vacance locative) sera plus proche de 4-5%. Toujours calculer le net. 📊"
+        },
+        {
           type: "swipe",
           statement: "Le régime LMNP (Loueur Meublé Non Professionnel) permet d'amortir le bien et réduire l'impôt.",
           isCorrect: true,
           explanation: "Le LMNP est fiscalement très avantageux grâce à l'amortissement comptable du bien."
+        },
+        {
+          type: "scenario",
+          situation: "Tu trouves un T2 à Lille à 150 000€ avec un loyer estimé de 750€/mois (rendement brut 6%). Mais le DPE est classé F (passoire thermique). La loi Climat 2021 interdit la location des logements classés G depuis 2025 et F depuis 2028. Que fais-tu ?",
+          choices: [
+            { text: "J'achète et je loue en l'état — 2028 c'est loin, j'ai le temps", isGood: false, explanation: "Risque réglementaire majeur. En 2028, un logement F ne pourra plus être loué. Tu devras rénover sous peine de perdre ton loyer. Anticipe TOUJOURS les lois à venir." },
+            { text: "Je négocie le prix en intégrant le coût de la rénovation énergétique (15-25k€ estimés) et je rénove avant location", isGood: true, explanation: "Excellente approche. Un DPE F qui passe en C/D après travaux = loyer potentiellement plus élevé + éligible aux aides (MaPrimeRénov') + valorisation du bien. Négocie 15-20k€ de réduction." },
+            { text: "Je passe mon chemin — trop de travaux, je cherche un bien déjà en bon DPE", isGood: false, explanation: "Compréhensible mais tu rates une opportunité. Les passoires thermiques se négocient avec 15-25% de décote. Après rénovation, la plus-value est significative." }
+          ],
+          mindyMessage: "Le DPE est devenu le nerf de la guerre en immobilier locatif. Un F bien rénové = pépite. Un F ignoré = bombe à retardement. 🏗️"
         },
         {
           type: "swipe_sequence",
@@ -1133,10 +1993,42 @@ const lessons = [
           mindyMessage: "L'émotion est l'ennemie de l'investisseur."
         },
         {
+          type: "match_pairs",
+          pairs: [
+            { term: "LMNP", definition: "Loueur Meublé Non Pro — amortissement du bien, fiscalité allégée" },
+            { term: "Loi Pinel", definition: "Réduction d'impôt pour achat neuf en zone tendue (fin 2024)" },
+            { term: "Déficit foncier", definition: "Charges > loyers = déduction sur le revenu global (10 700€/an max)" },
+            { term: "SCI", definition: "Société Civile Immobilière — gestion et transmission facilitées" },
+            { term: "Effet de levier", definition: "Emprunter pour investir — le crédit amplifie la rentabilité" }
+          ],
+          mindyMessage: "LMNP, Pinel, SCI, déficit foncier... L'immobilier locatif en France, c'est 50% terrain et 50% fiscalité. 🏛️"
+        },
+        {
+          type: "flashcard",
+          front: "L'effet de levier bancaire",
+          back: "L'effet de levier = utiliser l'argent de la banque pour investir.\n\nExemple concret :\n• Tu as 20 000€ d'apport\n• La banque te prête 180 000€ à 3.5% sur 20 ans\n• Tu achètes un bien à 200 000€ loué 1 000€/mois\n• Le locataire rembourse le crédit (1 050€/mois)\n• Dans 20 ans : tu possèdes un bien de 200 000€+ avec seulement 20 000€ investis\n\nRendement sur apport : si le bien prend 2%/an → 330 000€ dans 20 ans pour 20 000€ d'apport.\n\nL'immobilier est le SEUL investissement où la banque te prête autant.",
+          category: "Immobilier"
+        },
+        {
           type: "info",
           title: "Conclusion finale",
           content: "L'immobilier est puissant grâce à l'effet de levier bancaire, mais demande du temps et de la gestion.",
           mindyMessage: "Tu as fini le parcours. Ne va pas tout dépenser au casino maintenant. 🎰"
+        },
+        {
+          type: "speed_round",
+          title: "Speed Round : Immobilier Locatif",
+          pairs: [
+            { statement: "Le rendement locatif brut ne prend pas en compte les charges et impôts.", isTrue: true },
+            { statement: "Le LMNP permet d'amortir le prix du bien pour réduire l'impôt sur les loyers.", isTrue: true },
+            { statement: "La loi Pinel est réservée aux logements anciens à rénover.", isTrue: false },
+            { statement: "Un DPE classé G ne peut plus être mis en location depuis 2025.", isTrue: true },
+            { statement: "Le déficit foncier est déductible du revenu global jusqu'à 10 700€ par an.", isTrue: true },
+            { statement: "L'effet de levier bancaire amplifie les gains ET les pertes.", isTrue: true },
+            { statement: "Les frais de notaire en immobilier ancien sont d'environ 2-3% du prix.", isTrue: false },
+            { statement: "Une vacance locative de 2 mois/an réduit le rendement réel d'environ 16%.", isTrue: true }
+          ],
+          timeLimitSeconds: 45
         }
       ]
     }
@@ -1234,6 +2126,13 @@ const lessons = [
           mindyHint: "Fungible = interchangeable (1€ = 1€). Non-fungible = unique (Mona Lisa ≠ copie)."
         },
         {
+          type: "fill_blank",
+          sentence: "Le standard ___ (2022) permet de créer des tokens non-transférables, appelés 'Soulbound Tokens', proposés par Vitalik Buterin pour l'identité on-chain.",
+          answer: "ERC-5192",
+          choices: ["ERC-20", "ERC-721", "ERC-5192", "ERC-1155"],
+          mindyMessage: "Soulbound = lié à ton âme (wallet). Tu ne peux pas le vendre ou le transférer. Parfait pour les diplômes et certifications."
+        },
+        {
           type: "swipe",
           statement: "Acheter un NFT te donne le copyright de l'image associée.",
           isCorrect: false,
@@ -1244,6 +2143,17 @@ const lessons = [
           statement: "Les NFTs peuvent représenter des billets de concert, des diplômes ou des actifs physiques.",
           isCorrect: true,
           explanation: "C'est là l'utilité réelle : Ticketmaster explore les NFT tickets, les universités testent les diplômes on-chain, des marques tokenisent des produits physiques."
+        },
+        {
+          type: "match_pairs",
+          pairs: [
+            { term: "ERC-721", definition: "Standard NFT classique : chaque token est unique" },
+            { term: "ERC-1155", definition: "Standard multi-token : NFTs ET tokens fongibles en un contrat" },
+            { term: "ERC-5192", definition: "Soulbound Token : non-transférable, lié au wallet" },
+            { term: "ERC-6551", definition: "Token Bound Account : chaque NFT possède son propre wallet" },
+            { term: "ERC-4907", definition: "NFT rentable : permet de louer un NFT sans le transférer" }
+          ],
+          mindyMessage: "Les standards ERC évoluent vite. En 2025, les NFTs font bien plus que stocker des images. 🧬"
         },
         {
           type: "swipe_sequence",
@@ -1262,10 +2172,41 @@ const lessons = [
           mindyMessage: "Le singe à 500k$ c'était de la folie. Le diplôme on-chain c'est l'avenir."
         },
         {
+          type: "scenario",
+          situation: "Tu es développeur d'un jeu mobile. Tu veux permettre aux joueurs de posséder et revendre leurs skins. Un collègue propose d'utiliser des NFTs ERC-721 sur Ethereum mainnet. Quel est le meilleur choix ?",
+          choices: [
+            { text: "ERC-721 sur Ethereum mainnet — c'est le standard le plus connu et sécurisé", isGood: false, explanation: "Ethereum mainnet = gas fees de 5-50$ par transaction. Pour des skins de jeu mobile, c'est beaucoup trop cher. Les joueurs ne paieront pas 20$ de gas pour un skin à 5$." },
+            { text: "ERC-1155 sur un L2 (Immutable X, Polygon) — gas quasi-nul et batch transfers", isGood: true, explanation: "ERC-1155 permet les batch transfers (envoyer 50 items en 1 tx) et les L2 réduisent le gas à quasi-zéro. Immutable X est spécialisé gaming. C'est le standard de l'industrie." },
+            { text: "Pas de blockchain — une base de données classique suffit pour les skins", isGood: false, explanation: "Fonctionnel, mais les joueurs ne possèdent rien. Ils ne peuvent pas revendre sur un marché ouvert. L'avantage NFT = ownership réelle et interopérabilité." }
+          ],
+          mindyMessage: "Le bon NFT sur la mauvaise blockchain = flop garanti. L2 + ERC-1155 = le combo gagnant pour le gaming. 🎮"
+        },
+        {
+          type: "flashcard",
+          front: "RWA (Real World Assets) tokenisés",
+          back: "La tokenisation d'actifs réels via NFTs est le prochain marché massif :\n\n🏠 Immobilier : RealT tokenise des propriétés US (fractions dès 50$)\n🎨 Art : Masterworks fractionne des Basquiat et Banksy\n💎 Luxe : LVMH utilise Aura Blockchain pour l'authenticité\n⌚ Montres : Breitling certifie ses montres via NFT\n📜 Brevets : preuves d'antériorité horodatées on-chain\n\nBoston Consulting Group estime le marché RWA tokenisé à 16 000 milliards $ d'ici 2030.",
+          category: "NFT"
+        },
+        {
           type: "info",
           title: "Les NFTs en 2025",
           content: "Ce qui reste pertinent :\n✅ Gaming : ownership réelle des assets en jeu\n✅ Ticketing : anti-scalping, vérification d'identité\n✅ RWA (Real World Assets) : tokenisation d'actifs réels\n✅ Identité décentralisée\n\nCe qui est mort :\n❌ Profile pictures à 6 chiffres sans utilité\n❌ Metaverses fantômes",
           mindyMessage: "Retiens : NFT = outil. Ce qui change c'est ce qu'on met dedans. 🛠️"
+        },
+        {
+          type: "speed_round",
+          title: "Speed Round : NFTs en 2025",
+          pairs: [
+            { statement: "Les Soulbound Tokens (SBTs) sont des NFTs non-transférables.", isTrue: true },
+            { statement: "Le volume des ventes NFT en 2025 est supérieur à celui de 2022.", isTrue: false },
+            { statement: "ERC-1155 permet de gérer des tokens fongibles ET non-fongibles dans un seul contrat.", isTrue: true },
+            { statement: "La tokenisation d'actifs réels (RWA) est un cas d'usage NFT en forte croissance.", isTrue: true },
+            { statement: "Tous les NFTs stockent leur image directement sur la blockchain.", isTrue: false },
+            { statement: "Immutable X est un Layer 2 spécialisé dans les NFTs gaming.", isTrue: true },
+            { statement: "Les royalties NFT sont obligatoires et non-contournables sur toutes les marketplaces.", isTrue: false },
+            { statement: "ERC-6551 permet à un NFT de posséder d'autres tokens et NFTs.", isTrue: true }
+          ],
+          timeLimitSeconds: 45
         }
       ]
     }
@@ -1285,6 +2226,13 @@ const lessons = [
           mindyMessage: "La blockchain est un Dark Forest. Les robots te voient avant toi. 🤖🌑"
         },
         {
+          type: "fill_blank",
+          sentence: "Le terme 'Dark Forest' appliqué à Ethereum a été popularisé par Dan Robinson et Georgios Konstantopoulos dans un article de ___ décrivant la mempool comme une forêt hostile.",
+          answer: "2020",
+          choices: ["2018", "2019", "2020", "2022"],
+          mindyMessage: "L'article 'Ethereum is a Dark Forest' (août 2020) a changé la façon dont on perçoit la mempool. Lecture obligatoire."
+        },
+        {
           type: "quiz",
           question: "Dans une 'sandwich attack', que se passe-t-il ?",
           options: ["Deux transactions encadrent la tienne pour te voler du slippage", "Ton wallet est piraté", "Ta transaction est bloquée définitivement", "Tu reçois un bonus inattendu"],
@@ -1298,10 +2246,31 @@ const lessons = [
           explanation: "Légal oui — c'est inhérent au mécanisme des blocs. C'est pour ça qu'EIP-1559 et Flashbots ont été créés pour le mitiger."
         },
         {
+          type: "scenario",
+          situation: "Tu veux swapper 50 000 USDC contre de l'ETH sur Uniswap. Ton slippage est réglé à 5% par défaut. Le montant est important. Que fais-tu ?",
+          choices: [
+            { text: "Je réduis le slippage à 0.5%, j'utilise un RPC privé (Flashbots Protect) et je route via un agrégateur (1inch)", isGood: true, explanation: "Triple protection : slippage bas = moins de marge pour le sandwich, RPC privé = ta tx n'est pas visible dans le mempool public, agrégateur = meilleur prix via split routes." },
+            { text: "Je lance le swap directement avec 5% de slippage, Uniswap est sûr", isGood: false, explanation: "5% de slippage sur 50k$ = jusqu'à 2 500$ offerts aux bots MEV. C'est un festin pour les sandwich attacks. Uniswap est sûr, mais le mempool ne l'est pas." },
+            { text: "Je découpe mon swap en 10 transactions de 5 000$ pour passer inaperçu", isGood: false, explanation: "Découper augmente les frais de gas (10 tx au lieu de 1) et les bots détectent quand même chaque tx. Un RPC privé est bien plus efficace." }
+          ],
+          mindyMessage: "50 000$ dans le mempool public avec 5% de slippage ? Autant mettre un panneau 'buffet gratuit' pour les bots. 🤖"
+        },
+        {
           type: "swipe",
           statement: "Flashbots est un protocole qui élimine complètement le MEV.",
           isCorrect: false,
           explanation: "Flashbots ne l'élimine pas — il le 'démocratise' et le rend plus transparent via un marché ordonné de blocs (MEV-Boost)."
+        },
+        {
+          type: "match_pairs",
+          pairs: [
+            { term: "Mempool", definition: "File d'attente publique des transactions non confirmées" },
+            { term: "Flashbots", definition: "Protocole de marché MEV transparent (MEV-Boost, MEV-Share)" },
+            { term: "Sandwich Attack", definition: "Front-run + back-run d'une transaction pour extraire du slippage" },
+            { term: "Searcher", definition: "Bot qui scanne la mempool pour trouver des opportunités MEV" },
+            { term: "Block Builder", definition: "Entité qui construit les blocs optimaux pour les validateurs (PBS)" }
+          ],
+          mindyMessage: "L'écosystème MEV a ses propres acteurs : searchers, builders, relayers. Un business de milliards dans l'ombre. 🕵️"
         },
         {
           type: "quiz",
@@ -1311,10 +2280,31 @@ const lessons = [
           mindyHint: "Un RPC privé cache ta transaction du mempool public. Les bots ne peuvent pas te voir."
         },
         {
+          type: "flashcard",
+          front: "Proposer-Builder Separation (PBS)",
+          back: "PBS sépare deux rôles dans Ethereum post-Merge :\n\n• Builder : construit le bloc (ordonne les transactions, inclut le MEV)\n• Proposer (validateur) : choisit le bloc le plus profitable à proposer\n\nAvant PBS : le validateur faisait tout → centralisation du MEV.\nAprès PBS : compétition entre builders → MEV redistribué.\n\nMEV-Boost (Flashbots) est l'implémentation actuelle. En 2024, >90% des blocs Ethereum passent par MEV-Boost.",
+          category: "MEV"
+        },
+        {
           type: "info",
           title: "Se Protéger dans le Dark Forest",
           content: "Actions concrètes :\n• Utiliser MEV Blocker (rpc.mevblocker.io) comme RPC dans MetaMask\n• Limiter le slippage à 0.5-1% sur les gros trades\n• Utiliser des agregateurs (1inch, Paraswap) qui routent intelligemment\n• Sur Uniswap : activer 'protect from MEV'\n\n→ Le Dark Forest est réel. Équipe-toi.",
           mindyMessage: "Tu as survécu au Dark Forest avec tes nouvelles armes. Bien joué, soldier. ⚔️"
+        },
+        {
+          type: "speed_round",
+          title: "Speed Round : MEV & Dark Forest",
+          pairs: [
+            { statement: "Le MEV existait déjà avec le Proof of Work (anciennement 'Miner Extractable Value').", isTrue: true },
+            { statement: "Les sandwich attacks ne fonctionnent que sur Uniswap.", isTrue: false },
+            { statement: "Flashbots MEV-Boost est utilisé par plus de 90% des validateurs Ethereum.", isTrue: true },
+            { statement: "Un RPC privé empêche ta transaction d'apparaître dans le mempool public.", isTrue: true },
+            { statement: "Le MEV est bénéfique pour les utilisateurs finaux.", isTrue: false },
+            { statement: "Les liquidations DeFi (Aave, Compound) sont une forme de MEV.", isTrue: true },
+            { statement: "Régler son slippage à 0% garantit une protection contre le MEV.", isTrue: false },
+            { statement: "L'arbitrage MEV entre DEX contribue à aligner les prix entre plateformes.", isTrue: true }
+          ],
+          timeLimitSeconds: 45
         }
       ]
     }
@@ -1397,6 +2387,13 @@ const lessons = [
           mindyHint: "Call = tu appelles le prix à monter. Strike = ton prix d'exercice."
         },
         {
+          type: "fill_blank",
+          sentence: "Le marché des dérivés représente plus de ___ trillions de dollars de notionnel, soit 10x le PIB mondial.",
+          answer: "600",
+          choices: ["100", "300", "600", "1000"],
+          mindyMessage: "600 000 milliards de dollars. Le marché des dérivés est le plus gros marché au monde. Vertigineux."
+        },
+        {
           type: "swipe",
           statement: "Acheter une option engendre une perte maximale limitée à la prime payée.",
           isCorrect: true,
@@ -1409,6 +2406,16 @@ const lessons = [
           explanation: "FAUX. Vendre une naked call = risque de perte illimitée si l'action monte. GameStop short squeeze en 2021 : certains vendeurs ont perdu des milliards."
         },
         {
+          type: "scenario",
+          situation: "Tu détiens 100 actions Tesla à 250$ l'unité (25 000$ investis). Tu crains une baisse à court terme après les résultats trimestriels. Un Put Tesla strike 240$ expire dans 1 mois pour une prime de 8$ par action. Que fais-tu ?",
+          choices: [
+            { text: "J'achète le Put à 240$ pour protéger ma position (coût : 800$)", isGood: true, explanation: "Le 'Protective Put' est la stratégie de couverture classique. Pour 800$ (3.2% de ta position), tu limites ta perte max à 1 800$ (250→240 + prime). C'est une assurance portfolio." },
+            { text: "Je vends toutes mes actions pour éviter le risque", isGood: false, explanation: "Vendre génère un événement fiscal (plus-value imposable) et tu rates le potentiel de hausse. Un put te protège tout en gardant ton exposition haussière." },
+            { text: "Je vends des Call couverts (Covered Call) strike 280$ pour encaisser la prime", isGood: false, explanation: "Le Covered Call génère un revenu mais ne protège PAS contre une baisse. Si Tesla chute de 30%, tu perds quand même. C'est une stratégie de rendement, pas de protection." }
+          ],
+          mindyMessage: "Le Protective Put = assurance auto pour ton portfolio. Ça coûte un peu, mais ça t'évite la casse. 🛡️"
+        },
+        {
           type: "quiz",
           question: "Qu'est-ce que le 'Theta decay' dans les options ?",
           options: ["La hausse de valeur avec le temps", "La perte de valeur d'une option avec l'écoulement du temps", "Un type de stratégie DeFi", "L'impact du volume sur le prix"],
@@ -1416,10 +2423,45 @@ const lessons = [
           mindyHint: "Theta = temps. Les options perdent de la valeur chaque jour qui passe (toutes choses égales)."
         },
         {
+          type: "match_pairs",
+          pairs: [
+            { term: "Covered Call", definition: "Vendre un call en détenant l'action → revenus passifs" },
+            { term: "Protective Put", definition: "Acheter un put pour protéger une position longue" },
+            { term: "Straddle", definition: "Acheter call + put au même strike → parier sur la volatilité" },
+            { term: "Iron Condor", definition: "4 options combinées → profit si le prix reste dans un range" },
+            { term: "Bull Call Spread", definition: "Acheter call strike bas + vendre call strike haut → limiter le coût" }
+          ],
+          mindyMessage: "Les stratégies options, c'est du Lego financier. Chaque brique a sa fonction. Apprends les combos. 🧱"
+        },
+        {
           type: "info",
           title: "Les Grecs — Maîtriser les Sensibilités",
           content: "Les 'Greeks' mesurent la sensibilité d'une option :\n\n• Delta (Δ) : variation du prix option / variation du sous-jacent\n• Theta (Θ) : perte de valeur par jour (time decay)\n• Vega (V) : sensibilité à la volatilité implicite\n• Gamma (Γ) : taux de variation du Delta\n\n→ Les pros gèrent des portefeuilles delta-neutres pour isoler d'autres expositions.",
           mindyMessage: "Bienvenue dans le monde des quants. Si tu comprends les Greeks, tu es dans le top 1%. 🧮"
+        },
+        {
+          type: "calculator",
+          question: "Tu achètes un Call sur le S&P 500 à strike 5000 pour une prime de 120$. À l'expiration le S&P est à 5200. Quel est ton profit net ? (Formule: (prix final - strike) - prime)",
+          variables: ["Strike: 5000", "Prix final: 5200", "Prime payée: 120$", "Profit = (5200 - 5000) - 120"],
+          answer: 80,
+          tolerance: 0,
+          unit: "$",
+          mindyMessage: "200$ de valeur intrinsèque - 120$ de prime = 80$ de profit. Pas mal, mais le ratio risque/récompense est ce qui compte. 📊"
+        },
+        {
+          type: "speed_round",
+          title: "Speed Round : Options & Dérivés",
+          pairs: [
+            { statement: "Un Call donne le droit d'acheter un actif à un prix fixé.", isTrue: true },
+            { statement: "L'acheteur d'un Put souhaite que le prix du sous-jacent monte.", isTrue: false },
+            { statement: "Le Theta decay s'accélère à l'approche de l'expiration.", isTrue: true },
+            { statement: "Un future oblige les deux parties à exécuter le contrat à échéance.", isTrue: true },
+            { statement: "La volatilité implicite n'affecte pas le prix des options.", isTrue: false },
+            { statement: "Un Delta de 0.50 signifie que l'option gagne 0.50$ quand l'action gagne 1$.", isTrue: true },
+            { statement: "Les CFD permettent de posséder l'actif sous-jacent.", isTrue: false },
+            { statement: "Le short squeeze de GameStop en 2021 a causé des pertes massives aux vendeurs de naked calls.", isTrue: true }
+          ],
+          timeLimitSeconds: 45
         }
       ]
     }
@@ -1927,6 +2969,7 @@ const lessons = [
           content: "Une action représente une part de propriété dans une entreprise cotée en bourse. Acheter une action Apple, c'est littéralement devenir copropriétaire d'Apple — avec les droits et risques que ça implique.",
           mindyMessage: "Tu peux posséder un bout d'Apple. Même si tu utilises Android. 🍎"
         },
+        { type: "fill_blank", sentence: "Le marché boursier principal en France s'appelle ___.", answer: "Euronext", choices: ["Euronext", "NASDAQ", "NYSE", "DAX"], mindyMessage: "Paris a son propre marché. Et non, ce n'est pas le marché aux puces." },
         {
           type: "quiz",
           question: "Que donne une action à son détenteur ?",
@@ -1934,6 +2977,7 @@ const lessons = [
           correctIndex: 1,
           mindyHint: "Stock = ownership. Pas de garantie, pas de salaire fixe."
         },
+        { type: "match_pairs", title: "Termes Boursiers", instruction: "Associe chaque terme à sa définition.", pairs: [{ left: "Dividende", right: "Part des bénéfices versée aux actionnaires" }, { left: "Market Cap", right: "Valeur totale de l'entreprise en bourse" }, { left: "IPO", right: "Première mise en bourse d'une entreprise" }, { left: "Blue Chip", right: "Action d'une grande entreprise stable" }], mindyMessage: "Le vocabulaire, c'est la base. Maîtrise-le ou fais semblant. 📚" },
         {
           type: "swipe",
           statement: "Les dividendes sont la seule façon de gagner de l'argent avec des actions.",
@@ -1946,6 +2990,7 @@ const lessons = [
           isCorrect: true,
           explanation: "P/E = Prix de l'action / Bénéfice par action. Un P/E de 20 signifie que tu paies 20€ pour 1€ de bénéfice annuel."
         },
+        { type: "scenario", title: "Première Action à Acheter", scenario: "Tu as 500€ à investir en bourse pour la première fois. Tu hésites entre trois approches.", choices: [{ text: "Acheter une seule action Tesla à 250€ et garder le reste en cash", isCorrect: false, explanation: "Concentrer sur une seule action tech volatile = risque maximal pour un débutant." }, { text: "Investir 500€ dans un ETF S&P 500 diversifié via un PEA", isCorrect: true, explanation: "Un ETF diversifié via PEA = faibles frais, diversification, avantage fiscal. Le combo gagnant pour débuter." }, { text: "Acheter 10 penny stocks à 50€ chacune pour 'diversifier'", isCorrect: false, explanation: "Les penny stocks sont ultra-volatiles et peu liquides. Ce n'est pas de la diversification, c'est du gambling." }], mindyMessage: "Warren Buffett recommande un ETF S&P 500. Si c'est bon pour lui, c'est bon pour toi. 🎯" },
         {
           type: "swipe_sequence",
           title: "Action ou autre actif ?",
@@ -1963,12 +3008,15 @@ const lessons = [
           timeLimit: 40,
           mindyMessage: "Bitcoin = pas une action. Si tu l'oublies, recommence cette leçon."
         },
+        { type: "calculator", title: "Calcul du Dividend Yield", description: "Une action coûte 80€ et verse un dividende annuel de 3,20€ par action. Calcule le rendement du dividende (dividend yield) en %.", variables: [{ name: "Dividende annuel", value: 3.20 }, { name: "Prix de l'action", value: 80 }], answer: 4, tolerance: 0.1, unit: "%", mindyMessage: "Dividend yield = dividende / prix × 100. Simple mais essentiel pour comparer. 💰" },
+        { type: "reorder", title: "Parcours d'un Ordre en Bourse", instruction: "Remets les étapes d'un achat d'action dans l'ordre.", words: ["Passer un ordre d'achat via ton courtier", "Ouvrir un compte-titres ou PEA", "L'ordre est exécuté sur le marché", "Choisir l'action et le type d'ordre (marché/limite)", "L'action apparaît dans ton portefeuille"], correctOrder: [1, 3, 0, 2, 4], mindyMessage: "Si tu achètes au marché au lieu de limite, tu mérites ce qui arrive. 😅" },
         {
           type: "info",
           title: "Lire une Fiche Action",
           content: "Les indicateurs clés :\n• Prix actuel : cours de l'action en temps réel\n• Market Cap : prix × nombre d'actions = valeur totale\n• P/E Ratio : valorisation relative\n• EPS : bénéfice par action\n• Dividende yield : rendement annuel versé\n• 52-week high/low : fourchette sur un an\n\n→ Une action bon marché n'est pas forcément une bonne affaire.",
           mindyMessage: "Une action à 1€ peut être plus chère qu'une à 500€. Le P/E, c'est tout. 📊"
-        }
+        },
+        { type: "speed_round", title: "Speed Round : Actions & Bourse", pairs: [{ statement: "Une action donne un droit de vote en assemblée générale.", isTrue: true }, { statement: "Toutes les entreprises cotées versent un dividende chaque année.", isTrue: false }, { statement: "Le CAC 40 regroupe les 40 plus grandes entreprises françaises cotées.", isTrue: true }, { statement: "Un ordre 'au marché' garantit le prix d'exécution.", isTrue: false }, { statement: "Le P/E Ratio compare le prix d'une action à son bénéfice par action.", isTrue: true }, { statement: "Acheter des actions est réservé aux professionnels de la finance.", isTrue: false }, { statement: "La Market Cap = prix de l'action × nombre total d'actions.", isTrue: true }, { statement: "Un split d'action change la valeur fondamentale de l'entreprise.", isTrue: false }], timeLimitSeconds: 40, mindyMessage: "8 questions, 40 secondes. Pas le temps de googler. 🔥" }
       ]
     }
   },
@@ -2040,11 +3088,17 @@ const lessons = [
     content: {
       steps: [
         { type: "info", title: "Comment ça Marche Vraiment", content: "La blockchain = un registre partagé, immuable et distribué. Chaque bloc contient :\n• Un hash des transactions\n• Le hash du bloc précédent\n• Un timestamp\n• Un nonce (pour la preuve de travail)\n\nChanger un bloc = recalculer tous les blocs suivants = impossible en pratique.", mindyMessage: "C'est juste une liste chaînée de données cryptées. Mais la magie, c'est que personne ne la contrôle. 🔗" },
+        { type: "fill_blank", sentence: "L'algorithme de hachage utilisé par Bitcoin s'appelle ___.", answer: "SHA-256", choices: ["SHA-256", "MD5", "AES-128", "RSA-2048"], mindyMessage: "SHA-256 = Secure Hash Algorithm 256 bits. Le gardien mathématique de Bitcoin." },
         { type: "quiz", question: "Que garantit le hachage cryptographique (SHA-256) ?", options: ["L'anonymat total", "Qu'une même entrée donne toujours la même sortie unique", "La rapidité des transactions", "L'inflation contrôlée"], correctIndex: 1, mindyHint: "Hash = empreinte digitale des données. Déterministe et unique." },
+        { type: "match_pairs", title: "Composants d'un Bloc", instruction: "Associe chaque composant à son rôle.", pairs: [{ left: "Hash", right: "Empreinte digitale unique du bloc" }, { left: "Nonce", right: "Nombre variable utilisé pour le minage" }, { left: "Timestamp", right: "Date et heure de création du bloc" }, { left: "Merkle Root", right: "Résumé de toutes les transactions du bloc" }], mindyMessage: "Un bloc, c'est quatre ingrédients. Manque un seul, et tout s'effondre. 🧱" },
         { type: "swipe", statement: "Modifier une transaction passée dans la blockchain est techniquement possible si tu contrôles 51% du réseau.", isCorrect: true, explanation: "L'attaque des 51% — théoriquement possible mais économiquement absurde sur Bitcoin (coût = milliards de dollars d'électricité)." },
+        { type: "reorder", title: "Cycle de Minage d'un Bloc", instruction: "Remets le processus de minage dans l'ordre.", words: ["Les mineurs collectent les transactions en attente", "Ils calculent des milliards de hash en changeant le nonce", "Un mineur trouve un hash valide (sous la difficulté cible)", "Le bloc est propagé et vérifié par le réseau", "Le mineur reçoit la récompense (block reward)"], correctOrder: [0, 1, 2, 3, 4], mindyMessage: "Trouver un nonce valide = gratter un ticket gagnant parmi des milliards. Mais en maths. 🎟️" },
         { type: "swipe", statement: "La preuve de travail (PoW) consume beaucoup d'énergie intentionnellement.", isCorrect: true, explanation: "Le coût énergétique EST la sécurité. Rendre la fraude chère protège le réseau. C'est du game theory appliqué." },
+        { type: "word_scramble", title: "Vocabulaire Blockchain", instruction: "Retrouve les termes clés de la blockchain.", words: [{ scrambled: "NSOCEUSNS", answer: "CONSENSUS", hint: "Mécanisme d'accord entre les nœuds du réseau" }, { scrambled: "ELDDECRITASNE", answer: "DECENTRALISE", hint: "Aucune autorité centrale ne contrôle le réseau" }, { scrambled: "BAIMULME", answer: "IMMUABLE", hint: "Les données inscrites ne peuvent pas être modifiées" }, { scrambled: "UONDE", answer: "NOEUD", hint: "Ordinateur participant au réseau blockchain" }], mindyMessage: "Si tu peux pas écrire les mots, tu peux pas comprendre la tech. 🔤" },
         { type: "quiz", question: "La Proof of Stake (PoS) remplace quoi dans le consensus ?", options: ["Les mineurs par des validateurs qui stakent des tokens", "Le hashage par des signatures", "Les nœuds par des serveurs centraux", "Les blocs par des arbres de Merkle"], correctIndex: 0, mindyHint: "PoS = les validateurs mettent en jeu leurs tokens au lieu de brûler de l'électricité." },
-        { type: "info", title: "PoW vs PoS", content: "Proof of Work (Bitcoin) :\n✅ Ultra-sécurisé, battle-tested\n❌ Consomme énormément d'énergie\n\nProof of Stake (Ethereum 2.0, Solana, Cardano) :\n✅ 99% moins énergivore\n✅ Plus de TPS possible\n❌ Moins testé, risques de centralisation\n\nLe débat continue. Les deux ont leur place.", mindyMessage: "Bitcoin ne changera jamais son consensus. ETH l'a fait en 2022. C'est un choix philosophique autant que technique. 🤔" }
+        { type: "scenario", title: "Attaque 51%", scenario: "Tu es développeur d'une petite blockchain avec seulement 50 nœuds de minage. Un pool minier accumule 52% du hashrate. Que fais-tu ?", choices: [{ text: "Ignorer le problème — les attaques 51% sont juste théoriques", isCorrect: false, explanation: "Sur les petites blockchains, les attaques 51% sont réelles. Ethereum Classic en a subi plusieurs en 2020." }, { text: "Migrer vers un mécanisme de consensus hybride PoW/PoS ou implémenter un merge mining", isCorrect: true, explanation: "Le merge mining (ex: Namecoin avec Bitcoin) ou un consensus hybride augmente le coût d'attaque sans nécessiter plus de hashrate propre." }, { text: "Augmenter la taille des blocs pour diluer le pouvoir du pool", isCorrect: false, explanation: "La taille des blocs n'a aucun rapport avec la concentration du hashrate. Ça ne résout pas le problème." }], mindyMessage: "Ethereum Classic s'est fait attaquer 3 fois en 2020. Les petites chains ne plaisantent pas. ⚠️" },
+        { type: "info", title: "PoW vs PoS", content: "Proof of Work (Bitcoin) :\n✅ Ultra-sécurisé, battle-tested\n❌ Consomme énormément d'énergie\n\nProof of Stake (Ethereum 2.0, Solana, Cardano) :\n✅ 99% moins énergivore\n✅ Plus de TPS possible\n❌ Moins testé, risques de centralisation\n\nLe débat continue. Les deux ont leur place.", mindyMessage: "Bitcoin ne changera jamais son consensus. ETH l'a fait en 2022. C'est un choix philosophique autant que technique. 🤔" },
+        { type: "speed_round", title: "Speed Round : Blockchain", pairs: [{ statement: "Chaque bloc contient le hash du bloc précédent.", isTrue: true }, { statement: "La blockchain peut être modifiée par un administrateur central.", isTrue: false }, { statement: "Un nonce est un nombre aléatoire utilisé dans le processus de minage.", isTrue: true }, { statement: "SHA-256 produit une sortie de longueur variable selon l'entrée.", isTrue: false }, { statement: "Un arbre de Merkle permet de vérifier l'intégrité des transactions efficacement.", isTrue: true }, { statement: "La difficulté de minage sur Bitcoin s'ajuste toutes les 2016 blocs (~2 semaines).", isTrue: true }, { statement: "Proof of Stake consomme autant d'énergie que Proof of Work.", isTrue: false }, { statement: "Les nœuds complets stockent l'intégralité de l'historique de la blockchain.", isTrue: true }], timeLimitSeconds: 40, mindyMessage: "La blockchain en speed. Si t'hésites, c'est que tu maîtrises pas encore. ⚡" }
       ]
     }
   },
@@ -2057,16 +3111,22 @@ const lessons = [
     content: {
       steps: [
         { type: "info", title: "Ton Passeport vers le Web3", content: "MetaMask est un wallet non-custodial qui s'installe en extension browser ou app mobile. Il te donne :\n• Une adresse Ethereum (publique)\n• Une clé privée (secrète)\n• La seed phrase (12-24 mots = accès total)\n\nNon-custodial = personne d'autre n'a ta clé privée.", mindyMessage: "Not your keys, not your crypto. MetaMask = tu es ta propre banque. 🔐" },
+        { type: "fill_blank", sentence: "Un wallet non-custodial signifie que ___ détient ta clé privée.", answer: "toi seul", choices: ["toi seul", "MetaMask", "Ethereum Foundation", "ton exchange"], mindyMessage: "Non-custodial = toi seul. Le pouvoir ET la responsabilité." },
         { type: "swipe", statement: "Partager sa seed phrase avec un 'support' MetaMask sur Discord est une bonne pratique.", isCorrect: false, explanation: "JAMAIS. MetaMask ne demandera JAMAIS ta seed phrase. 100% des gens qui demandent ta seed phrase veulent te voler." },
         { type: "quiz", question: "Que se passe-t-il si tu perds ta seed phrase ET ton appareil ?", options: ["MetaMask peut récupérer ton compte", "Tu perds définitivement accès à tes fonds", "Tu peux contacter Ethereum pour récupérer", "Ton wallet est automatiquement sauvegardé en cloud"], correctIndex: 1, mindyHint: "Décentralisé = personne ne peut récupérer pour toi. La seed phrase EST le compte." },
+        { type: "match_pairs", title: "Vocabulaire MetaMask", instruction: "Associe chaque terme à sa fonction.", pairs: [{ left: "Seed phrase", right: "Suite de mots pour restaurer le wallet" }, { left: "Clé privée", right: "Signe les transactions (secrète)" }, { left: "Adresse publique", right: "Identifiant pour recevoir des crypto" }, { left: "Gas", right: "Frais payés aux validateurs" }, { left: "Nonce (tx)", right: "Numéro séquentiel de chaque transaction" }], mindyMessage: "5 termes à connaître. Confonds-les et tu perds tout. Littéralement. 🧠" },
         { type: "swipe", statement: "Une adresse Ethereum est publique — n'importe qui peut voir tes transactions.", isCorrect: true, explanation: "La blockchain est publique. Toutes tes transactions sont visibles sur Etherscan. Pseudonyme ≠ anonyme." },
+        { type: "spot_the_scam", title: "Arnaque MetaMask ou Légitime ?", instruction: "Identifie les arnaques parmi ces messages.", items: [{ content: "🔔 MetaMask Support: Votre wallet a été compromis. Cliquez ici pour vérifier votre seed phrase et sécuriser vos fonds.", isScam: true, explanation: "MetaMask ne contacte JAMAIS les utilisateurs. Ne demande JAMAIS ta seed phrase. C'est du phishing pur." }, { content: "Transaction confirmée : 0.5 ETH envoyé à 0x7a23...f9b1. Vérifiable sur Etherscan.", isScam: false, explanation: "Un message de confirmation standard avec un hash vérifiable. Toujours vérifier l'adresse de destination." }, { content: "🎁 Airdrop exclusif ! Connectez votre MetaMask à www.metamask-claim-free.io pour réclamer 500 USDT gratuits.", isScam: true, explanation: "Domaine suspect (pas metamask.io). Les airdrops légitimes ne demandent jamais de connecter ton wallet sur un site inconnu." }, { content: "Mise à jour MetaMask disponible via le Chrome Web Store officiel.", isScam: false, explanation: "Les mises à jour via le store officiel sont légitimes. Toujours vérifier l'éditeur (ConsenSys)." }], mindyMessage: "Si ça semble trop beau ou trop urgent, c'est une arnaque. Toujours. 🎭" },
         { type: "swipe_sequence", title: "Sécurité MetaMask", instruction: "Bonne pratique ou erreur fatale ?", leftLabel: "❌ Erreur", rightLabel: "✅ Bonne pratique", cards: [
           { id: "hw", content: "Hardware wallet pour les gros montants", correctDirection: "right", explanation: "Ledger/Trezor = clé privée hors ligne. Meilleure sécurité." },
           { id: "share", content: "Partager sa seed sur Google Drive", correctDirection: "left", explanation: "Si Google est compromis ou hacké, tu perds tout." },
           { id: "paper", content: "Écrire sa seed sur papier, stocker en sécurité", correctDirection: "right", explanation: "Low-tech mais efficace. Le papier ne se hack pas." },
           { id: "same", content: "Utiliser le même MetaMask pour DeFi risqué et l'épargne", correctDirection: "left", explanation: "Sépare tes wallets : un pour DeFi/test, un pour l'épargne long terme." }
         ], timeLimit: 35, mindyMessage: "Un wallet piraté, c'est irréversible. Sécurise AVANT d'avoir un problème." },
-        { type: "info", title: "Gas Fees : Comprendre les Frais", content: "Les gas fees sur Ethereum paient les validateurs pour exécuter tes transactions.\n\n• Gas price (Gwei) : prix par unité de calcul\n• Gas limit : max d'unités pour cette tx\n• Frais totaux = Gas price × Gas used\n\n→ Les frais varient selon la congestion. Mardi/mercredi 2-6h UTC = moins cher.", mindyMessage: "50$ pour envoyer 100$, c'est toi en 2021. Les L2 ont résolu ça. Utilise Arbitrum/Optimism. 💸" }
+        { type: "reorder", title: "Installer MetaMask en Sécurité", instruction: "Remets les étapes dans le bon ordre.", words: ["Installer l'extension depuis le Chrome Web Store officiel", "Créer un nouveau wallet et définir un mot de passe", "Noter la seed phrase (12 mots) sur papier", "Vérifier la seed phrase en la re-saisissant", "Stocker le papier dans un endroit sûr (coffre, lieu séparé)"], correctOrder: [0, 1, 2, 3, 4], mindyMessage: "Screenshot de la seed = erreur n°1 des débutants. Papier. Stylo. Coffre. Point." },
+        { type: "info", title: "Gas Fees : Comprendre les Frais", content: "Les gas fees sur Ethereum paient les validateurs pour exécuter tes transactions.\n\n• Gas price (Gwei) : prix par unité de calcul\n• Gas limit : max d'unités pour cette tx\n• Frais totaux = Gas price × Gas used\n\n→ Les frais varient selon la congestion. Mardi/mercredi 2-6h UTC = moins cher.", mindyMessage: "50$ pour envoyer 100$, c'est toi en 2021. Les L2 ont résolu ça. Utilise Arbitrum/Optimism. 💸" },
+        { type: "calculator", title: "Calcul de Gas Fees", description: "Tu envoies des tokens ERC-20. Le gas price est de 25 Gwei et ta transaction utilise 65,000 unités de gas. 1 Gwei = 0.000000001 ETH et 1 ETH = 3,200€. Calcule le coût de la transaction en euros.", variables: [{ name: "Gas price", value: 25 }, { name: "Gas used", value: 65000 }, { name: "Prix ETH", value: 3200 }], answer: 5.20, tolerance: 0.1, unit: "€", mindyMessage: "25 × 65,000 = 1,625,000 Gwei = 0.001625 ETH × 3,200€ = 5.20€. Les maths, c'est la liberté. 🧮" },
+        { type: "speed_round", title: "Speed Round : MetaMask & Web3", pairs: [{ statement: "MetaMask est un wallet custodial géré par ConsenSys.", isTrue: false }, { statement: "Une seed phrase de 12 mots suffit pour restaurer un wallet sur n'importe quel appareil.", isTrue: true }, { statement: "Les gas fees sur Ethereum sont fixes et ne changent jamais.", isTrue: false }, { statement: "On peut ajouter des réseaux personnalisés (Polygon, BSC) dans MetaMask.", isTrue: true }, { statement: "1 Gwei = 0.000000001 ETH.", isTrue: true }, { statement: "MetaMask stocke tes crypto directement dans l'extension.", isTrue: false }, { statement: "Révoquer les approbations de smart contracts est une bonne pratique de sécurité.", isTrue: true }, { statement: "Un wallet MetaMask ne fonctionne que sur Ethereum mainnet.", isTrue: false }], timeLimitSeconds: 40, mindyMessage: "MetaMask n'a plus de secrets pour toi. Ou presque. ⚡" }
       ]
     }
   },
@@ -2079,16 +3139,22 @@ const lessons = [
     content: {
       steps: [
         { type: "info", title: "Le Monde au-delà d'Ethereum", content: "L'écosystème L1 alternatif :\n• Solana (SOL) : ~65,000 TPS, frais < 0.001$, Proof of History\n• Cardano (ADA) : approche académique peer-reviewed, PoS\n• Polkadot (DOT) : interopérabilité multi-chain, parachains\n• Avalanche (AVAX) : 3 sous-réseaux, finality en 1s\n• Near Protocol : sharding, UX simplifiée", mindyMessage: "Ethereum = iPhone. Solana = Android. Les deux ont leur marché. Le reste tente de survivre. 📱" },
+        { type: "match_pairs", title: "Les L1 et leurs Innovations", instruction: "Associe chaque blockchain à sa technologie clé.", pairs: [{ left: "Solana", right: "Proof of History (horodatage cryptographique)" }, { left: "Cardano", right: "Développement formel peer-reviewed (Haskell)" }, { left: "Polkadot", right: "Relay chain + parachains (interopérabilité)" }, { left: "Avalanche", right: "3 sous-réseaux (X-chain, C-chain, P-chain)" }, { left: "Near Protocol", right: "Nightshade sharding dynamique" }], mindyMessage: "Chaque L1 a son truc. Le problème c'est quand ils prétendent TOUT faire mieux. 🤷" },
         { type: "quiz", question: "Quelle est la principale force de Solana ?", options: ["La décentralisation maximale", "La vitesse et les frais ultra-bas", "La compatibilité EVM", "L'anonymat des transactions"], correctIndex: 1, mindyHint: "Solana sacrifie un peu de décentralisation pour des performances extrêmes." },
+        { type: "fill_blank", sentence: "Le mécanisme de consensus unique à Solana s'appelle Proof of ___.", answer: "History", choices: ["History", "Stake", "Work", "Authority"], mindyMessage: "Proof of History = horodatage cryptographique AVANT le consensus. C'est ce qui rend Solana rapide." },
         { type: "swipe", statement: "Solana a subi plusieurs pannes réseau majeures en 2021-2022.", isCorrect: true, explanation: "Vrai — Solana a eu des outages à cause de la surcharge (spam de transactions). Décentralisation vs performance : le trilemme de la blockchain." },
+        { type: "scenario", title: "Choisir sa Blockchain", scenario: "Tu développes une app de paiements instantanés pour des micro-transactions (< 0.10$) avec des millions d'utilisateurs. Quelle L1 choisir ?", choices: [{ text: "Ethereum mainnet — c'est la plus sécurisée et la plus décentralisée", isCorrect: false, explanation: "Ethereum mainnet coûte 1-50$ par transaction. Impossible pour des micro-paiements < 0.10$." }, { text: "Solana — frais < 0.001$, ~65,000 TPS, finality rapide", isCorrect: true, explanation: "Solana est optimisée pour le throughput et les frais ultra-bas. Idéale pour les micro-transactions à haut volume." }, { text: "Bitcoin — la plus ancienne et la plus fiable", isCorrect: false, explanation: "Bitcoin fait ~7 TPS avec des frais souvent > 1$. Pas adapté aux micro-transactions de masse." }], mindyMessage: "Le bon outil pour le bon usage. Pas de maximalisme, juste du pragmatisme. 🔧" },
         { type: "swipe", statement: "Polkadot permet à différentes blockchains de communiquer entre elles nativement.", isCorrect: true, explanation: "C'est le design fondamental de Polkadot — une 'relay chain' centrale connectant des 'parachains' spécialisées." },
+        { type: "reorder", title: "Évolution des L1", instruction: "Classe ces blockchains par date de lancement (plus ancienne en premier).", words: ["Bitcoin (2009)", "Ethereum (2015)", "Cardano (2017)", "Polkadot (2020)", "Solana (2020)"], correctOrder: [0, 1, 2, 3, 4], mindyMessage: "Bitcoin a 15 ans d'avance. Solana est un bébé en comparaison. L'âge compte en crypto. 👶" },
         { type: "swipe_sequence", title: "Quel L1 ?", instruction: "Associe la caractéristique au bon projet.", leftLabel: "Ethereum/L1 classique", rightLabel: "Solana/Alt L1", cards: [
           { id: "fast", content: "65,000 TPS natifs", correctDirection: "right", explanation: "Solana — throughput extrême via Proof of History" },
           { id: "evm", content: "Compatible EVM (Solidity)", correctDirection: "left", explanation: "Ethereum et ses forks (BSC, Polygon PoS...)" },
           { id: "rust", content: "Programmes en Rust/C", correctDirection: "right", explanation: "Solana — pas de Solidity, écosystème différent" },
           { id: "peer", content: "Développement académique peer-reviewed", correctDirection: "left", explanation: "Cardano — Haskell, papers scientifiques avant tout" }
         ], timeLimit: 40, mindyMessage: "Chaque L1 a son trade-off. Apprends-les, ne fais pas confiance aux maximalistes." },
-        { type: "info", title: "Le Trilemme de la Blockchain", content: "On ne peut avoir QUE DEUX des trois à la fois :\n• Sécurité\n• Scalabilité\n• Décentralisation\n\nBitcoin : Sécurité + Décentralisation (sacrifice scalabilité)\nSolana : Sécurité + Scalabilité (sacrifice décentralisation)\nEthereum + L2 : vise les 3 via la hiérarchie L1/L2\n\n→ Il n'y a pas de solution parfaite. Contexte d'usage = choix de chain.", mindyMessage: "Personne ne résout le trilemme. Tous mentent en disant le contraire. 🎭" }
+        { type: "calculator", title: "Coût Comparé des Transactions", description: "Tu fais 100 transactions par mois. Sur Ethereum, chaque tx coûte en moyenne 5€. Sur Solana, chaque tx coûte 0.001€. Combien économises-tu par an en utilisant Solana ?", variables: [{ name: "Tx par mois", value: 100 }, { name: "Coût ETH par tx", value: 5 }, { name: "Coût SOL par tx", value: 0.001 }], answer: 5999.88, tolerance: 1, unit: "€", mindyMessage: "Presque 6,000€ d'économie par an. Ça met en perspective le choix de L1. 💸" },
+        { type: "info", title: "Le Trilemme de la Blockchain", content: "On ne peut avoir QUE DEUX des trois à la fois :\n• Sécurité\n• Scalabilité\n• Décentralisation\n\nBitcoin : Sécurité + Décentralisation (sacrifice scalabilité)\nSolana : Sécurité + Scalabilité (sacrifice décentralisation)\nEthereum + L2 : vise les 3 via la hiérarchie L1/L2\n\n→ Il n'y a pas de solution parfaite. Contexte d'usage = choix de chain.", mindyMessage: "Personne ne résout le trilemme. Tous mentent en disant le contraire. 🎭" },
+        { type: "speed_round", title: "Speed Round : Altcoins & L1", pairs: [{ statement: "Solana utilise le langage Rust pour ses smart contracts.", isTrue: true }, { statement: "Cardano a été fondé par Vitalik Buterin.", isTrue: false }, { statement: "Avalanche propose une finality en moins d'une seconde.", isTrue: true }, { statement: "Polkadot utilise des 'parachains' pour connecter des blockchains spécialisées.", isTrue: true }, { statement: "Solana est aussi décentralisée que Bitcoin.", isTrue: false }, { statement: "Near Protocol utilise le sharding pour scaler.", isTrue: true }, { statement: "Cardano utilise le Proof of Work comme Bitcoin.", isTrue: false }, { statement: "Le trilemme de la blockchain a été formulé par Vitalik Buterin.", isTrue: true }], timeLimitSeconds: 40, mindyMessage: "8 affirmations, 40 secondes. Les vrais connaisseurs n'hésitent pas. 🏎️" }
       ]
     }
   },
@@ -2101,11 +3167,26 @@ const lessons = [
     content: {
       steps: [
         { type: "info", title: "Lire un Graphique de Prix", content: "L'analyse technique (TA) utilise les graphiques de prix pour anticiper les mouvements futurs.\n\nÉléments clés :\n• Chandelier japonais (candle) : open, high, low, close\n• Volume : nombre de transactions dans la période\n• Support : niveau où le prix a tendance à rebondir\n• Résistance : niveau où le prix a tendance à bloquer\n• Tendance (trend) : direction dominante", mindyMessage: "Les graphiques sont l'histoire du marché. Les patterns se répètent parce que les humains se répètent. 📊" },
+        { type: "fill_blank", sentence: "Un chandelier japonais montre 4 données : Open, High, Low et ___.", answer: "Close", choices: ["Close", "Volume", "Spread", "Average"], mindyMessage: "OHLC. Quatre lettres, quatre prix, un chandelier. La base de tout. 🕯️" },
         { type: "quiz", question: "Un chandelier vert (bullish) signifie que :", options: ["Le prix a baissé sur la période", "Le prix de clôture est supérieur au prix d'ouverture", "Le volume est élevé", "Il n'y a pas de transactions"], correctIndex: 1, mindyHint: "Vert = close > open. Rouge = close < open." },
+        { type: "match_pairs", title: "Vocabulaire de l'Analyse Technique", instruction: "Associe chaque terme à sa définition.", pairs: [{ left: "Support", right: "Niveau de prix où la demande freine la baisse" }, { left: "Résistance", right: "Niveau de prix où l'offre freine la hausse" }, { left: "Breakout", right: "Cassure d'un niveau clé avec volume" }, { left: "Pullback", right: "Retour temporaire après un breakout" }, { left: "Mèche (wick)", right: "Extrêmes de prix au-delà du corps du chandelier" }], mindyMessage: "Le vocabulaire de la TA, c'est comme l'alphabet. Sans lui, tu lis rien. 📖" },
         { type: "swipe", statement: "Un support cassé à la baisse devient généralement une résistance.", isCorrect: true, explanation: "C'est le concept de 'polarity change'. Un support brisé devient résistance parce que les anciens acheteurs veulent récupérer leur mise." },
+        { type: "reorder", title: "Identifier une Tendance Haussière", instruction: "Remets les étapes d'identification dans l'ordre.", words: ["Observer des creux de plus en plus hauts (higher lows)", "Confirmer avec des sommets de plus en plus hauts (higher highs)", "Vérifier que le volume accompagne la hausse", "Tracer une trendline reliant les creux", "Chercher un point d'entrée sur un pullback vers la trendline"], correctOrder: [0, 1, 2, 3, 4], mindyMessage: "Higher highs + higher lows = tendance haussière. Aussi simple que ça. 📈" },
         { type: "swipe", statement: "L'analyse technique est une science exacte qui prédit l'avenir avec certitude.", isCorrect: false, explanation: "Faux — la TA donne des probabilités, pas des certitudes. Toujours associer à un risk management (stop-loss)." },
+        { type: "price_prediction", question: "ETH forme un support solide à 2,800$ et teste une résistance à 3,100$. Analyse les chandeliers et prédit le prochain mouvement.", candles: [
+          { open: 2820, high: 2950, low: 2790, close: 2930 },
+          { open: 2930, high: 3050, low: 2900, close: 2980 },
+          { open: 2980, high: 3090, low: 2960, close: 3070 },
+          { open: 3070, high: 3100, low: 2990, close: 3010 },
+          { open: 3010, high: 3060, low: 2840, close: 2860 },
+          { open: 2860, high: 2920, low: 2800, close: 2900 },
+          { open: 2900, high: 3020, low: 2880, close: 3000 },
+          { open: 3000, high: 3110, low: 2980, close: 3095 }
+        ], correctAnswer: "up", explanation: "Le prix a rebondi sur le support 2,800$ avec des chandeliers haussiers de plus en plus grands. Le test de résistance à 3,100$ se fait avec un momentum croissant — breakout probable.", mindyMessage: "Support solide + chandeliers haussiers croissants = le breakout se prépare. Patience et confirmation. 🎯" },
         { type: "quiz", question: "Un pattern 'Double Top' indique généralement :", options: ["Une continuation haussière forte", "Un renversement baissier probable", "Une consolidation latérale", "Une opportunité d'achat immédiate"], correctIndex: 1, mindyHint: "Double Top = le prix a essayé de casser la résistance 2 fois et a échoué. Signal baissier." },
-        { type: "info", title: "Patterns Essentiels à Connaître", content: "Patterns de continuation :\n• Flag (drapeau) : consolidation courte avant continuation\n• Triangle symétrique : convergence, breakout possible\n\nPatterns de renversement :\n• Head & Shoulders : tête entre deux épaules = baisse probable\n• Double Top/Bottom : test échoué = retournement\n\nRègle : TOUJOURS attendre la confirmation du breakout avant d'entrer.", mindyMessage: "Les patterns c'est bien. Le risk management c'est mieux. Sans stop-loss, la TA devient du gambling. 🎲" }
+        { type: "scenario", title: "Lire le Graphique", scenario: "Tu analyses le graphique daily de BTC. Le prix a formé un triangle descendant avec un support à 40,000$. Le volume diminue progressivement. Le RSI est à 38.", choices: [{ text: "Acheter immédiatement — le support tient depuis 3 semaines", isCorrect: false, explanation: "Un triangle descendant est un pattern baissier avec compression. Acheter sans confirmation est risqué, surtout avec un volume décroissant." }, { text: "Attendre le breakout (hausse ou baisse) avec confirmation par le volume avant d'agir", isCorrect: true, explanation: "Triangle descendant + volume décroissant = compression. Attendre le breakout confirmé par un pic de volume est la stratégie optimale." }, { text: "Shorter immédiatement — le triangle descendant est toujours baissier", isCorrect: false, explanation: "Le triangle descendant a un biais baissier, mais les faux breakouts existent. Attendre la confirmation est essentiel." }], mindyMessage: "Le triangle comprime l'énergie. Quand il casse, c'est violent. Sois prêt, pas pressé. ⚡" },
+        { type: "info", title: "Patterns Essentiels à Connaître", content: "Patterns de continuation :\n• Flag (drapeau) : consolidation courte avant continuation\n• Triangle symétrique : convergence, breakout possible\n\nPatterns de renversement :\n• Head & Shoulders : tête entre deux épaules = baisse probable\n• Double Top/Bottom : test échoué = retournement\n\nRègle : TOUJOURS attendre la confirmation du breakout avant d'entrer.", mindyMessage: "Les patterns c'est bien. Le risk management c'est mieux. Sans stop-loss, la TA devient du gambling. 🎲" },
+        { type: "speed_round", title: "Speed Round : Analyse Technique", pairs: [{ statement: "Un chandelier Doji signale une indécision du marché.", isTrue: true }, { statement: "Le volume est inutile en analyse technique — seul le prix compte.", isTrue: false }, { statement: "Un Head & Shoulders est un pattern de retournement baissier.", isTrue: true }, { statement: "Un gap (trou de cotation) est toujours comblé.", isTrue: false }, { statement: "Les timeframes courts (1m, 5m) sont les plus fiables pour l'AT.", isTrue: false }, { statement: "Un marteau (hammer) en bas de tendance est un signal haussier potentiel.", isTrue: true }, { statement: "Un flag haussier est un pattern de continuation.", isTrue: true }, { statement: "Trader sans stop-loss est acceptable si on a confiance dans son analyse.", isTrue: false }], timeLimitSeconds: 40, mindyMessage: "L'AT en rafale. Si tu galères ici, relis la leçon. 🔄" }
       ]
     }
   },
@@ -2118,11 +3199,25 @@ const lessons = [
     content: {
       steps: [
         { type: "info", title: "Les Oscillateurs : Mesurer la Force du Mouvement", content: "Les indicateurs techniques mesurent l'élan (momentum) et les conditions de surachat/survente :\n\n• RSI (Relative Strength Index) : 0-100, survendu <30, suracheté >70\n• MACD : convergence/divergence de 2 moyennes mobiles\n• Bollinger Bands : volatilité autour d'une moyenne\n• Volume Profile : où se concentrent les échanges", mindyMessage: "Un indicateur seul = bruit. Deux indicateurs convergents = signal. Trois = conviction. 📡" },
+        { type: "fill_blank", sentence: "Le RSI oscille entre 0 et 100. La zone de surachat commence au-dessus de ___.", answer: "70", choices: ["50", "60", "70", "80"], mindyMessage: "70 = surachat, 30 = survente. Les deux zones où il faut ouvrir les yeux. 👀" },
         { type: "quiz", question: "Un RSI à 80 signifie :", options: ["Le marché est survendu — acheter", "Le marché est suracheté — attention", "La tendance est neutre", "Le volume est au maximum"], correctIndex: 1, mindyHint: "RSI > 70 = suracheté. Attention, pas une garantie de baisse — le RSI peut rester élevé longtemps." },
+        { type: "match_pairs", title: "Indicateurs et leurs Fonctions", instruction: "Associe chaque indicateur à ce qu'il mesure.", pairs: [{ left: "RSI", right: "Conditions de surachat/survente (0-100)" }, { left: "MACD", right: "Convergence/divergence de moyennes mobiles" }, { left: "Bollinger Bands", right: "Volatilité autour d'une moyenne mobile" }, { left: "Volume Profile", right: "Zones de prix avec le plus d'échanges" }], mindyMessage: "Chaque indicateur a son rôle. Les confondre = mal interpréter le marché. 🔧" },
         { type: "swipe", statement: "Le MACD est utile pour identifier les changements de tendance via les croisements.", isCorrect: true, explanation: "Croisement MACD au-dessus de sa signal line = momentum haussier. Au-dessous = baissier. Plus fiable sur les timeframes élevés." },
+        { type: "price_prediction", question: "BTC est en tendance haussière mais le RSI affiche 78 avec une divergence baissière. Le MACD commence à se retourner. Que va-t-il se passer ?", candles: [
+          { open: 62000, high: 64500, low: 61800, close: 64200 },
+          { open: 64200, high: 66800, low: 63900, close: 66500 },
+          { open: 66500, high: 68200, low: 66000, close: 67800 },
+          { open: 67800, high: 69500, low: 67200, close: 68900 },
+          { open: 68900, high: 70100, low: 68400, close: 69200 },
+          { open: 69200, high: 70800, low: 68800, close: 69000 },
+          { open: 69000, high: 69800, low: 67500, close: 68100 },
+          { open: 68100, high: 68900, low: 66800, close: 67200 }
+        ], correctAnswer: "down", explanation: "RSI en surachat (78) + divergence baissière (prix monte, RSI baisse) + MACD qui se retourne = signal de correction imminente. Triple confluence baissière.", mindyMessage: "Divergence RSI + MACD retournement = le signal le plus puissant en TA. Respecte-le. 📉" },
         { type: "swipe", statement: "Une divergence RSI baissière = le prix fait un nouveau high mais le RSI non.", isCorrect: true, explanation: "Exactement. La divergence signale un affaiblissement du momentum — souvent un signe avant-coureur de retournement." },
+        { type: "calculator", title: "Calcul du RSI Simplifié", description: "Sur les 14 dernières périodes, la moyenne des gains est de 2.5% et la moyenne des pertes est de 1.5%. Calcule le RSI. Formule : RSI = 100 - (100 / (1 + RS)), où RS = moyenne gains / moyenne pertes.", variables: [{ name: "Moyenne des gains", value: 2.5 }, { name: "Moyenne des pertes", value: 1.5 }], answer: 62.5, tolerance: 0.5, unit: "", mindyMessage: "RS = 2.5/1.5 = 1.667. RSI = 100 - (100/2.667) = 62.5. Zone neutre-haussière. 🧮" },
         { type: "quiz", question: "Sur quelle timeframe les indicateurs sont-ils le plus fiables ?", options: ["1 minute", "5 minutes", "Daily/Weekly", "Peu importe"], correctIndex: 2, mindyHint: "Plus le timeframe est élevé, moins il y a de faux signaux. Daily et Weekly = signaux structurels." },
-        { type: "info", title: "Stratégie de Combinaison", content: "Setup fiable :\n1. Trend-following : MA20 > MA50 (tendance haussière)\n2. RSI entre 40-60 (pas en zone extrême)\n3. MACD croisement haussier\n4. Volume en hausse sur la cassure\n\nPlus de confluences = signal plus fort. Entrée seulement si 3/4 conditions remplies.\n\n→ Toujours définir son invalidation (stop-loss) AVANT d'entrer.", mindyMessage: "Les meilleurs traders cherchent des confluences, pas des justifications. Il y a une différence. 🎯" }
+        { type: "info", title: "Stratégie de Combinaison", content: "Setup fiable :\n1. Trend-following : MA20 > MA50 (tendance haussière)\n2. RSI entre 40-60 (pas en zone extrême)\n3. MACD croisement haussier\n4. Volume en hausse sur la cassure\n\nPlus de confluences = signal plus fort. Entrée seulement si 3/4 conditions remplies.\n\n→ Toujours définir son invalidation (stop-loss) AVANT d'entrer.", mindyMessage: "Les meilleurs traders cherchent des confluences, pas des justifications. Il y a une différence. 🎯" },
+        { type: "speed_round", title: "Speed Round : Indicateurs Techniques", pairs: [{ statement: "Le RSI standard utilise une période de 14.", isTrue: true }, { statement: "Le MACD peut être utilisé comme indicateur de tendance ET de momentum.", isTrue: true }, { statement: "Les Bollinger Bands s'élargissent quand la volatilité diminue.", isTrue: false }, { statement: "Une divergence haussière = le prix fait un nouveau low mais le RSI non.", isTrue: true }, { statement: "Le MACD est un indicateur avancé (leading) qui prédit les mouvements.", isTrue: false }, { statement: "Combiner RSI + MACD + Volume donne un signal plus fiable qu'un seul indicateur.", isTrue: true }], timeLimitSeconds: 35, mindyMessage: "6 questions pour savoir si tu maîtrises vraiment tes indicateurs. 🎯" }
       ]
     }
   },
@@ -2135,11 +3230,17 @@ const lessons = [
     content: {
       steps: [
         { type: "info", title: "L'État Veut sa Part", content: "En France depuis 2019 :\n• Flat tax de 30% sur les plus-values crypto (12.8% IR + 17.2% PS)\n• Imposition UNIQUEMENT lors de la conversion en euros (ou autre monnaie fiat)\n• Crypto vers crypto = pas d'imposition\n• Seuil d'exonération : moins de 305€ de plus-value par an\n\n→ Tu peux swapper BTC contre ETH sans payer d'impôts.", mindyMessage: "Crypto → crypto = pas d'impôt. Crypto → euros = flat tax 30%. Retiens ça et évite les surprises. 💶" },
+        { type: "fill_blank", sentence: "La flat tax crypto en France est de ___%, composée de 12.8% d'IR et 17.2% de prélèvements sociaux.", answer: "30", choices: ["20", "25", "30", "35"], mindyMessage: "30% = le PFU (Prélèvement Forfaitaire Unique). Simple, brutal, efficace. 💸" },
         { type: "quiz", question: "Tu achètes 1 BTC à 20,000€ et le revends à 30,000€. Combien d'impôts ?", options: ["0€ (exonéré)", "3,000€ (30% de 10,000€)", "1,280€ (12.8% IR)", "10,000€"], correctIndex: 1, mindyHint: "Plus-value = 10,000€. Flat tax 30% = 3,000€." },
+        { type: "calculator", title: "Calcul de Plus-Value Crypto", description: "Tu as acheté 2 ETH à 1,800€ l'unité. Tu revends tout quand ETH vaut 3,200€. Calcule ta plus-value imposable, puis l'impôt dû (flat tax 30%).", variables: [{ name: "Prix d'achat unitaire", value: 1800 }, { name: "Prix de vente unitaire", value: 3200 }, { name: "Quantité", value: 2 }, { name: "Flat tax", value: 30 }], answer: 840, tolerance: 1, unit: "€", mindyMessage: "Plus-value = (3200-1800) × 2 = 2,800€. Impôt = 2,800 × 30% = 840€. L'État te remercie. 🏛️" },
         { type: "swipe", statement: "Échanger BTC contre ETH sur un DEX est un événement taxable en France.", isCorrect: false, explanation: "Crypto vers crypto = PAS un fait générateur d'imposition selon l'article 150 VH bis du CGI. Seul le retrait en euros l'est." },
+        { type: "scenario", title: "Optimisation Fiscale Crypto", scenario: "Tu as 15,000€ de plus-value crypto cette année. Tu veux minimiser ton imposition légalement. Quelle stratégie adopter ?", choices: [{ text: "Ne pas déclarer et espérer que le fisc ne remarque pas", isCorrect: false, explanation: "Les exchanges sont tenus de transmettre les données aux autorités fiscales. Le risque de redressement + pénalités est énorme." }, { text: "Convertir en stablecoins plutôt qu'en euros pour repousser l'imposition", isCorrect: true, explanation: "Crypto vers crypto (y compris stablecoins) n'est pas un fait générateur. Tu cristallises ta valeur en USDC/USDT sans déclencher d'impôt. Tu paieras quand tu sortiras en euros." }, { text: "Transférer sur un exchange étranger pour éviter la fiscalité française", isCorrect: false, explanation: "Les résidents fiscaux français sont imposables sur leurs revenus mondiaux. De plus, ne pas déclarer un compte étranger = amende de 750€ à 1,500€ par compte." }], mindyMessage: "Optimiser ≠ frauder. Les stablecoins sont ton meilleur ami fiscal. Légalement. 🧠" },
         { type: "swipe", statement: "Le staking est considéré comme un revenu et non une plus-value.", isCorrect: true, explanation: "Les rewards de staking sont traités comme des bénéfices non commerciaux (BNC) et imposés selon ta tranche marginale, pas la flat tax." },
+        { type: "match_pairs", title: "Fiscalité Crypto : Termes Clés", instruction: "Associe chaque situation à son traitement fiscal.", pairs: [{ left: "Vente crypto → euros", right: "Flat tax 30% sur la plus-value" }, { left: "Swap crypto → crypto", right: "Pas d'imposition (pas de fait générateur)" }, { left: "Rewards de staking", right: "BNC (Bénéfices Non Commerciaux)" }, { left: "Mining régulier", right: "BIC (Bénéfices Industriels et Commerciaux)" }, { left: "Airdrop gratuit", right: "Imposable à la revente en fiat uniquement" }], mindyMessage: "Chaque opération a son régime. Confonds-les et le fisc te corrigera. Avec intérêts. 📋" },
         { type: "quiz", question: "Quel formulaire utiliser pour déclarer ses plus-values crypto en France ?", options: ["Formulaire 2042", "Formulaire 2086", "Formulaire 2074", "Pas de déclaration nécessaire"], correctIndex: 1, mindyHint: "Formulaire 2086 = déclaration spécifique aux actifs numériques. Obligatoire si tu as des plus-values." },
-        { type: "info", title: "Outils et Astuces", content: "• Koinly, Waltio, CoinTracking : logiciels de suivi fiscal crypto\n• Déclaration obligatoire de tous les comptes étrangers (CEX étrangers = formulaire 3916-bis)\n• Conservation des historiques : 10 ans\n• Pertes : déductibles UNIQUEMENT des plus-values de la même année (pas de report)\n\n→ Déclare dès la première année, même à 0. Évite les redressements.", mindyMessage: "La crypto t'a enrichi ? Bien. L'État le sait aussi. Déclare, c'est plus simple que de stresser. 🧾" }
+        { type: "reorder", title: "Déclaration Crypto : Les Étapes", instruction: "Remets les étapes de la déclaration dans l'ordre.", words: ["Collecter tous les historiques de transactions (CEX, DEX, wallets)", "Calculer les plus-values avec un outil (Waltio, Koinly)", "Remplir le formulaire 2086 (plus-values crypto)", "Déclarer les comptes étrangers sur le formulaire 3916-bis", "Vérifier et soumettre la déclaration avant la date limite"], correctOrder: [0, 1, 2, 3, 4], mindyMessage: "La déclaration crypto, c'est 5 étapes. Pas 0. Fais-le ou le fisc le fera pour toi. 📝" },
+        { type: "info", title: "Outils et Astuces", content: "• Koinly, Waltio, CoinTracking : logiciels de suivi fiscal crypto\n• Déclaration obligatoire de tous les comptes étrangers (CEX étrangers = formulaire 3916-bis)\n• Conservation des historiques : 10 ans\n• Pertes : déductibles UNIQUEMENT des plus-values de la même année (pas de report)\n\n→ Déclare dès la première année, même à 0. Évite les redressements.", mindyMessage: "La crypto t'a enrichi ? Bien. L'État le sait aussi. Déclare, c'est plus simple que de stresser. 🧾" },
+        { type: "speed_round", title: "Speed Round : Fiscalité Crypto France", pairs: [{ statement: "La flat tax crypto en France est de 30%.", isTrue: true }, { statement: "Les plus-values crypto inférieures à 305€/an sont exonérées.", isTrue: true }, { statement: "Échanger BTC contre un stablecoin (USDT) déclenche l'imposition.", isTrue: false }, { statement: "Il faut déclarer ses comptes sur les exchanges étrangers (Binance, Kraken).", isTrue: true }, { statement: "Les pertes crypto sont reportables sur les années suivantes.", isTrue: false }, { statement: "Le minage régulier relève du régime BIC, pas de la flat tax.", isTrue: true }, { statement: "Acheter des crypto avec des euros est un événement taxable.", isTrue: false }, { statement: "Les NFTs suivent le même régime fiscal que les cryptomonnaies.", isTrue: true }], timeLimitSeconds: 40, mindyMessage: "Fiscal et crypto en 40 secondes. Le fisc serait fier. Ou pas. 🏛️" }
       ]
     }
   },
@@ -2152,11 +3253,17 @@ const lessons = [
     content: {
       steps: [
         { type: "info", title: "Sécurité Maximale : La Clé Hors-Ligne", content: "Un hardware wallet (Ledger, Trezor, Coldcard) stocke ta clé privée hors-ligne dans un chip sécurisé. Pour signer une transaction, l'appareil génère la signature EN INTERNE — ta clé ne quitte jamais le device.\n\nNiveaux de sécurité :\n🔴 Exchange (hot) → 🟡 MetaMask (hot) → 🟢 Ledger/Trezor → 🔵 Coldcard (air-gapped)", mindyMessage: "Mt. Gox. FTX. Celsius. Si tu laisses tes crypto sur un exchange, c'est une question de quand, pas si. 📱" },
+        { type: "fill_blank", sentence: "Un hardware wallet génère la signature cryptographique ___ — la clé privée ne quitte jamais l'appareil.", answer: "en interne", choices: ["en interne", "dans le cloud", "via le navigateur", "sur le serveur"], mindyMessage: "La clé privée ne sort JAMAIS du device. C'est le principe fondamental. 🔐" },
         { type: "quiz", question: "Que se passe-t-il si ton Ledger est volé ou perdu ?", options: ["Tes crypto sont perdues", "Tu peux récupérer avec ta seed phrase sur un nouveau device", "Ledger SAS peut récupérer tes fonds", "Les fonds sont bloqués 30 jours"], correctIndex: 1, mindyHint: "La seed phrase = accès universel. Device perdu ≠ fonds perdus si tu as ta seed." },
+        { type: "match_pairs", title: "Hardware Wallets : Comparatif", instruction: "Associe chaque hardware wallet à sa caractéristique principale.", pairs: [{ left: "Ledger Nano X", right: "Bluetooth + chip sécurisé (Secure Element)" }, { left: "Trezor Model T", right: "Open-source intégral, écran tactile" }, { left: "Coldcard Mk4", right: "Air-gapped total, Bitcoin only" }, { left: "GridPlus Lattice1", right: "Écran e-ink, stockage de smart contracts" }], mindyMessage: "Chaque wallet a sa philosophie. Ledger = polyvalent. Coldcard = paranoïa maximale. 🛡️" },
         { type: "swipe", statement: "Il est recommandé de stocker sa seed phrase dans un gestionnaire de mots de passe en ligne.", isCorrect: false, explanation: "JAMAIS en ligne. Seed sur papier ou sur plaque métallique (Cryptosteel), dans un endroit physiquement sécurisé." },
+        { type: "spot_the_scam", title: "Arnaques Hardware Wallet", instruction: "Identifie les arnaques liées aux hardware wallets.", items: [{ content: "Un Ledger neuf vendu sur Amazon avec la seed phrase déjà imprimée dans la boîte.", isScam: true, explanation: "Un Ledger légitime te demande de GÉNÉRER ta propre seed phrase. Si elle est pré-remplie, l'appareil est compromis — le vendeur connaît ta seed." }, { content: "Mise à jour firmware disponible via l'application Ledger Live officielle.", isScam: false, explanation: "Les mises à jour via Ledger Live sont légitimes. Toujours vérifier que c'est bien l'app officielle." }, { content: "Email de 'Ledger Support' demandant de saisir ta seed phrase pour vérifier ton solde après une fuite de données.", isScam: true, explanation: "Ledger ne demandera JAMAIS ta seed phrase par email, SMS ou téléphone. La fuite de données de 2020 a généré des vagues de phishing." }, { content: "Acheter un Ledger directement sur ledger.com avec livraison scellée.", isScam: false, explanation: "Le seul canal sûr. Vérifier le sceau anti-ouverture à la réception." }], mindyMessage: "La fuite de données Ledger 2020 a touché 270,000 clients. Les scammers sont encore actifs. Vigilance. ⚠️" },
         { type: "swipe", statement: "Un hardware wallet peut être utilisé avec plusieurs applications (MetaMask, Rabby, etc.).", isCorrect: true, explanation: "Le hardware wallet signe les transactions — compatible avec n'importe quelle interface. C'est son rôle." },
+        { type: "scenario", title: "Sécuriser un Gros Portefeuille", scenario: "Tu as accumulé 80,000€ en crypto. Tu utilises un seul Ledger Nano S. Ta seed phrase est écrite sur un papier dans le tiroir de ton bureau. Que dois-tu améliorer en priorité ?", choices: [{ text: "Rien — un Ledger suffit amplement pour n'importe quel montant", isCorrect: false, explanation: "Un seul point de défaillance pour 80k€ est inacceptable. Perte, vol ou dégradation du papier = tout perdu." }, { text: "Passer en multi-sig (2/3) et graver la seed sur plaque métallique dans deux lieux séparés", isCorrect: true, explanation: "Multi-sig = aucune clé unique ne compromet le portefeuille. Plaque métallique = résiste au feu et à l'eau. Lieux séparés = protection contre le vol/catastrophe." }, { text: "Ajouter un second Ledger avec la même seed phrase comme backup", isCorrect: false, explanation: "Deux Ledger avec la même seed = même vulnérabilité. Tu dupliques le risque sans l'atténuer." }], mindyMessage: "80k€ méritent un setup de paranoïaque. Multi-sig + métal + lieux séparés. Non négociable. 🔒" },
         { type: "reorder", title: "Setup sécurisé Ledger", instruction: "Ordre correct pour un setup sécurisé.", words: ["Connecter à MetaMask comme signer", "Commander sur ledger.com uniquement (pas Amazon)", "Générer la seed phrase en mode avion", "Vérifier l'intégrité du packaging", "Sauvegarder la seed phrase hors-ligne"], correctOrder: [1, 3, 2, 4, 0], mindyMessage: "Commander d'occasion ou sur Amazon = risque de compromission. Jamais." },
-        { type: "info", title: "Multi-Sig & Stratégies Avancées", content: "Pour les grosses sommes :\n• Multi-signature (multi-sig) : 2/3 clés pour signer = compromission d'une clé ne suffit pas\n• Gnosis Safe : multi-sig smart contract sur Ethereum\n• Air-gapped signing : signer des transactions sur un appareil jamais connecté à internet (Coldcard + PSBT)\n\n→ Si tu as > 50k€ en crypto, multi-sig est non-négociable.", mindyMessage: "50k€+ en crypto avec juste un Ledger ? Un accident de voiture et tout est perdu. Multi-sig. 🔒" }
+        { type: "quiz", question: "Qu'est-ce que le 'air-gapped signing' ?", options: ["Signer des transactions sur un appareil connecté au Wi-Fi sécurisé", "Signer des transactions sur un appareil qui n'a JAMAIS été connecté à internet", "Un protocole de chiffrement pour les exchanges", "Une méthode de récupération de seed phrase"], correctIndex: 1, mindyHint: "Air-gapped = isolé de l'air (réseau). Coldcard utilise des fichiers PSBT sur carte SD pour signer sans connexion." },
+        { type: "info", title: "Multi-Sig & Stratégies Avancées", content: "Pour les grosses sommes :\n• Multi-signature (multi-sig) : 2/3 clés pour signer = compromission d'une clé ne suffit pas\n• Gnosis Safe : multi-sig smart contract sur Ethereum\n• Air-gapped signing : signer des transactions sur un appareil jamais connecté à internet (Coldcard + PSBT)\n\n→ Si tu as > 50k€ en crypto, multi-sig est non-négociable.", mindyMessage: "50k€+ en crypto avec juste un Ledger ? Un accident de voiture et tout est perdu. Multi-sig. 🔒" },
+        { type: "speed_round", title: "Speed Round : Hardware Wallets", pairs: [{ statement: "Un hardware wallet stocke la clé privée dans un chip sécurisé hors-ligne.", isTrue: true }, { statement: "Si ton Ledger est volé, le voleur peut accéder à tes crypto sans ton PIN.", isTrue: false }, { statement: "Cryptosteel est une solution métallique pour sauvegarder sa seed phrase.", isTrue: true }, { statement: "Un hardware wallet ne fonctionne qu'avec une seule blockchain.", isTrue: false }, { statement: "Le multi-sig nécessite plusieurs clés pour signer une transaction.", isTrue: true }, { statement: "Acheter un Ledger d'occasion sur eBay est une pratique sûre.", isTrue: false }, { statement: "Coldcard est un hardware wallet spécialisé Bitcoin avec air-gap.", isTrue: true }, { statement: "La passphrase (25ème mot) ajoute une couche de sécurité à la seed.", isTrue: true }], timeLimitSeconds: 40, mindyMessage: "La sécurité, ça ne s'improvise pas. 8 questions pour le prouver. 🔐" }
       ]
     }
   },
@@ -2169,16 +3276,22 @@ const lessons = [
     content: {
       steps: [
         { type: "info", title: "Pourquoi les Investisseurs Prennent de Mauvaises Décisions", content: "La finance comportementale étudie comment les biais cognitifs et émotionnels influencent nos décisions financières. Ces biais sont universels — même les professionnels n'y échappent pas.\n\nEnnemis principaux :\n• Biais de confirmation : chercher des infos qui confirment nos croyances\n• Loss aversion : la douleur d'une perte est 2x celle du plaisir d'un gain\n• FOMO : Fear Of Missing Out\n• Dunning-Kruger : incompétence inconsciente", mindyMessage: "Tu penses être rationnel en finance ? Daniel Kahneman a prouvé le contraire. Nobel d'économie. 🧠" },
+        { type: "fill_blank", sentence: "Le ___ est le biais qui pousse à chercher uniquement des informations qui confirment nos croyances existantes.", answer: "biais de confirmation", choices: ["biais de confirmation", "effet de halo", "biais de récence", "effet Dunning-Kruger"], mindyMessage: "Tu détiens du BTC ? Tu vas lire que des articles bullish. C'est le biais de confirmation. 🔄" },
         { type: "quiz", question: "Selon Kahneman & Tversky, perdre 1000€ crée une souffrance équivalente à quel gain ?", options: ["500€", "1000€", "2000€", "5000€"], correctIndex: 2, mindyHint: "Loss aversion = la perte est 2x plus intense que le gain équivalent en termes de ressenti." },
+        { type: "scenario", title: "Gérer la Panique", scenario: "Ton portefeuille crypto perd 35% en une semaine suite à un crash marché. Ton instinct te dit de tout vendre. Que fais-tu ?", choices: [{ text: "Tout vendre immédiatement pour éviter de perdre plus", isCorrect: false, explanation: "Vendre en panique = cristalliser ses pertes au pire moment. Historiquement, les plus gros rebonds suivent les plus gros crashes." }, { text: "Revenir à son plan initial : si rien n'a changé fondamentalement, maintenir la position et même DCA", isCorrect: true, explanation: "Un plan prédéfini supprime l'émotion. Si les fondamentaux sont intacts, un crash = une opportunité de renforcer à prix réduit." }, { text: "Mettre un levier x10 pour 'récupérer' les pertes plus vite", isCorrect: false, explanation: "C'est du revenge trading avec levier — la combinaison la plus destructrice en finance. Chemin direct vers la liquidation." }], mindyMessage: "Warren Buffett : 'Be fearful when others are greedy, and greedy when others are fearful.' 🧘" },
         { type: "swipe", statement: "Vendre immédiatement quand un investissement perd 5% est une décision rationnelle.", isCorrect: false, explanation: "C'est souvent de la loss aversion à l'œuvre. Vendre à -5% puis regarder le rebond à +30%... c'est le scénario classique du retail." },
+        { type: "match_pairs", title: "Les Biais Cognitifs en Finance", instruction: "Associe chaque biais à son mécanisme.", pairs: [{ left: "Loss aversion", right: "La douleur d'une perte > plaisir d'un gain équivalent" }, { left: "FOMO", right: "Acheter sous pression sociale quand 'tout le monde gagne'" }, { left: "Anchoring", right: "Se fixer sur le prix d'achat pour évaluer une position" }, { left: "Dunning-Kruger", right: "Surestimer ses compétences après quelques gains" }, { left: "Sunk cost fallacy", right: "Garder un actif perdant car on a 'déjà investi'" }], mindyMessage: "5 biais, 5 façons de perdre de l'argent. Connais-les ou subis-les. 🎭" },
         { type: "swipe", statement: "L'ancrage (anchoring) pousse à trop se focaliser sur le prix d'achat pour évaluer une position.", isCorrect: true, explanation: "\"J'attends qu'il revienne à mon prix d'achat\" — ancrage classique. Le marché ne connaît pas ton prix d'entrée." },
+        { type: "quiz", question: "Le 'disposition effect' pousse les investisseurs à :", options: ["Acheter uniquement des blue chips", "Vendre les gagnants trop tôt et garder les perdants trop longtemps", "Diversifier excessivement", "Investir uniquement dans leur secteur d'activité"], correctIndex: 1, mindyHint: "Vendre tôt le gagnant (+10%) pour 'sécuriser' et garder le perdant (-30%) en espérant un rebond. Classique." },
         { type: "swipe_sequence", title: "Biais ou Bonne Pratique ?", instruction: "Identifie si c'est un biais cognitif ou une bonne pratique.", leftLabel: "Biais cognitif", rightLabel: "Bonne pratique", cards: [
           { id: "dca", content: "DCA régulier peu importe les actualités", correctDirection: "right", explanation: "Discipline systématique qui bypass les émotions" },
           { id: "news", content: "Acheter quand tout le monde est optimiste (CNBC bullish)", correctDirection: "left", explanation: "FOMO + comportement grégaire — souvent le top du marché" },
           { id: "stop", content: "Stop-loss défini avant d'entrer en position", correctDirection: "right", explanation: "Décision froide avant que les émotions s'activent" },
           { id: "revenge", content: "Doubler la mise après une perte pour 'récupérer'", correctDirection: "left", explanation: "Revenge trading — un des chemins les plus rapides vers 0" }
         ], timeLimit: 40, mindyMessage: "Les traders les plus profitables ne sont pas les plus intelligents. Ce sont les plus disciplinés. ⚙️" },
-        { type: "info", title: "Système vs Émotion", content: "Comment battre ses biais :\n1. Décisions pré-définies (règles écrites avant) — investit combien, quand, dans quoi\n2. DCA automatique — enlève l'émotion du timing\n3. Journaling de trading — identifier ses patterns émotionnels\n4. Jamais d'action en état de stress ou FOMO\n5. Contre-narratif : quand tout le monde est euphorique = prudence\n\nBerkshire Hathaway a outperformé le marché 50 ans avec une règle simple : ne jamais vendre.", mindyMessage: "Être ennuyeux en finance, c'est ce qui rend riche. Safestreet Buffett l'a prouvé. 🗿" }
+        { type: "reorder", title: "Construire un Système Anti-Biais", instruction: "Mets ces protections dans l'ordre de mise en place.", words: ["Écrire ses règles d'investissement AVANT d'investir", "Automatiser le DCA (virement programmé)", "Définir un stop-loss pour chaque position", "Tenir un journal de trading (émotions + décisions)", "Revoir son plan trimestriellement sans émotion"], correctOrder: [0, 1, 2, 3, 4], mindyMessage: "Un système bat toujours une émotion. Construis le tien avant de trader. 🏗️" },
+        { type: "info", title: "Système vs Émotion", content: "Comment battre ses biais :\n1. Décisions pré-définies (règles écrites avant) — investit combien, quand, dans quoi\n2. DCA automatique — enlève l'émotion du timing\n3. Journaling de trading — identifier ses patterns émotionnels\n4. Jamais d'action en état de stress ou FOMO\n5. Contre-narratif : quand tout le monde est euphorique = prudence\n\nBerkshire Hathaway a outperformé le marché 50 ans avec une règle simple : ne jamais vendre.", mindyMessage: "Être ennuyeux en finance, c'est ce qui rend riche. Safestreet Buffett l'a prouvé. 🗿" },
+        { type: "speed_round", title: "Speed Round : Biais Cognitifs", pairs: [{ statement: "Le biais de confirmation nous pousse à chercher des infos qui confirment notre position.", isTrue: true }, { statement: "Le revenge trading est une stratégie efficace pour récupérer ses pertes.", isTrue: false }, { statement: "L'aversion à la perte fait qu'on ressent 2x plus une perte qu'un gain équivalent.", isTrue: true }, { statement: "L'overconfidence après une série de gains est un biais dangereux.", isTrue: true }, { statement: "Le biais d'ancrage n'affecte pas les traders expérimentés.", isTrue: false }, { statement: "Un trade journal aide à identifier ses biais émotionnels.", isTrue: true }, { statement: "Suivre les influenceurs crypto est une stratégie de trading fiable.", isTrue: false }, { statement: "La paralysie d'analyse (analysis paralysis) empêche de prendre des décisions.", isTrue: true }], timeLimitSeconds: 40, mindyMessage: "8 questions sur tes biais. Si tu les as tous, tu es déjà meilleur que 90% des traders. 🏆" }
       ]
     }
   },
@@ -2191,11 +3304,17 @@ const lessons = [
     content: {
       steps: [
         { type: "info", title: "La FED et la BCE : Maîtres de l'Économie Mondiale", content: "Les banques centrales contrôlent :\n• Les taux directeurs : le loyer de l'argent\n• La masse monétaire (QE/QT)\n• La stabilité du système financier\n\nFed Funds Rate élevé → emprunter coûte cher → entreprises investissent moins → marchés baissent\nTaux bas → argent abondant → marchés montent → risque d'inflation", mindyMessage: "Jerome Powell tweete pas. Il change ses taux. Et le monde entier tremble. 🏛️" },
+        { type: "fill_blank", sentence: "Le double mandat de la Fed est la stabilité des prix et le plein ___.", answer: "emploi", choices: ["emploi", "pouvoir d'achat", "commerce", "investissement"], mindyMessage: "Stabilité des prix + plein emploi. Deux objectifs souvent contradictoires. Bonne chance Jerome. 😅" },
         { type: "quiz", question: "Qu'est-ce que le 'Quantitative Easing' (QE) ?", options: ["Une augmentation des taux directeurs", "L'achat massif d'actifs par la banque centrale pour injecter des liquidités", "Une politique de réduction de la masse monétaire", "Un indicateur économique mesurant la croissance"], correctIndex: 1, mindyHint: "QE = la banque centrale 'imprime' de l'argent et achète des obligations. Inject de liquidités." },
+        { type: "match_pairs", title: "Politique Monétaire : Concepts Clés", instruction: "Associe chaque terme à sa définition.", pairs: [{ left: "Taux directeur", right: "Le coût auquel les banques empruntent à la BC" }, { left: "QE (Quantitative Easing)", right: "Achat massif d'obligations pour injecter des liquidités" }, { left: "QT (Quantitative Tightening)", right: "Réduction du bilan de la BC (retrait de liquidités)" }, { left: "Courbe des taux", right: "Relation entre taux courts et longs (shape = signal)" }, { left: "Fed Funds Rate", right: "Taux interbancaire au jour le jour aux USA" }], mindyMessage: "5 concepts que tout investisseur doit maîtriser. La macro, c'est le contexte de tout le reste. 📋" },
         { type: "swipe", statement: "Une hausse de taux de la Fed est généralement négative à court terme pour les actions.", isCorrect: true, explanation: "Taux plus élevés = coût de financement plus élevé pour les entreprises + les obligations deviennent plus attractives que les actions. Rotation des capitaux." },
+        { type: "scenario", title: "Réagir à une Décision de la Fed", scenario: "La Fed vient d'annoncer une hausse surprise de 50bps (au lieu de 25bps attendus). Les marchés plongent de 3% en quelques heures. Quelle est la réaction la plus intelligente ?", choices: [{ text: "Vendre immédiatement toutes ses actions pour limiter les dégâts", isCorrect: false, explanation: "Vendre en panique après l'annonce = acheter au plus haut et vendre au plus bas. Le marché a déjà prisonné la nouvelle." }, { text: "Analyser les projections de la Fed (dot plot) et ajuster son allocation progressivement si la trajectoire change", isCorrect: true, explanation: "La réaction initiale est souvent exagérée. Le dot plot et les minutes de la Fed donnent la vraie direction. Ajuster progressivement, pas en panique." }, { text: "Ignorer complètement — la macro n'a pas d'impact sur un horizon long terme", isCorrect: false, explanation: "La macro impacte tout : valorisations, taux d'actualisation, sentiment. Ignorer la Fed est une erreur même pour un investisseur long terme." }], mindyMessage: "Le marché surréagit toujours aux annonces surprise. Les pros achètent la panique. 🧊" },
         { type: "swipe", statement: "L'inflation est toujours mauvaise pour tous les actifs.", isCorrect: false, explanation: "L'immobilier et les matières premières sont généralement de bonnes couvertures contre l'inflation. L'or aussi, historiquement." },
+        { type: "reorder", title: "Le Cycle de Politique Monétaire", instruction: "Remets les étapes du cycle dans l'ordre.", words: ["L'économie surchauffe, l'inflation monte", "La banque centrale relève les taux directeurs", "Le crédit se contracte, la consommation ralentit", "L'économie entre en récession, le chômage monte", "La banque centrale baisse les taux pour relancer l'économie"], correctOrder: [0, 1, 2, 3, 4], mindyMessage: "Ce cycle se répète depuis des décennies. Les investisseurs qui le comprennent ont un avantage massif. 🔄" },
         { type: "quiz", question: "La courbe des taux 'inversée' (taux courts > taux longs) prédit généralement :", options: ["Une forte croissance économique", "Une récession dans les 12-18 mois suivants", "Une baisse de l'inflation", "Un bull market actions"], correctIndex: 1, mindyHint: "Courbe inversée = le marché anticipe une baisse de taux future = anticipation d'une récession." },
-        { type: "info", title: "Macro Trading : Lire le Cycle", content: "Les 4 phases du cycle économique :\n1. Expansion : taux bas, croissance forte → actions/crypto performent\n2. Pic : inflation monte, banques centrales relèvent les taux\n3. Contraction (récession) : taux élevés, chômage monte → obligations/cash performent\n4. Reprise : banques centrales baissent les taux → actions repartent\n\n→ Identifier dans quelle phase tu es = adapter ton allocation.", mindyMessage: "2022 : phase 2→3 en accéléré. FED +500bps en 18 mois. Le portefeuille 60/40 a pris -20%. Macro, ça compte. 📉" }
+        { type: "calculator", title: "Impact des Taux sur un Prêt Immobilier", description: "Tu empruntes 250,000€ sur 20 ans. La Fed (et donc la BCE) augmente les taux de 2% à 4%. Calcule la différence de mensualité. À 2% : ~1,265€/mois. À 4% : ~1,515€/mois.", variables: [{ name: "Mensualité à 2%", value: 1265 }, { name: "Mensualité à 4%", value: 1515 }], answer: 250, tolerance: 5, unit: "€/mois", mindyMessage: "250€ de plus par mois. 60,000€ de plus sur 20 ans. Les taux directeurs, ça change ta vie. 🏠" },
+        { type: "info", title: "Macro Trading : Lire le Cycle", content: "Les 4 phases du cycle économique :\n1. Expansion : taux bas, croissance forte → actions/crypto performent\n2. Pic : inflation monte, banques centrales relèvent les taux\n3. Contraction (récession) : taux élevés, chômage monte → obligations/cash performent\n4. Reprise : banques centrales baissent les taux → actions repartent\n\n→ Identifier dans quelle phase tu es = adapter ton allocation.", mindyMessage: "2022 : phase 2→3 en accéléré. FED +500bps en 18 mois. Le portefeuille 60/40 a pris -20%. Macro, ça compte. 📉" },
+        { type: "speed_round", title: "Speed Round : Politique Monétaire", pairs: [{ statement: "La Fed a un double mandat : stabilité des prix et plein emploi.", isTrue: true }, { statement: "Le Quantitative Tightening injecte des liquidités dans le marché.", isTrue: false }, { statement: "Une hausse de taux rend les obligations existantes moins attractives.", isTrue: true }, { statement: "La BCE (Banque Centrale Européenne) fixe les taux pour la zone euro.", isTrue: true }, { statement: "L'inflation cible de la plupart des banques centrales est de 5%.", isTrue: false }, { statement: "Bitcoin a été créé en partie en réaction à la politique monétaire de 2008.", isTrue: true }, { statement: "Les marchés actions performent généralement mieux en période de taux bas.", isTrue: true }, { statement: "Le dot plot de la Fed montre les projections de taux de chaque membre du FOMC.", isTrue: true }], timeLimitSeconds: 40, mindyMessage: "La macro en 40 secondes. Si tu galères, revois les bases. La Fed n'attend personne. ⏱️" }
       ]
     }
   },
@@ -2450,7 +3569,9 @@ const tradingLessons = [
         { type: "news_impact", headline: "La SEC approuve le premier ETF Bitcoin Spot aux États-Unis", source: "Bloomberg", date: "2024-01-10", correctImpact: "bullish", explanation: "L'approbation d'un ETF spot ouvre Bitcoin aux investisseurs institutionnels via Wall Street. Ça signifie des milliards de dollars potentiels entrant sur le marché — signal extrêmement bullish.", mindyMessage: "Quand Wall Street arrive, les prix suivent. L'ETF = la porte d'entrée pour les gros. 🏦" },
         { type: "flashcard", front: "Doji", back: "Chandelier dont l'ouverture et la clôture sont quasi identiques. Signale l'indécision du marché et un possible retournement de tendance.", category: "Trading" },
         { type: "price_prediction", question: "Un Doji apparaît après une longue tendance baissière. Analyse le pattern et prédit le mouvement suivant.", candles: [{ open: 52000, high: 52500, low: 50800, close: 51000 }, { open: 51000, high: 51200, low: 49500, close: 49800 }, { open: 49800, high: 50100, low: 48200, close: 48500 }, { open: 48500, high: 48800, low: 47000, close: 47200 }, { open: 47200, high: 47500, low: 46000, close: 46300 }, { open: 46300, high: 46800, low: 45500, close: 45700 }, { open: 45700, high: 46100, low: 45200, close: 45300 }, { open: 45300, high: 45500, low: 44800, close: 45300 }], correctAnswer: "up", explanation: "Le dernier chandelier est un Doji (open ≈ close) après une série baissière. Cela indique l'épuisement des vendeurs et une indécision du marché. Historiquement, un Doji en fin de tendance baissière précède souvent un retournement haussier.", mindyMessage: "Doji après une baisse = les vendeurs s'essoufflent. Signal de retournement potentiel. 🕯️" },
-        { type: "match_pairs", pairs: [{ term: "Marubozu", definition: "Long corps sans mèches — domination totale acheteurs/vendeurs" }, { term: "Hammer", definition: "Petit corps en haut + longue mèche basse — rebond potentiel" }, { term: "Shooting Star", definition: "Petit corps en bas + longue mèche haute — retournement baissier" }, { term: "Engulfing", definition: "Chandelier qui 'avale' le précédent — signal de retournement" }], mindyMessage: "4 patterns. 80% des signaux de chandelier. Apprends ceux-là et tu lis le marché. 📊" }
+        { type: "match_pairs", pairs: [{ term: "Marubozu", definition: "Long corps sans mèches — domination totale acheteurs/vendeurs" }, { term: "Hammer", definition: "Petit corps en haut + longue mèche basse — rebond potentiel" }, { term: "Shooting Star", definition: "Petit corps en bas + longue mèche haute — retournement baissier" }, { term: "Engulfing", definition: "Chandelier qui 'avale' le précédent — signal de retournement" }], mindyMessage: "4 patterns. 80% des signaux de chandelier. Apprends ceux-là et tu lis le marché. 📊" },
+        { type: "connect_dots", pairs: [{ term: "Open", definition: "Prix d'ouverture de la période" }, { term: "Close", definition: "Prix de clôture de la période" }, { term: "High", definition: "Prix le plus haut atteint" }, { term: "Low", definition: "Prix le plus bas atteint" }, { term: "Mèche", definition: "Ligne fine au-dessus/dessous du corps" }], mindyMessage: "Les 5 composants d'un chandelier. Si tu les connais pas, tu trades à l'aveugle." },
+        { type: "word_scramble", word: "HAMMER", hint: "Pattern de chandelier avec un petit corps et une longue mèche basse, signal de rebond.", scrambled: ["M", "H", "A", "R", "E", "M"], mindyMessage: "Ce pattern peut sauver ton trade. Trouve-le !" }
       ]
     }
   },

@@ -4,10 +4,17 @@ import { AchievementsService } from './achievements.service';
 
 export type AchievementTrigger =
   | 'lesson_completed'
+  | 'master_quiz_completed'
   | 'xp_gained'
   | 'streak_updated'
   | 'daily_challenge'
   | 'referral';
+
+/** Extra context passed alongside a trigger */
+export interface TriggerContext {
+  /** Domain of the completed lesson/master quiz (CRYPTO | FINANCE | TRADING) */
+  domain?: string;
+}
 
 @Injectable()
 export class AchievementCheckerService {
@@ -19,9 +26,14 @@ export class AchievementCheckerService {
   ) {}
 
   /**
-   * Check and unlock achievements based on a trigger event
+   * Check and unlock achievements based on a trigger event.
+   * Pass an optional `context` with `domain` for master quiz triggers.
    */
-  async checkAndUnlock(userId: string, trigger: AchievementTrigger): Promise<string[]> {
+  async checkAndUnlock(
+    userId: string,
+    trigger: AchievementTrigger,
+    context: TriggerContext = {},
+  ): Promise<string[]> {
     const unlockedKeys: string[] = [];
 
     try {
@@ -48,7 +60,7 @@ export class AchievementCheckerService {
 
       // Check each locked achievement
       for (const achievement of lockedAchievements) {
-        if (this.shouldUnlock(achievement, stats, trigger)) {
+        if (this.shouldUnlock(achievement, stats, trigger, context)) {
           const result = await this.achievementsService.unlockAchievement(userId, achievement.key);
           if (!result.alreadyUnlocked) {
             unlockedKeys.push(achievement.key);
@@ -80,27 +92,36 @@ export class AchievementCheckerService {
       }),
     ]);
 
-    // Count completed lessons by domain
+    // Count completed lessons by domain (non-master quizzes + master quizzes)
     const lessonsByDomain = await this.prisma.lesson.findMany({
       where: {
-        progress: {
-          some: { userId, isCompleted: true },
-        },
+        progress: { some: { userId, isCompleted: true } },
       },
-      select: { domain: true },
+      select: { domain: true, isMasterQuiz: true },
     });
 
-    const domainCounts = lessonsByDomain.reduce(
-      (acc, l) => {
-        acc[l.domain] = (acc[l.domain] || 0) + 1;
-        return acc;
-      },
-      {} as Record<string, number>,
-    );
+    const regularCounts: Record<string, number> = {};
+    const masterQuizCounts: Record<string, number> = {};
 
-    const cryptoLessonsCompleted = domainCounts['CRYPTO'] || 0;
-    const financeLessonsCompleted = domainCounts['FINANCE'] || 0;
-    const domainsCompleted = Object.values(domainCounts).filter((c) => c >= 5).length;
+    for (const l of lessonsByDomain) {
+      if (l.isMasterQuiz) {
+        masterQuizCounts[l.domain] = (masterQuizCounts[l.domain] || 0) + 1;
+      } else {
+        regularCounts[l.domain] = (regularCounts[l.domain] || 0) + 1;
+      }
+    }
+
+    const cryptoLessonsCompleted = regularCounts['CRYPTO'] || 0;
+    const financeLessonsCompleted = regularCounts['FINANCE'] || 0;
+    const tradingLessonsCompleted = regularCounts['TRADING'] || 0;
+
+    const cryptoMasterQuizCompleted = masterQuizCounts['CRYPTO'] || 0;
+    const financeMasterQuizCompleted = masterQuizCounts['FINANCE'] || 0;
+    const tradingMasterQuizCompleted = masterQuizCounts['TRADING'] || 0;
+
+    // A domain is "completed" if ≥5 lessons done
+    const domainsCompleted = [cryptoLessonsCompleted, financeLessonsCompleted, tradingLessonsCompleted]
+      .filter((c) => c >= 5).length;
 
     return {
       xp: user?.xp ?? 0,
@@ -111,6 +132,10 @@ export class AchievementCheckerService {
       domainsCompleted,
       cryptoLessonsCompleted,
       financeLessonsCompleted,
+      tradingLessonsCompleted,
+      cryptoMasterQuizCompleted,
+      financeMasterQuizCompleted,
+      tradingMasterQuizCompleted,
       referralsCount,
     };
   }
@@ -120,22 +145,24 @@ export class AchievementCheckerService {
    */
   private shouldUnlock(
     achievement: { requirementType: string; requirementValue: number },
-    stats: {
-      xp: number;
-      level: number;
-      streak: number;
-      lessonsCompleted: number;
-      dailyChallengesCompleted: number;
-      domainsCompleted: number;
-      cryptoLessonsCompleted: number;
-      financeLessonsCompleted: number;
-      referralsCount: number;
-    },
+    stats: ReturnType<AchievementCheckerService['getUserStats']> extends Promise<infer T> ? T : never,
     trigger: AchievementTrigger,
+    context: TriggerContext,
   ): boolean {
     // Only check relevant achievements based on trigger
     const triggerRelevance: Record<AchievementTrigger, string[]> = {
-      lesson_completed: ['LESSONS_COMPLETED', 'DOMAIN_COMPLETED', 'CRYPTO_LESSONS_COMPLETED', 'FINANCE_LESSONS_COMPLETED'],
+      lesson_completed: [
+        'LESSONS_COMPLETED',
+        'DOMAIN_COMPLETED',
+        'CRYPTO_LESSONS_COMPLETED',
+        'FINANCE_LESSONS_COMPLETED',
+        'TRADING_LESSONS_COMPLETED',
+      ],
+      master_quiz_completed: [
+        'CRYPTO_MASTER_QUIZ_COMPLETED',
+        'FINANCE_MASTER_QUIZ_COMPLETED',
+        'TRADING_MASTER_QUIZ_COMPLETED',
+      ],
       xp_gained: ['XP_EARNED', 'LEVEL_REACHED'],
       streak_updated: ['STREAK_DAYS'],
       daily_challenge: ['DAILY_CHALLENGES'],
@@ -145,6 +172,14 @@ export class AchievementCheckerService {
     const relevantTypes = triggerRelevance[trigger];
     if (!relevantTypes.includes(achievement.requirementType)) {
       return false;
+    }
+
+    // For master quiz achievements, check domain-specific condition
+    if (trigger === 'master_quiz_completed' && context.domain) {
+      const domainUpper = context.domain.toUpperCase();
+      if (achievement.requirementType === 'CRYPTO_MASTER_QUIZ_COMPLETED' && domainUpper !== 'CRYPTO') return false;
+      if (achievement.requirementType === 'FINANCE_MASTER_QUIZ_COMPLETED' && domainUpper !== 'FINANCE') return false;
+      if (achievement.requirementType === 'TRADING_MASTER_QUIZ_COMPLETED' && domainUpper !== 'TRADING') return false;
     }
 
     let current = 0;
@@ -170,6 +205,18 @@ export class AchievementCheckerService {
         break;
       case 'FINANCE_LESSONS_COMPLETED':
         current = stats.financeLessonsCompleted;
+        break;
+      case 'TRADING_LESSONS_COMPLETED':
+        current = stats.tradingLessonsCompleted;
+        break;
+      case 'CRYPTO_MASTER_QUIZ_COMPLETED':
+        current = stats.cryptoMasterQuizCompleted;
+        break;
+      case 'FINANCE_MASTER_QUIZ_COMPLETED':
+        current = stats.financeMasterQuizCompleted;
+        break;
+      case 'TRADING_MASTER_QUIZ_COMPLETED':
+        current = stats.tradingMasterQuizCompleted;
         break;
       case 'LEVEL_REACHED':
         current = stats.level;

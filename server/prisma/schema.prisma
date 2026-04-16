@@ -1,8 +1,3 @@
-// ============================================================================
-// MINDY Database Schema
-// PostgreSQL + Prisma ORM
-// ============================================================================
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -12,90 +7,73 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// ============================================================================
-// User Model
-// Tracks user profile, XP, level, and streak
-// ============================================================================
-
 model User {
-  id                  String         @id @default(cuid())
-  email               String         @unique
-  username            String         @unique
-  xp                  Int            @default(0)
-  level               Int            @default(1)
-  streak              Int            @default(0)
-  maxStreak           Int            @default(0)
-  streakFreezes       Int            @default(3)
-  streakFreezeUsedAt  DateTime?
-  soundEnabled        Boolean        @default(true)
-  lastActiveAt        DateTime?
-  referralCode        String?        @unique
-  referralXpEarned    Int            @default(0)
-  createdAt           DateTime       @default(now())
-  updatedAt           DateTime       @updatedAt
-
-  // Relations
-  progress                UserProgress[]
-  dailyChallenges         DailyChallenge[]
-  weeklyXp                WeeklyXp[]
-  pushTokens              PushToken[]
-  notificationPreferences NotificationPreferences?
+  id                      String                   @id @default(cuid())
+  email                   String                   @unique
+  username                String                   @unique
+  xp                      Int                      @default(0)
+  level                   Int                      @default(1)
+  streak                  Int                      @default(0)
+  lastActiveAt            DateTime?
+  deletedAt               DateTime?
+  createdAt               DateTime                 @default(now())
+  updatedAt               DateTime                 @updatedAt
+  maxStreak               Int                      @default(0)
+  soundEnabled            Boolean                  @default(true)
+  streakFreezeUsedAt      DateTime?
+  streakFreezes           Int                      @default(3)
+  referralCode            String?                  @unique
+  referralXpEarned        Int                      @default(0)
+  preferredDomain         String?
+  userGoal                String?
   analyticsEvents         AnalyticsEvent[]
+  dailyChallenges         DailyChallenge[]
   notificationLogs        NotificationLog[]
+  notificationPreferences NotificationPreferences?
+  pushTokens              PushToken[]
+  referredBy              Referral?                @relation("ReferredBy")
+  referrals               Referral[]               @relation("Referrals")
   achievements            UserAchievement[]
-  referrals               Referral[] @relation("Referrals")
-  referredBy              Referral?  @relation("ReferredBy")
+  progress                UserProgress[]
+  weeklyXp                WeeklyXp[]
+  subscription            Subscription?
+  sentFriendRequests      FriendRequest[]          @relation("SentRequests")
+  receivedFriendRequests  FriendRequest[]          @relation("ReceivedRequests")
+  challengesSent          LessonChallenge[]        @relation("ChallengesSent")
+  challengesReceived      LessonChallenge[]        @relation("ChallengesReceived")
 
   @@map("users")
 }
 
-// ============================================================================
-// Lesson Model
-// Educational content with structured JSON steps
-// ============================================================================
-
 model Lesson {
-  id              String         @id @default(cuid())
+  id              String           @id @default(cuid())
   title           String
   domain          Domain
   difficulty      Difficulty
-  content         Json           // Validated by Zod: { steps: LessonStep[] }
-  xpReward        Int            @default(50)
-  orderIndex      Int            @default(0)
-  createdAt       DateTime       @default(now())
-
-  // Relations
-  progress        UserProgress[]
+  content         Json
+  xpReward        Int              @default(50)
+  orderIndex      Int              @default(0)
+  isMasterQuiz    Boolean          @default(false)
+  createdAt       DateTime         @default(now())
   dailyChallenges DailyChallenge[]
+  progress        UserProgress[]
+  challenges      LessonChallenge[]
 
   @@map("lessons")
 }
 
-// ============================================================================
-// UserProgress Model
-// Tracks user progress through lessons
-// ============================================================================
-
 model UserProgress {
-  id             String    @id @default(cuid())
+  id             String  @id @default(cuid())
   userId         String
   lessonId       String
-  completedSteps Int[]     @default([])
-  isCompleted    Boolean   @default(false)
+  completedSteps Int[]   @default([])
+  isCompleted    Boolean @default(false)
+  lesson         Lesson  @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  user           User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  // Relations
-  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  lesson         Lesson    @relation(fields: [lessonId], references: [id], onDelete: Cascade)
-
-  // Ensure one progress record per user-lesson pair
   @@unique([userId, lessonId])
   @@map("user_progress")
 }
-
-// ============================================================================
-// Daily Challenge Model
-// Daily quiz with bonus XP reward
-// ============================================================================
 
 model DailyChallenge {
   id             String    @id @default(cuid())
@@ -105,43 +83,139 @@ model DailyChallenge {
   isCompleted    Boolean   @default(false)
   xpBonusAwarded Int       @default(0)
   completedAt    DateTime?
-
-  // Relations
-  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   lesson         Lesson    @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  // One challenge per user per day
   @@unique([userId, date])
   @@map("daily_challenges")
 }
-
-// ============================================================================
-// Weekly XP Model
-// Tracks XP earned per week for leaderboard
-// ============================================================================
 
 model WeeklyXp {
   id        String   @id @default(cuid())
   userId    String
   weekStart DateTime @db.Date
   xpEarned  Int      @default(0)
-
-  // Relations
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  // One record per user per week
   @@unique([userId, weekStart])
   @@index([weekStart, xpEarned(sort: Desc)])
   @@map("weekly_xp")
 }
 
-// ============================================================================
-// Enums
-// ============================================================================
+model PushToken {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  platform  Platform
+  deviceId  String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("push_tokens")
+}
+
+model NotificationPreferences {
+  id                 String   @id @default(cuid())
+  userId             String   @unique
+  streakReminder     Boolean  @default(true)
+  dailyChallenge     Boolean  @default(true)
+  inactivityReminder Boolean  @default(true)
+  levelUpCelebration Boolean  @default(true)
+  streakMilestone    Boolean  @default(true)
+  reminderHour       Int      @default(19)
+  timezone           String   @default("Europe/Paris")
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notification_preferences")
+}
+
+model AnalyticsEvent {
+  id        String    @id @default(cuid())
+  userId    String
+  eventType EventType
+  eventData Json?
+  sessionId String?
+  timestamp DateTime  @default(now())
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, timestamp])
+  @@index([eventType, timestamp])
+  @@index([sessionId])
+  @@map("analytics_events")
+}
+
+model NotificationLog {
+  id           String             @id @default(cuid())
+  userId       String
+  type         NotificationType
+  title        String
+  body         String
+  status       NotificationStatus @default(PENDING)
+  expoTicketId String?
+  sentAt       DateTime?
+  createdAt    DateTime           @default(now())
+  user         User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([status])
+  @@map("notification_logs")
+}
+
+model Achievement {
+  id               String              @id @default(cuid())
+  key              String              @unique
+  name             String
+  description      String
+  category         AchievementCategory
+  requirementType  RequirementType
+  requirementValue Int
+  xpReward         Int                 @default(50)
+  badgeUrl         String?
+  rarity           AchievementRarity   @default(COMMON)
+  orderIndex       Int                 @default(0)
+  createdAt        DateTime            @default(now())
+  userAchievements UserAchievement[]
+
+  @@index([category])
+  @@map("achievements")
+}
+
+model UserAchievement {
+  id            String      @id @default(cuid())
+  userId        String
+  achievementId String
+  unlockedAt    DateTime    @default(now())
+  xpAwarded     Int         @default(0)
+  achievement   Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, achievementId])
+  @@index([userId, unlockedAt])
+  @@map("user_achievements")
+}
+
+model Referral {
+  id         String   @id @default(cuid())
+  referrerId String
+  refereeId  String   @unique
+  xpAwarded  Int      @default(0)
+  createdAt  DateTime @default(now())
+  referee    User     @relation("ReferredBy", fields: [refereeId], references: [id], onDelete: Cascade)
+  referrer   User     @relation("Referrals", fields: [referrerId], references: [id], onDelete: Cascade)
+
+  @@index([referrerId])
+  @@map("referrals")
+}
 
 enum Domain {
   CRYPTO
   FINANCE
+  TRADING
 }
 
 enum Difficulty {
@@ -166,6 +240,11 @@ enum EventType {
   LEVEL_UP
   ACHIEVEMENT_UNLOCKED
   REFERRAL_COMPLETED
+  STREAK_FREEZE_PURCHASED
+  COMBO_BONUS
+  CHALLENGE_SENT
+  CHALLENGE_ACCEPTED
+  CHALLENGE_COMPLETED
 }
 
 enum NotificationType {
@@ -176,6 +255,8 @@ enum NotificationType {
   STREAK_MILESTONE
   ACHIEVEMENT_UNLOCKED
   REFERRAL_COMPLETED
+  LESSON_CHALLENGE_RECEIVED
+  LESSON_CHALLENGE_ACCEPTED
 }
 
 enum NotificationStatus {
@@ -183,165 +264,6 @@ enum NotificationStatus {
   SENT
   FAILED
 }
-
-// ============================================================================
-// Push Token Model
-// Stores Expo push tokens for each user's devices
-// ============================================================================
-
-model PushToken {
-  id        String   @id @default(cuid())
-  userId    String
-  token     String   @unique
-  platform  Platform
-  deviceId  String?
-  isActive  Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId])
-  @@map("push_tokens")
-}
-
-// ============================================================================
-// Notification Preferences Model
-// User preferences for different notification types
-// ============================================================================
-
-model NotificationPreferences {
-  id                 String   @id @default(cuid())
-  userId             String   @unique
-  streakReminder     Boolean  @default(true)
-  dailyChallenge     Boolean  @default(true)
-  inactivityReminder Boolean  @default(true)
-  levelUpCelebration Boolean  @default(true)
-  streakMilestone    Boolean  @default(true)
-  reminderHour       Int      @default(19)
-  timezone           String   @default("Europe/Paris")
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
-
-  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@map("notification_preferences")
-}
-
-// ============================================================================
-// Analytics Event Model
-// Tracks user events for custom analytics dashboard
-// ============================================================================
-
-model AnalyticsEvent {
-  id        String    @id @default(cuid())
-  userId    String
-  eventType EventType
-  eventData Json?
-  sessionId String?
-  timestamp DateTime  @default(now())
-
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId, timestamp])
-  @@index([eventType, timestamp])
-  @@index([sessionId])
-  @@map("analytics_events")
-}
-
-// ============================================================================
-// Notification Log Model
-// Tracks sent notifications for debugging and analytics
-// ============================================================================
-
-model NotificationLog {
-  id           String             @id @default(cuid())
-  userId       String
-  type         NotificationType
-  title        String
-  body         String
-  status       NotificationStatus @default(PENDING)
-  expoTicketId String?
-  sentAt       DateTime?
-  createdAt    DateTime           @default(now())
-
-  user         User               @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId, createdAt])
-  @@index([status])
-  @@map("notification_logs")
-}
-
-// ============================================================================
-// Achievement Model
-// Achievement definitions (seeded)
-// ============================================================================
-
-model Achievement {
-  id               String              @id @default(cuid())
-  key              String              @unique
-  name             String
-  description      String
-  category         AchievementCategory
-  requirementType  RequirementType
-  requirementValue Int
-  xpReward         Int                 @default(50)
-  badgeUrl         String?
-  rarity           AchievementRarity   @default(COMMON)
-  orderIndex       Int                 @default(0)
-  createdAt        DateTime            @default(now())
-
-  // Relations
-  userAchievements UserAchievement[]
-
-  @@index([category])
-  @@map("achievements")
-}
-
-// ============================================================================
-// UserAchievement Model
-// User's unlocked achievements
-// ============================================================================
-
-model UserAchievement {
-  id            String      @id @default(cuid())
-  userId        String
-  achievementId String
-  unlockedAt    DateTime    @default(now())
-  xpAwarded     Int         @default(0)
-
-  // Relations
-  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  achievement   Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, achievementId])
-  @@index([userId, unlockedAt])
-  @@map("user_achievements")
-}
-
-// ============================================================================
-// Referral Model
-// Tracks referral relationships between users
-// ============================================================================
-
-model Referral {
-  id         String   @id @default(cuid())
-  referrerId String
-  refereeId  String   @unique
-  xpAwarded  Int      @default(0)
-  createdAt  DateTime @default(now())
-
-  // Relations
-  referrer   User     @relation("Referrals", fields: [referrerId], references: [id], onDelete: Cascade)
-  referee    User     @relation("ReferredBy", fields: [refereeId], references: [id], onDelete: Cascade)
-
-  @@index([referrerId])
-  @@map("referrals")
-}
-
-// ============================================================================
-// Achievement Enums
-// ============================================================================
 
 enum AchievementCategory {
   LEARNING
@@ -357,10 +279,14 @@ enum RequirementType {
   XP_EARNED
   DAILY_CHALLENGES
   DOMAIN_COMPLETED
-  CRYPTO_LESSONS_COMPLETED
-  FINANCE_LESSONS_COMPLETED
   LEVEL_REACHED
   REFERRALS_MADE
+  CRYPTO_LESSONS_COMPLETED
+  FINANCE_LESSONS_COMPLETED
+  TRADING_LESSONS_COMPLETED
+  CRYPTO_MASTER_QUIZ_COMPLETED
+  FINANCE_MASTER_QUIZ_COMPLETED
+  TRADING_MASTER_QUIZ_COMPLETED
 }
 
 enum AchievementRarity {
@@ -371,3 +297,81 @@ enum AchievementRarity {
   LEGENDARY
 }
 
+model Subscription {
+  id               String           @id @default(cuid())
+  userId           String           @unique
+  plan             SubscriptionPlan @default(FREE)
+  status           SubStatus        @default(ACTIVE)
+  currentPeriodEnd DateTime?
+  cancelAtPeriodEnd Boolean         @default(false)
+  stripeCustomerId String?
+  stripePriceId    String?
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  user             User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("subscriptions")
+}
+
+model FriendRequest {
+  id         String      @id @default(cuid())
+  senderId   String
+  receiverId String
+  status     FriendStatus @default(PENDING)
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  sender     User        @relation("SentRequests", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver   User        @relation("ReceivedRequests", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  @@unique([senderId, receiverId])
+  @@index([receiverId, status])
+  @@map("friend_requests")
+}
+
+enum SubscriptionPlan {
+  FREE
+  PRO_MONTHLY
+  PRO_ANNUAL
+}
+
+enum SubStatus {
+  ACTIVE
+  CANCELLED
+  PAST_DUE
+  TRIALING
+}
+
+enum FriendStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+}
+
+model LessonChallenge {
+  id           String          @id @default(cuid())
+  challengerId String
+  challengedId String
+  lessonId     String
+  status       ChallengeStatus @default(PENDING)
+  challengerXp Int?
+  challengedXp Int?
+  message      String?
+  expiresAt    DateTime
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+  challenger   User            @relation("ChallengesSent", fields: [challengerId], references: [id], onDelete: Cascade)
+  challenged   User            @relation("ChallengesReceived", fields: [challengedId], references: [id], onDelete: Cascade)
+  lesson       Lesson          @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  @@index([challengedId, status])
+  @@index([challengerId])
+  @@map("lesson_challenges")
+}
+
+enum ChallengeStatus {
+  PENDING
+  ACCEPTED
+  COMPLETED
+  EXPIRED
+  DECLINED
+}

@@ -22,6 +22,7 @@ import { useSound } from '@/hooks/useSound';
 import { ProgressBar } from '@/components/ui/ProgressBar';
 import { MindyMessage } from '@/components/MindyMessage';
 import { Icon } from '@/components/ui/Icon';
+import { ComboBanner } from '@/components/ui/ComboBanner';
 import { Confetti, XpCounter, LevelUpCelebration, StreakFire } from '@/components/animations';
 import {
   InfoStepView,
@@ -39,6 +40,11 @@ import {
   BudgetAllocatorStepView,
   NewsImpactStepView,
   FlashcardStepView,
+  WordScrambleStepView,
+  DragSortStepView,
+  SpotTheScamStepView,
+  ConnectDotsStepView,
+  TimelineBuilderStepView,
 } from '@/components/steps';
 
 type ScreenState = 'loading' | 'ready' | 'playing' | 'feedback' | 'completed' | 'error';
@@ -107,6 +113,9 @@ export default function LessonScreen() {
 
   // Completion state
   const [xpAwarded, setXpAwarded] = useState(0);
+  const [comboCount, setComboCount] = useState(0);
+  const [comboMultiplier, setComboMultiplier] = useState(1.0);
+  const [bonusXp, setBonusXp] = useState(0);
   const [showConfetti, setShowConfetti] = useState(false);
   const [showLevelUp, setShowLevelUp] = useState(false);
   const [newLevel, setNewLevel] = useState(0);
@@ -340,7 +349,18 @@ export default function LessonScreen() {
       const finalRes = await progressApi.completeStep(progress.id, totalSteps - 1);
 
       if (finalRes.success && finalRes.data) {
-        setXpAwarded(finalRes.data.xpAwarded || lesson.xpReward);
+        // Backend returns combo fields in addition to UserProgress type
+        const comboData = finalRes.data as typeof finalRes.data & {
+          comboCount?: number;
+          comboMultiplier?: number;
+          bonusXp?: number;
+        };
+        setXpAwarded(comboData.xpAwarded || lesson.xpReward);
+        if (comboData.comboCount && comboData.comboCount >= 3) {
+          setComboCount(comboData.comboCount);
+          setComboMultiplier(comboData.comboMultiplier ?? 1.0);
+          setBonusXp(comboData.bonusXp ?? 0);
+        }
 
         // Check for level up
         const statsRes = await usersApi.getStats(userId);
@@ -404,6 +424,16 @@ export default function LessonScreen() {
         return <NewsImpactStepView key={stepKey} step={currentStep} onAnswer={handleStepComplete} />;
       case 'flashcard':
         return <FlashcardStepView key={stepKey} step={currentStep} onContinue={handleContinue} />;
+      case 'word_scramble':
+        return <WordScrambleStepView key={stepKey} step={currentStep} onAnswer={handleStepComplete} />;
+      case 'drag_sort':
+        return <DragSortStepView key={stepKey} step={currentStep} onAnswer={handleStepComplete} />;
+      case 'spot_the_scam':
+        return <SpotTheScamStepView key={stepKey} step={currentStep} onAnswer={handleStepComplete} />;
+      case 'connect_dots':
+        return <ConnectDotsStepView key={stepKey} step={currentStep} onAnswer={handleStepComplete} />;
+      case 'timeline_builder':
+        return <TimelineBuilderStepView key={stepKey} step={currentStep} onAnswer={handleStepComplete} />;
       default:
         return null;
     }
@@ -650,6 +680,18 @@ export default function LessonScreen() {
               </Animated.View>
             )}
 
+            {/* Combo Bonus Banner — shows when chaining lessons */}
+            {!isPracticeMode && comboCount >= 3 && (
+              <Animated.View entering={FadeInUp.delay(650)}>
+                <ComboBanner
+                  comboCount={comboCount}
+                  comboMultiplier={comboMultiplier}
+                  bonusXp={bonusXp}
+                  visible={comboCount >= 3}
+                />
+              </Animated.View>
+            )}
+
             {/* Stats */}
             <Animated.View entering={FadeInUp.delay(700)} style={styles.completionStats}>
               {(() => {
@@ -699,13 +741,21 @@ export default function LessonScreen() {
             <Icon name="arrow-right" size={18} color="#0D1117" />
           </Pressable>
           {!isPracticeMode && (
-            <Pressable
-              style={styles.practiceAgainButton}
-              onPress={() => router.replace(`/lesson/${id}?practice=true`)}
-            >
-              <Icon name="refresh" size={16} color="#8B949E" />
-              <Text style={styles.practiceAgainText}>Pratiquer encore (sans XP)</Text>
-            </Pressable>
+            <>
+              <Pressable
+                style={styles.challengeButton}
+                onPress={() => router.push('/challenges' as any)}
+              >
+                <Text style={styles.challengeButtonText}>⚔️ Défier un ami sur cette leçon</Text>
+              </Pressable>
+              <Pressable
+                style={styles.practiceAgainButton}
+                onPress={() => router.replace(`/lesson/${id}?practice=true`)}
+              >
+                <Icon name="refresh" size={16} color="#8B949E" />
+                <Text style={styles.practiceAgainText}>Pratiquer encore (sans XP)</Text>
+              </Pressable>
+            </>
           )}
         </Animated.View>
       </SafeAreaView>
@@ -1209,5 +1259,20 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter',
     fontSize: 14,
     color: '#8B949E',
+  },
+  challengeButton: {
+    paddingVertical: 14,
+    borderRadius: 14,
+    borderWidth: 1.5,
+    borderColor: '#39FF14',
+    alignItems: 'center',
+    marginTop: 10,
+    backgroundColor: 'rgba(57,255,20,0.05)',
+  },
+  challengeButtonText: {
+    fontFamily: 'Inter',
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#39FF14',
   },
 });

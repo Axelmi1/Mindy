@@ -15,14 +15,31 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "app.mindy.mobile"
+      "bundleIdentifier": "app.mindy.mobile",
+      "associatedDomains": ["applinks:mindy.app"]
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#0D1117"
       },
-      "package": "app.mindy.mobile"
+      "package": "app.mindy.mobile",
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "mindy"
+            },
+            {
+              "scheme": "https",
+              "host": "mindy.app"
+            }
+          ],
+          "category": ["BROWSABLE", "DEFAULT"]
+        }
+      ]
     },
     "web": {
       "bundler": "metro",
@@ -32,7 +49,15 @@
     "plugins": [
       "expo-router",
       "expo-font",
-      "expo-asset"
+      "expo-asset",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/icon.png",
+          "color": "#39FF14",
+          "defaultChannel": "default"
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true

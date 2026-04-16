@@ -175,6 +175,139 @@ class NotificationService {
   }
 
   /**
+   * Schedule a daily streak reminder at a given hour (local time).
+   * Cancels any previously scheduled reminder before creating a new one.
+   */
+  async scheduleStreakReminder(hour = 20, minute = 0): Promise<string | null> {
+    try {
+      // Cancel any existing streak reminder
+      await this.cancelScheduledNotification('streak_reminder');
+
+      const id = await Notifications.scheduleNotificationAsync({
+        identifier: 'streak_reminder',
+        content: {
+          title: '🔥 Ne brise pas ta streak !',
+          body: 'Tu n\'as pas encore appris aujourd\'hui. Garde ta série vivante — juste 5 min.',
+          data: { type: 'STREAK_AT_RISK', source: 'local' },
+          sound: true,
+        },
+        trigger: {
+          type: Notifications.SchedulableTriggerInputTypes.DAILY,
+          hour,
+          minute,
+        },
+      });
+
+      await AsyncStorage.setItem('@mindy/streak_reminder_id', id);
+      console.log(`[Notifications] Streak reminder scheduled at ${hour}:${minute.toString().padStart(2, '0')} → id=${id}`);
+      return id;
+    } catch (error) {
+      console.warn('[Notifications] Failed to schedule streak reminder:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Schedule a daily challenge reminder at a given hour.
+   */
+  async scheduleDailyChallengeReminder(hour = 9, minute = 0): Promise<string | null> {
+    try {
+      await this.cancelScheduledNotification('daily_challenge_reminder');
+
+      const id = await Notifications.scheduleNotificationAsync({
+        identifier: 'daily_challenge_reminder',
+        content: {
+          title: '⚡ Défi du jour disponible',
+          body: 'Ton défi quotidien t\'attend. Gagne du XP bonus maintenant !',
+          data: { type: 'DAILY_CHALLENGE', source: 'local' },
+          sound: true,
+        },
+        trigger: {
+          type: Notifications.SchedulableTriggerInputTypes.DAILY,
+          hour,
+          minute,
+        },
+      });
+
+      await AsyncStorage.setItem('@mindy/daily_challenge_reminder_id', id);
+      console.log(`[Notifications] Daily challenge reminder scheduled at ${hour}:${minute.toString().padStart(2, '0')}`);
+      return id;
+    } catch (error) {
+      console.warn('[Notifications] Failed to schedule daily challenge reminder:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Schedule a one-time "inactivity" notification N days from now.
+   */
+  async scheduleInactivityReminder(daysFromNow = 3): Promise<string | null> {
+    try {
+      await this.cancelScheduledNotification('inactivity_reminder');
+
+      const triggerDate = new Date();
+      triggerDate.setDate(triggerDate.getDate() + daysFromNow);
+      triggerDate.setHours(18, 0, 0, 0);
+
+      const id = await Notifications.scheduleNotificationAsync({
+        identifier: 'inactivity_reminder',
+        content: {
+          title: '👋 Mindy te manque !',
+          body: `Ça fait ${daysFromNow} jours que tu n'as pas appris. Reprends là où tu t'es arrêté.`,
+          data: { type: 'INACTIVITY_REMINDER', source: 'local' },
+          sound: true,
+        },
+        trigger: {
+          type: Notifications.SchedulableTriggerInputTypes.DATE,
+          date: triggerDate,
+        },
+      });
+
+      await AsyncStorage.setItem('@mindy/inactivity_reminder_id', id);
+      console.log(`[Notifications] Inactivity reminder scheduled for ${triggerDate.toISOString()}`);
+      return id;
+    } catch (error) {
+      console.warn('[Notifications] Failed to schedule inactivity reminder:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Cancel a specific scheduled notification by identifier.
+   */
+  async cancelScheduledNotification(identifier: string): Promise<void> {
+    try {
+      await Notifications.cancelScheduledNotificationAsync(identifier);
+    } catch {
+      // Ignore — notification may not exist yet
+    }
+  }
+
+  /**
+   * Cancel ALL scheduled local notifications.
+   */
+  async cancelAllScheduled(): Promise<void> {
+    try {
+      await Notifications.cancelAllScheduledNotificationsAsync();
+      await AsyncStorage.multiRemove([
+        '@mindy/streak_reminder_id',
+        '@mindy/daily_challenge_reminder_id',
+        '@mindy/inactivity_reminder_id',
+      ]);
+      console.log('[Notifications] All scheduled notifications cancelled');
+    } catch (error) {
+      console.warn('[Notifications] Failed to cancel all scheduled:', error);
+    }
+  }
+
+  /**
+   * Get all currently scheduled notifications (for debug / settings display).
+   */
+  async getScheduledNotifications() {
+    return Notifications.getAllScheduledNotificationsAsync();
+  }
+
+  /**
    * Cleanup listeners
    */
   cleanup(): void {
@@ -197,3 +330,15 @@ export const isNotificationsEnabled = () => notificationService.isEnabled();
 export const setOnNotificationTap = (callback: (data: Record<string, unknown>) => void) =>
   notificationService.setOnNotificationTap(callback);
 export const cleanupNotifications = () => notificationService.cleanup();
+
+// Local scheduling exports
+export const scheduleStreakReminder = (hour?: number, minute?: number) =>
+  notificationService.scheduleStreakReminder(hour, minute);
+export const scheduleDailyChallengeReminder = (hour?: number, minute?: number) =>
+  notificationService.scheduleDailyChallengeReminder(hour, minute);
+export const scheduleInactivityReminder = (days?: number) =>
+  notificationService.scheduleInactivityReminder(days);
+export const cancelAllScheduledNotifications = () =>
+  notificationService.cancelAllScheduled();
+export const getScheduledNotifications = () =>
+  notificationService.getScheduledNotifications();

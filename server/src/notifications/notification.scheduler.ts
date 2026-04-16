@@ -3,6 +3,26 @@ import { Cron, CronExpression } from '@nestjs/schedule';
 import { PrismaService } from '../prisma/prisma.service';
 import { NotificationsService } from './notifications.service';
 
+// ── League thresholds (must mirror mobile utils/league.ts) ────────────────────
+const LEAGUE_TIERS = [
+  { rank: 0, name: 'Iron',     minXp: 0     },
+  { rank: 1, name: 'Bronze',   minXp: 100   },
+  { rank: 2, name: 'Silver',   minXp: 500   },
+  { rank: 3, name: 'Gold',     minXp: 2000  },
+  { rank: 4, name: 'Platinum', minXp: 5000  },
+] as const;
+
+const LEAGUE_EMOJIS: Record<string, string> = {
+  Iron: '⚙️', Bronze: '🥉', Silver: '🥈', Gold: '🥇', Platinum: '💠',
+};
+
+function getLeagueRank(xp: number): { rank: number; name: string } {
+  for (let i = LEAGUE_TIERS.length - 1; i >= 0; i--) {
+    if (xp >= LEAGUE_TIERS[i].minXp) return LEAGUE_TIERS[i];
+  }
+  return LEAGUE_TIERS[0];
+}
+
 @Injectable()
 export class NotificationScheduler {
   private readonly logger = new Logger(NotificationScheduler.name);
@@ -87,6 +107,46 @@ export class NotificationScheduler {
       }
     } catch (error) {
       this.logger.error(`Failed to send streak-at-risk notifications: ${error}`);
+    }
+  }
+
+  /**
+   * High-streak protection alert — runs daily at 12:00 UTC (19:00 Bangkok).
+   * Targets users with a streak > 7 who haven't been active today yet.
+   * These are the most engaged users: protecting their streaks dramatically
+   * reduces churn and improves D30 retention metrics.
+   */
+  @Cron('0 12 * * *', { name: 'high-streak-protection' })
+  async sendHighStreakProtectionAlerts() {
+    this.logger.debug('Running high-streak protection alert (19h Bangkok)');
+    try {
+      const todayStart = new Date();
+      todayStart.setUTCHours(0, 0, 0, 0);
+
+      const atRiskUsers = await this.prisma.user.findMany({
+        where: {
+          streak: { gt: 7 },          // Only high-value streaks
+          lastActiveAt: {
+            lt: todayStart,            // Haven't completed a lesson today
+          },
+          pushTokens: {
+            some: { isActive: true }, // Have a push token
+          },
+        },
+        select: { id: true, streak: true },
+      });
+
+      let sent = 0;
+      for (const user of atRiskUsers) {
+        await this.notificationsService.sendStreakAtRiskNotification(user.id, user.streak);
+        sent++;
+      }
+
+      if (sent > 0) {
+        this.logger.log(`[HighStreakAlert] Sent ${sent} high-streak protection notifications`);
+      }
+    } catch (error) {
+      this.logger.error(`[HighStreakAlert] Failed: ${error}`);
     }
   }
 
@@ -198,6 +258,171 @@ export class NotificationScheduler {
       }
     } catch (error) {
       this.logger.error(`Failed to send inactivity reminders: ${error}`);
+    }
+  }
+
+  /**
+   * League Promotion Check — runs every Sunday at 00:05 UTC (after weekly XP reset).
+   *
+   * For each user who earned XP this past week, we compare:
+   *   • currentLeague  = getLeagueRank(user.totalXp)
+   *   • previousLeague = getLeagueRank(user.totalXp - weekXpEarned)
+   *
+   * If currentLeague.rank > previousLeague.rank → the user was promoted this week.
+   * We send a LEVEL_UP celebration push notification and log the total count.
+   *
+   * No schema change required — league rank is always derived from totalXp on-the-fly.
+   */
+  @Cron('5 0 * * 0', { name: 'league-promotion-check' })
+  async checkLeaguePromotions() {
+    this.logger.log('[LeaguePromotion] Running weekly league promotion check');
+
+    try {
+      const now = new Date();
+      // "Last week" = the UTC week that just ended (Sunday midnight reset)
+      const lastWeekStart = new Date(
+        Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() - 7),
+      );
+
+      // Fetch all WeeklyXp entries from last week with user's total XP
+      const weeklyEntries = await this.prisma.weeklyXp.findMany({
+        where: {
+          weekStart: lastWeekStart,
+          xpEarned: { gt: 0 },
+        },
+        include: {
+          user: {
+            select: {
+              id: true,
+              xp: true,
+              username: true,
+              pushTokens: {
+                where: { isActive: true },
+                select: { id: true },
+              },
+            },
+          },
+        },
+      });
+
+      let promotedCount = 0;
+
+      for (const entry of weeklyEntries) {
+        const { user } = entry;
+
+        // Skip users with no active push tokens
+        if (user.pushTokens.length === 0) continue;
+
+        const currentXp = user.xp;
+        const previousXp = Math.max(0, currentXp - entry.xpEarned);
+
+        const currentLeague = getLeagueRank(currentXp);
+        const previousLeague = getLeagueRank(previousXp);
+
+        // Promoted if league rank went up
+        if (currentLeague.rank > previousLeague.rank) {
+          const emoji = LEAGUE_EMOJIS[currentLeague.name] ?? '🏅';
+          await this.notificationsService.sendNotification(
+            user.id,
+            'LEVEL_UP',
+            `${emoji} Promotion de ligue !`,
+            `Tu es maintenant en ligue ${currentLeague.name} ! Continue comme ça ! 🚀`,
+            {
+              type: 'league_promotion',
+              newLeague: currentLeague.name,
+              previousLeague: previousLeague.name,
+              totalXp: currentXp,
+            },
+          );
+          promotedCount++;
+          this.logger.log(
+            `[LeaguePromotion] ${user.username} promoted ${previousLeague.name} → ${currentLeague.name}`,
+          );
+        }
+      }
+
+      this.logger.log(
+        `[LeaguePromotion] Done — ${promotedCount} promotion(s) notified out of ${weeklyEntries.length} active users`,
+      );
+    } catch (error) {
+      this.logger.error(`[LeaguePromotion] Failed: ${error}`);
+    }
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────────
+  // Challenge Expiry — runs every hour
+  // Marks PENDING / ACCEPTED challenges past their expiresAt as EXPIRED
+  // and sends a push notification to the challenger.
+  // ─────────────────────────────────────────────────────────────────────────────
+
+  @Cron(CronExpression.EVERY_HOUR, { name: 'challenge-expiry' })
+  async expireStaleChallenges() {
+    this.logger.debug('[ChallengeExpiry] Running challenge expiry check');
+
+    try {
+      const now = new Date();
+
+      // Find all stale challenges
+      const stale = await this.prisma.lessonChallenge.findMany({
+        where: {
+          expiresAt: { lt: now },
+          status: { in: ['PENDING', 'ACCEPTED'] },
+        },
+        include: {
+          challenger: {
+            select: {
+              id: true,
+              username: true,
+              pushTokens: { where: { isActive: true }, select: { id: true } },
+            },
+          },
+          challenged: { select: { id: true, username: true } },
+          lesson:     { select: { title: true } },
+        },
+      });
+
+      if (stale.length === 0) {
+        this.logger.debug('[ChallengeExpiry] No stale challenges found');
+        return;
+      }
+
+      // Batch-update to EXPIRED
+      const ids = stale.map((c) => c.id);
+      await this.prisma.lessonChallenge.updateMany({
+        where: { id: { in: ids } },
+        data: { status: 'EXPIRED', updatedAt: now },
+      });
+
+      this.logger.log(`[ChallengeExpiry] Expired ${ids.length} challenge(s)`);
+
+      // Notify challenger for each expired challenge (fire-and-forget)
+      for (const challenge of stale) {
+        // Only push if challenger has an active token
+        if (challenge.challenger.pushTokens.length === 0) continue;
+
+        const title = '⏰ Défi expiré';
+        const body =
+          `Ton défi "${challenge.lesson.title}" contre ` +
+          `${challenge.challenged.username} a expiré sans réponse.`;
+
+        await this.notificationsService.sendNotification(
+          challenge.challenger.id,
+          'LESSON_CHALLENGE_RECEIVED', // reuse existing type — no schema change
+          title,
+          body,
+          {
+            type: 'challenge_expired',
+            challengeId: challenge.id,
+            lessonTitle: challenge.lesson.title,
+          },
+        );
+      }
+
+      this.logger.log(
+        `[ChallengeExpiry] Notified ${stale.filter((c) => c.challenger.pushTokens.length > 0).length} challenger(s)`,
+      );
+    } catch (error) {
+      this.logger.error(`[ChallengeExpiry] Failed: ${error}`);
     }
   }
 }

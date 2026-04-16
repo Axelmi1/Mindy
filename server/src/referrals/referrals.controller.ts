@@ -1,3 +1,4 @@
+import { ApiTags } from '@nestjs/swagger';
 import { Controller, Get, Post, Param, Body } from '@nestjs/common';
 import { ReferralsService } from './referrals.service';
 
@@ -6,6 +7,7 @@ class ApplyReferralDto {
   referralCode!: string;
 }
 
+@ApiTags('referrals')
 @Controller('referrals')
 export class ReferralsController {
   constructor(private readonly referralsService: ReferralsService) {}

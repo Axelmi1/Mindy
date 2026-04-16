@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
-import { View, Text, ScrollView, Pressable, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, ScrollView, Pressable, StyleSheet } from 'react-native';
+import { SkeletonBox } from '@/components/ui/SkeletonBox';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import Animated, { FadeIn, FadeInUp } from 'react-native-reanimated';
@@ -76,7 +77,7 @@ export default function AchievementsScreen() {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.centerContent}>
-          <ActivityIndicator size="large" color="#39FF14" />
+          (<View style={{padding:20,gap:12}}>{[0,1,2,3,4].map(i=><SkeletonBox key={i} height={80} borderRadius={16}/>)}</View>)
         </View>
       </SafeAreaView>
     );
@@ -132,7 +133,7 @@ export default function AchievementsScreen() {
       >
         {isLoading ? (
           <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color="#39FF14" />
+            (<View style={{padding:20,gap:12}}>{[0,1,2,3,4].map(i=><SkeletonBox key={i} height={80} borderRadius={16}/>)}</View>)
           </View>
         ) : (
           CATEGORY_ORDER.map((category, categoryIndex) => {

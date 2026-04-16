@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { View, Text, Pressable, StyleSheet, Dimensions } from 'react-native';
 import Animated, {
   FadeInDown,
   FadeInUp,
@@ -9,13 +9,208 @@ import Animated, {
   useAnimatedStyle,
   withTiming,
   withDelay,
-  withSequence,
   Easing,
 } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
-import type { PricePredictionStep } from '@mindy/shared';
+import type { PricePredictionStep, Candle } from '@mindy/shared';
 import { MindyMessage } from '../MindyMessage';
 import { Icon } from '../ui/Icon';
+
+const CHART_HEIGHT = 180;
+const CANDLE_GAP = 4;
+const WICK_WIDTH = 1.5;
+
+interface CandlestickChartProps {
+  candles: Candle[];
+  revealed: boolean;
+  correctAnswer: 'up' | 'down';
+}
+
+function CandlestickChart({ candles, revealed, correctAnswer }: CandlestickChartProps) {
+  const { width } = Dimensions.get('window');
+  const chartWidth = width - 32 - 32 - 32; // screen padding + card padding + inner padding
+
+  // +1 for the "next candle" placeholder column
+  const candleCount = candles.length + 1;
+  const candleWidth = Math.floor((chartWidth - CANDLE_GAP * (candleCount - 1)) / candleCount);
+
+  // Global price range across all candles
+  const { globalMin, globalMax } = useMemo(() => {
+    let min = Infinity;
+    let max = -Infinity;
+    for (const c of candles) {
+      if (c.low < min) min = c.low;
+      if (c.high > max) max = c.high;
+    }
+    const padding = (max - min) * 0.08;
+    return { globalMin: min - padding, globalMax: max + padding };
+  }, [candles]);
+
+  const range = globalMax - globalMin || 1;
+
+  // Convert price value to Y coordinate (top = high price)
+  const toY = (price: number) =>
+    CHART_HEIGHT - ((price - globalMin) / range) * CHART_HEIGHT;
+
+  // Price scale labels (3 horizontal lines)
+  const priceLabels = [globalMax, (globalMax + globalMin) / 2, globalMin];
+
+  // Last candle info for prediction arrow
+  const lastCandle = candles[candles.length - 1];
+  const predictedY = revealed
+    ? correctAnswer === 'up'
+      ? toY(lastCandle.high * 1.02)
+      : toY(lastCandle.low * 0.98)
+    : null;
+
+  return (
+    <View style={styles.chartWrapper}>
+      {/* Y-axis labels */}
+      <View style={styles.yAxis}>
+        {priceLabels.map((price, i) => (
+          <Text key={i} style={styles.yLabel}>
+            {price >= 1000
+              ? `${(price / 1000).toFixed(1)}k`
+              : price.toFixed(0)}
+          </Text>
+        ))}
+      </View>
+
+      {/* Chart area */}
+      <View style={[styles.chartArea, { height: CHART_HEIGHT }]}>
+        {/* Horizontal grid lines */}
+        {priceLabels.map((_, i) => (
+          <View
+            key={i}
+            style={[
+              styles.gridLine,
+              { top: (i / (priceLabels.length - 1)) * CHART_HEIGHT },
+            ]}
+          />
+        ))}
+
+        {/* Candles */}
+        {candles.map((candle, i) => {
+          const isGreen = candle.close >= candle.open;
+          const color = isGreen ? '#26A65B' : '#F85149';
+          const glowColor = isGreen ? 'rgba(38,166,91,0.3)' : 'rgba(248,81,73,0.3)';
+
+          const bodyTop = toY(Math.max(candle.open, candle.close));
+          const bodyBottom = toY(Math.min(candle.open, candle.close));
+          const bodyHeight = Math.max(bodyBottom - bodyTop, 2);
+
+          const wickTop = toY(candle.high);
+          const wickBottom = toY(candle.low);
+
+          const x = i * (candleWidth + CANDLE_GAP);
+          const isLast = i === candles.length - 1;
+
+          return (
+            <View
+              key={i}
+              style={[
+                styles.candleWrapper,
+                { left: x, width: candleWidth },
+              ]}
+            >
+              {/* Upper wick */}
+              <View
+                style={[
+                  styles.wick,
+                  {
+                    top: wickTop,
+                    height: Math.max(bodyTop - wickTop, 0),
+                    left: candleWidth / 2 - WICK_WIDTH / 2,
+                    backgroundColor: color,
+                  },
+                ]}
+              />
+
+              {/* Candle body */}
+              <View
+                style={[
+                  styles.candleBody,
+                  {
+                    top: bodyTop,
+                    height: bodyHeight,
+                    backgroundColor: color,
+                    shadowColor: glowColor,
+                    shadowOpacity: isLast ? 0.6 : 0,
+                    shadowRadius: 6,
+                    shadowOffset: { width: 0, height: 0 },
+                  },
+                ]}
+              />
+
+              {/* Lower wick */}
+              <View
+                style={[
+                  styles.wick,
+                  {
+                    top: bodyTop + bodyHeight,
+                    height: Math.max(wickBottom - (bodyTop + bodyHeight), 0),
+                    left: candleWidth / 2 - WICK_WIDTH / 2,
+                    backgroundColor: color,
+                  },
+                ]}
+              />
+
+
+            </View>
+          );
+        })}
+
+        {/* Next candle placeholder — always visible, position neutral (center) */}
+        <View
+          style={[
+            styles.candleWrapper,
+            {
+              left: candles.length * (candleWidth + CANDLE_GAP),
+              width: candleWidth,
+            },
+          ]}
+        >
+          {!revealed ? (
+            // Dashed empty box in the middle of chart = "unknown next candle"
+            <View
+              style={[
+                styles.nextCandlePlaceholder,
+                {
+                  top: CHART_HEIGHT * 0.25,
+                  height: CHART_HEIGHT * 0.5,
+                },
+              ]}
+            >
+              <Text style={styles.nextCandleQ}>?</Text>
+            </View>
+          ) : (
+            // Revealed: show direction arrow
+            <Animated.View
+              entering={ZoomIn.duration(300)}
+              style={[
+                styles.nextCandlePlaceholder,
+                {
+                  top: CHART_HEIGHT * 0.25,
+                  height: CHART_HEIGHT * 0.5,
+                  borderColor: correctAnswer === 'up' ? '#26A65B' : '#F85149',
+                  backgroundColor: correctAnswer === 'up'
+                    ? 'rgba(38,166,91,0.12)'
+                    : 'rgba(248,81,73,0.12)',
+                },
+              ]}
+            >
+              <Text style={styles.nextCandleQ}>
+                {correctAnswer === 'up' ? '📈' : '📉'}
+              </Text>
+            </Animated.View>
+          )}
+        </View>
+      </View>
+    </View>
+  );
+}
+
+// ─────────────────────────────────────────────
 
 interface PricePredictionStepViewProps {
   step: PricePredictionStep;
@@ -23,30 +218,25 @@ interface PricePredictionStepViewProps {
 }
 
 export function PricePredictionStepView({ step, onAnswer }: PricePredictionStepViewProps) {
-  const [timeLeft, setTimeLeft] = useState(6);
+  const [timeLeft, setTimeLeft] = useState(8);
   const [selected, setSelected] = useState<'up' | 'down' | null>(null);
   const [revealed, setRevealed] = useState(false);
   const [timedOut, setTimedOut] = useState(false);
 
-  // Animated bar heights
-  const barAnimations = step.priceData.map(() => useSharedValue(0));
+  // Timer progress bar (1 → 0)
+  const timerProgress = useSharedValue(1);
+  const timerBarStyle = useAnimatedStyle(() => ({
+    width: `${timerProgress.value * 100}%`,
+  }));
 
-  // Animate bars on mount
   useEffect(() => {
-    const maxPrice = Math.max(...step.priceData);
-    const minPrice = Math.min(...step.priceData);
-    const range = maxPrice - minPrice || 1;
-
-    step.priceData.forEach((price, i) => {
-      const normalizedHeight = 0.2 + ((price - minPrice) / range) * 0.8;
-      barAnimations[i].value = withDelay(
-        i * 80,
-        withTiming(normalizedHeight, { duration: 400, easing: Easing.out(Easing.cubic) })
-      );
+    timerProgress.value = withTiming(0, {
+      duration: 8000,
+      easing: Easing.linear,
     });
   }, []);
 
-  // Countdown timer
+  // Countdown
   useEffect(() => {
     if (revealed || selected) return;
     if (timeLeft <= 0) {
@@ -59,25 +249,20 @@ export function PricePredictionStepView({ step, onAnswer }: PricePredictionStepV
   }, [timeLeft, revealed, selected]);
 
   const handleSelect = useCallback(async (direction: 'up' | 'down') => {
-    if (revealed || selected) return;
+    if (revealed) return;
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     setSelected(direction);
     setRevealed(true);
-  }, [revealed, selected]);
+  }, [revealed]);
 
   const handleContinue = () => {
-    if (timedOut) {
-      onAnswer(false);
-      return;
-    }
+    if (timedOut) return onAnswer(false);
     onAnswer(selected === step.correctAnswer);
   };
 
   const isCorrect = selected === step.correctAnswer;
   const feedbackColor = isCorrect ? '#39FF14' : '#F85149';
-
-  // Determine trend color for bars
-  const trendUp = step.priceData[step.priceData.length - 1] >= step.priceData[0];
+  const timerColor = timeLeft <= 3 ? '#F85149' : timeLeft <= 5 ? '#FFA500' : '#39FF14';
 
   return (
     <View style={styles.container}>
@@ -86,59 +271,44 @@ export function PricePredictionStepView({ step, onAnswer }: PricePredictionStepV
         {step.question}
       </Animated.Text>
 
-      {/* Timer */}
+      {/* Timer bar */}
       {!revealed && (
-        <Animated.View entering={FadeIn} style={styles.timerRow}>
-          <Icon name="clock" size={14} color={timeLeft <= 2 ? '#F85149' : '#8B949E'} />
-          <Text style={[styles.timerText, timeLeft <= 2 && styles.timerUrgent]}>
+        <View style={styles.timerContainer}>
+          <View style={styles.timerTrack}>
+            <Animated.View
+              style={[styles.timerFill, { backgroundColor: timerColor }, timerBarStyle]}
+            />
+          </View>
+          <Text style={[styles.timerText, timeLeft <= 3 && styles.timerUrgent]}>
             {timeLeft}s
           </Text>
-        </Animated.View>
+        </View>
       )}
 
-      {/* Sparkline Chart (View-based bars) */}
-      <Animated.View entering={FadeInUp.delay(100).duration(400)} style={styles.chartContainer}>
-        <View style={styles.chartInner}>
-          {step.priceData.map((price, i) => {
-            const animStyle = useAnimatedStyle(() => ({
-              height: `${barAnimations[i].value * 100}%`,
-            }));
-            const isLast = i === step.priceData.length - 1;
-            return (
-              <Animated.View
-                key={i}
-                style={[
-                  styles.bar,
-                  animStyle,
-                  {
-                    backgroundColor: isLast
-                      ? (trendUp ? '#39FF14' : '#F85149')
-                      : 'rgba(88, 166, 255, 0.6)',
-                  },
-                  isLast && styles.barLast,
-                ]}
-              />
-            );
-          })}
+      {/* Candlestick chart */}
+      <Animated.View
+        entering={FadeInUp.delay(100).duration(400)}
+        style={styles.chartContainer}
+      >
+        {/* Legend */}
+        <View style={styles.legend}>
+          <View style={styles.legendItem}>
+            <View style={[styles.legendDot, { backgroundColor: '#26A65B' }]} />
+            <Text style={styles.legendText}>Haussier</Text>
+          </View>
+          <View style={styles.legendItem}>
+            <View style={[styles.legendDot, { backgroundColor: '#F85149' }]} />
+            <Text style={styles.legendText}>Baissier</Text>
+          </View>
+          <Text style={styles.legendText}>  |  Prochain = ?</Text>
         </View>
 
-        {/* Price labels */}
-        <View style={styles.priceLabels}>
-          <Text style={styles.priceLabel}>
-            {Math.min(...step.priceData).toLocaleString()}
-          </Text>
-          <Text style={styles.priceLabel}>
-            {Math.max(...step.priceData).toLocaleString()}
-          </Text>
-        </View>
+        <CandlestickChart
+          candles={step.candles}
+          revealed={revealed}
+          correctAnswer={step.correctAnswer}
+        />
       </Animated.View>
-
-      {/* Question mark for next bar */}
-      {!revealed && (
-        <Animated.Text entering={FadeIn.delay(800)} style={styles.predictionHint}>
-          Le prochain point sera...
-        </Animated.Text>
-      )}
 
       {/* Prediction buttons */}
       {!revealed && (
@@ -147,14 +317,14 @@ export function PricePredictionStepView({ step, onAnswer }: PricePredictionStepV
             style={[styles.predictionButton, styles.upButton]}
             onPress={() => handleSelect('up')}
           >
-            <Icon name="trending-up" size={24} color="#39FF14" />
-            <Text style={[styles.predictionButtonText, { color: '#39FF14' }]}>Hausse</Text>
+            <Text style={styles.upDownEmoji}>📈</Text>
+            <Text style={[styles.predictionButtonText, { color: '#26A65B' }]}>Hausse</Text>
           </Pressable>
           <Pressable
             style={[styles.predictionButton, styles.downButton]}
             onPress={() => handleSelect('down')}
           >
-            <Icon name="trending-down" size={24} color="#F85149" />
+            <Text style={styles.upDownEmoji}>📉</Text>
             <Text style={[styles.predictionButtonText, { color: '#F85149' }]}>Baisse</Text>
           </Pressable>
         </Animated.View>
@@ -167,16 +337,24 @@ export function PricePredictionStepView({ step, onAnswer }: PricePredictionStepV
             <Animated.View entering={ZoomIn.duration(300)} style={styles.resultCard}>
               <Icon name="clock" size={28} color="#F85149" />
               <Text style={[styles.resultText, { color: '#F85149' }]}>Temps écoulé !</Text>
+              <Text style={styles.correctAnswer}>
+                Réponse : {step.correctAnswer === 'up' ? '📈 Hausse' : '📉 Baisse'}
+              </Text>
             </Animated.View>
           ) : (
-            <Animated.View entering={ZoomIn.duration(300)} style={[styles.resultCard, { borderColor: feedbackColor }]}>
+            <Animated.View
+              entering={ZoomIn.duration(300)}
+              style={[styles.resultCard, { borderColor: feedbackColor }]}
+            >
               <Icon name={isCorrect ? 'check' : 'x'} size={28} color={feedbackColor} />
               <Text style={[styles.resultText, { color: feedbackColor }]}>
-                {isCorrect ? 'Bonne prédiction !' : 'Mauvaise prédiction'}
+                {isCorrect ? 'Bonne lecture !' : 'Mauvaise prédiction'}
               </Text>
-              <Text style={styles.correctAnswer}>
-                Réponse : {step.correctAnswer === 'up' ? 'Hausse' : 'Baisse'}
-              </Text>
+              {!isCorrect && (
+                <Text style={styles.correctAnswer}>
+                  Réponse attendue : {step.correctAnswer === 'up' ? '📈 Hausse' : '📉 Baisse'}
+                </Text>
+              )}
             </Animated.View>
           )}
 
@@ -210,63 +388,126 @@ const styles = StyleSheet.create({
   },
   question: {
     fontFamily: 'Inter',
-    fontSize: 18,
+    fontSize: 17,
     fontWeight: '700',
     color: '#E6EDF3',
     lineHeight: 26,
   },
-  timerRow: {
+  timerContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
-    alignSelf: 'center',
+    gap: 8,
+  },
+  timerTrack: {
+    flex: 1,
+    height: 6,
+    backgroundColor: '#21262D',
+    borderRadius: 3,
+    overflow: 'hidden',
+  },
+  timerFill: {
+    height: '100%',
+    borderRadius: 3,
   },
   timerText: {
     fontFamily: 'JetBrainsMono',
-    fontSize: 16,
+    fontSize: 13,
     fontWeight: '700',
     color: '#8B949E',
+    width: 26,
+    textAlign: 'right',
   },
   timerUrgent: {
     color: '#F85149',
   },
   chartContainer: {
-    backgroundColor: '#161B22',
+    backgroundColor: '#0D1117',
     borderRadius: 16,
-    padding: 16,
+    padding: 12,
     borderWidth: 1,
-    borderColor: '#30363D',
-    gap: 8,
+    borderColor: '#21262D',
+    gap: 10,
+    overflow: 'hidden',
   },
-  chartInner: {
+  legend: {
     flexDirection: 'row',
-    alignItems: 'flex-end',
-    height: 140,
+    alignItems: 'center',
     gap: 6,
   },
-  bar: {
-    flex: 1,
-    borderRadius: 4,
-    minHeight: 8,
-  },
-  barLast: {
-    opacity: 0.9,
-  },
-  priceLabels: {
+  legendItem: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    alignItems: 'center',
+    gap: 4,
   },
-  priceLabel: {
+  legendDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 2,
+  },
+  legendText: {
     fontFamily: 'JetBrainsMono',
-    fontSize: 10,
+    fontSize: 9,
     color: '#484F58',
   },
-  predictionHint: {
-    fontFamily: 'Inter',
-    fontSize: 14,
+  chartWrapper: {
+    flexDirection: 'row',
+    gap: 6,
+  },
+  yAxis: {
+    width: 32,
+    height: CHART_HEIGHT,
+    justifyContent: 'space-between',
+    alignItems: 'flex-end',
+    paddingRight: 4,
+  },
+  yLabel: {
+    fontFamily: 'JetBrainsMono',
+    fontSize: 8,
+    color: '#484F58',
+  },
+  chartArea: {
+    flex: 1,
+    position: 'relative',
+  },
+  gridLine: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    height: 1,
+    backgroundColor: '#21262D',
+  },
+  candleWrapper: {
+    position: 'absolute',
+    top: 0,
+    height: CHART_HEIGHT,
+  },
+  wick: {
+    position: 'absolute',
+    width: WICK_WIDTH,
+  },
+  candleBody: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    borderRadius: 1,
+  },
+  nextCandlePlaceholder: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    borderRadius: 3,
+    borderWidth: 1.5,
+    borderColor: '#484F58',
+    borderStyle: 'dashed',
+    backgroundColor: 'rgba(139,148,158,0.06)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  nextCandleQ: {
+    fontFamily: 'JetBrainsMono',
+    fontSize: 13,
+    fontWeight: '700',
     color: '#8B949E',
-    textAlign: 'center',
-    fontWeight: '500',
   },
   buttonRow: {
     flexDirection: 'row',
@@ -282,9 +523,12 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     borderWidth: 1.5,
   },
+  upDownEmoji: {
+    fontSize: 20,
+  },
   upButton: {
-    backgroundColor: 'rgba(57, 255, 20, 0.08)',
-    borderColor: 'rgba(57, 255, 20, 0.4)',
+    backgroundColor: 'rgba(38, 166, 91, 0.08)',
+    borderColor: 'rgba(38, 166, 91, 0.4)',
   },
   downButton: {
     backgroundColor: 'rgba(248, 81, 73, 0.08)',

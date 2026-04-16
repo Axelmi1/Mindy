@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { View, Text, Pressable, StyleSheet, ActivityIndicator, FlatList, RefreshControl } from 'react-native';
+import { View, Text, Pressable, StyleSheet, FlatList, RefreshControl } from 'react-native';
+import { SkeletonBox } from '@/components/ui/SkeletonBox';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
@@ -106,10 +107,38 @@ export default function LeaderboardScreen() {
         </View>
 
         <View style={styles.userInfo}>
-          <Text style={[styles.username, item.isCurrentUser && styles.usernameCurrentUser]}>
-            {item.username}
-            {item.isCurrentUser && ' (You)'}
-          </Text>
+          <View style={styles.usernameRow}>
+            <Text style={[styles.username, item.isCurrentUser && styles.usernameCurrentUser]}>
+              {item.username}
+              {item.isCurrentUser && ' (You)'}
+            </Text>
+            {item.rankDelta !== null && item.rankDelta !== 0 && (
+              <View style={[
+                styles.rankDeltaBadge,
+                item.rankDelta > 0 ? styles.rankDeltaUp : styles.rankDeltaDown,
+              ]}>
+                <Text style={[
+                  styles.rankDeltaText,
+                  item.rankDelta > 0 ? styles.rankDeltaTextUp : styles.rankDeltaTextDown,
+                ]}>
+                  {item.rankDelta > 0 ? '▲' : '▼'} {Math.abs(item.rankDelta)}
+                </Text>
+              </View>
+            )}
+            {item.rankDelta === null && (
+              <View style={styles.rankNewBadge}>
+                <Text style={styles.rankNewText}>NEW</Text>
+              </View>
+            )}
+          </View>
+          {typeof item.xpDelta === 'number' && item.xpDelta !== 0 && (
+            <Text style={[
+              styles.deltaText,
+              item.xpDelta > 0 ? styles.deltaPositive : styles.deltaNegative,
+            ]}>
+              {item.xpDelta > 0 ? '+' : ''}{item.xpDelta.toLocaleString()} XP vs semaine passée
+            </Text>
+          )}
         </View>
 
         <View style={styles.xpContainer}>
@@ -124,9 +153,12 @@ export default function LeaderboardScreen() {
   if (isUserLoading || isLoading) {
     return (
       <SafeAreaView style={styles.container}>
-        <View style={styles.centerContent}>
-          <ActivityIndicator size="large" color="#FFD700" />
-          <Text style={styles.loadingText}>Loading leaderboard...</Text>
+        <View style={{ padding: 20, gap: 12 }}>
+          <SkeletonBox height={28} width="50%" borderRadius={8} />
+          <SkeletonBox height={80} borderRadius={16} />
+          {[0, 1, 2, 3, 4, 5, 6].map(i => (
+            <SkeletonBox key={i} height={68} borderRadius={12} />
+          ))}
         </View>
       </SafeAreaView>
     );
@@ -330,6 +362,12 @@ const styles = StyleSheet.create({
     flex: 1,
     marginLeft: 12,
   },
+  usernameRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    flexWrap: 'wrap',
+  },
   username: {
     fontFamily: 'Inter',
     fontSize: 14,
@@ -338,6 +376,51 @@ const styles = StyleSheet.create({
   },
   usernameCurrentUser: {
     color: '#39FF14',
+  },
+  rankDeltaBadge: {
+    borderRadius: 4,
+    paddingHorizontal: 5,
+    paddingVertical: 2,
+  },
+  rankDeltaUp: {
+    backgroundColor: 'rgba(57, 255, 20, 0.15)',
+  },
+  rankDeltaDown: {
+    backgroundColor: 'rgba(248, 81, 73, 0.15)',
+  },
+  rankDeltaText: {
+    fontFamily: 'JetBrainsMono',
+    fontSize: 10,
+    fontWeight: '700',
+  },
+  rankDeltaTextUp: {
+    color: '#39FF14',
+  },
+  rankDeltaTextDown: {
+    color: '#F85149',
+  },
+  rankNewBadge: {
+    backgroundColor: 'rgba(88, 166, 255, 0.15)',
+    borderRadius: 4,
+    paddingHorizontal: 5,
+    paddingVertical: 2,
+  },
+  rankNewText: {
+    fontFamily: 'JetBrainsMono',
+    fontSize: 10,
+    fontWeight: '700',
+    color: '#58A6FF',
+  },
+  deltaText: {
+    fontFamily: 'JetBrainsMono',
+    fontSize: 10,
+    marginTop: 2,
+  },
+  deltaPositive: {
+    color: '#39FF14',
+  },
+  deltaNegative: {
+    color: '#F85149',
   },
   xpContainer: {
     flexDirection: 'row',

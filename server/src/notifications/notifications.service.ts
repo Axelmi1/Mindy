@@ -45,6 +45,9 @@ export class NotificationsService {
         return prefs.levelUpCelebration; // Use same pref as level up
       case 'REFERRAL_COMPLETED':
         return true; // Always send referral notifications
+      case 'LESSON_CHALLENGE_RECEIVED':
+      case 'LESSON_CHALLENGE_ACCEPTED':
+        return true; // Always send challenge notifications
       default:
         return true;
     }
@@ -234,6 +237,42 @@ export class NotificationsService {
       'Nouveau parrainage ! 🎉',
       `${refereeUsername} a utilisé ton code ! Tu gagnes +${xpAwarded} XP !`,
       { refereeUsername, xpAwarded },
+    );
+  }
+
+  /**
+   * Send push notification when a user receives a lesson challenge
+   */
+  async sendChallengeReceivedNotification(
+    challengedUserId: string,
+    challengerUsername: string,
+    lessonTitle: string,
+    challengeId: string,
+  ) {
+    return this.sendNotification(
+      challengedUserId,
+      'LESSON_CHALLENGE_RECEIVED',
+      `⚔️ Nouveau défi de ${challengerUsername} !`,
+      `${challengerUsername} te défie sur "${lessonTitle}". Tu as 48h pour relever le challenge !`,
+      { challengeId, challengerUsername, lessonTitle, action: 'open_challenge' },
+    );
+  }
+
+  /**
+   * Send push notification when a challenge is accepted
+   */
+  async sendChallengeAcceptedNotification(
+    challengerUserId: string,
+    challengedUsername: string,
+    lessonTitle: string,
+    challengeId: string,
+  ) {
+    return this.sendNotification(
+      challengerUserId,
+      'LESSON_CHALLENGE_ACCEPTED',
+      `🔥 ${challengedUsername} a accepté ton défi !`,
+      `La battle sur "${lessonTitle}" commence. Montre ce que tu vaux !`,
+      { challengeId, challengedUsername, lessonTitle, action: 'open_challenge' },
     );
   }
 }

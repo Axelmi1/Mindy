@@ -45,6 +45,8 @@ export interface UpdateUserDto {
     xp?: number;
     level?: number;
     streak?: number;
+    preferredDomain?: string;
+    userGoal?: string;
 }
 export interface CreateProgressDto {
     userId: string;

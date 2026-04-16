@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
-import { View, Text, Pressable, StyleSheet, ActivityIndicator, TextInput, Alert } from 'react-native';
+import { View, Text, Pressable, StyleSheet, ActivityIndicator, TextInput, Alert, KeyboardAvoidingView, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import Animated, { FadeIn, FadeInUp, FadeInDown } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useUser } from '@/hooks/useUser';
 import { Icon } from '@/components/ui/Icon';
-import { referralsApi } from '@/api/client';
+import { referralsApi, usersApi } from '@/api/client';
 
 /**
  * Login Screen - Entry point for authentication
@@ -17,6 +18,9 @@ export default function LoginScreen() {
   const [isCreatingNew, setIsCreatingNew] = useState(false);
   const [showReferralInput, setShowReferralInput] = useState(false);
   const [referralCode, setReferralCode] = useState('');
+  const [showUsernameLogin, setShowUsernameLogin] = useState(false);
+  const [loginUsername, setLoginUsername] = useState('');
+  const [isLoginLoading, setIsLoginLoading] = useState(false);
 
   const handleAnonymousLogin = async () => {
     setIsLoading(true);
@@ -67,6 +71,31 @@ export default function LoginScreen() {
     } catch (err) {
       console.error('Error creating new test user:', err);
       setIsCreatingNew(false);
+    }
+  };
+
+  const handleUsernameLogin = async () => {
+    const trimmed = loginUsername.trim();
+    if (!trimmed) return;
+
+    setIsLoginLoading(true);
+    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+
+    try {
+      const result = await usersApi.getByUsername(trimmed);
+      if (result.success && result.data) {
+        await AsyncStorage.multiSet([
+          ['@mindy/user_id', result.data.id],
+          ['@mindy/username', result.data.username],
+        ]);
+        router.replace('/(tabs)');
+      } else {
+        Alert.alert('User not found', `No account found for "@${trimmed}"\n\nGo back to create a new account.`, [{ text: 'OK' }]);
+      }
+    } catch {
+      Alert.alert('Error', 'Could not connect to the server. Check your connection.', [{ text: 'OK' }]);
+    } finally {
+      setIsLoginLoading(false);
     }
   };
 
@@ -164,24 +193,66 @@ export default function LoginScreen() {
 
           <View style={styles.dividerRow}>
             <View style={styles.divider} />
-            <Text style={styles.dividerText}>or continue with</Text>
+            <Text style={styles.dividerText}>or login with username</Text>
             <View style={styles.divider} />
           </View>
 
-          {/* Social Buttons */}
-          <View style={styles.socialRow}>
-            <Pressable style={[styles.button, styles.buttonSocial]} onPress={handleGoogleLogin}>
-              <Icon name="google" size={18} color="#E6EDF3" />
-              <Text style={styles.buttonSocialText}>Google</Text>
+          {/* Username Login */}
+          {!showUsernameLogin ? (
+            <Pressable
+              style={[styles.button, styles.buttonTest]}
+              onPress={() => setShowUsernameLogin(true)}
+            >
+              <Icon name="user" size={20} color="#8B949E" />
+              <Text style={styles.buttonTestText}>Login with @username</Text>
             </Pressable>
-
-            <Pressable style={[styles.button, styles.buttonSocial]} onPress={handleAppleLogin}>
-              <Icon name="apple" size={18} color="#E6EDF3" />
-              <Text style={styles.buttonSocialText}>Apple</Text>
-            </Pressable>
-          </View>
+          ) : (
+            <View style={{ gap: 10 }}>
+              <View style={styles.usernameLoginRow}>
+                <Text style={styles.usernameAtSign}>@</Text>
+                <TextInput
+                  style={styles.usernameLoginInput}
+                  placeholder="your_username"
+                  placeholderTextColor="#484F58"
+                  value={loginUsername}
+                  onChangeText={setLoginUsername}
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  returnKeyType="go"
+                  onSubmitEditing={handleUsernameLogin}
+                  autoFocus
+                />
+              </View>
+              <Pressable
+                style={[styles.button, styles.buttonPrimary, (!loginUsername.trim() || isLoginLoading) && { opacity: 0.5 }]}
+                onPress={handleUsernameLogin}
+                disabled={!loginUsername.trim() || isLoginLoading}
+              >
+                {isLoginLoading ? (
+                  <ActivityIndicator color="#0D1117" />
+                ) : (
+                  <Text style={styles.buttonPrimaryText}>Login</Text>
+                )}
+              </Pressable>
+            </View>
+          )}
         </Animated.View>
       </View>
+
+      {/* Admin Mode */}
+      <Animated.View entering={FadeInDown.delay(700).duration(400)} style={styles.adminSection}>
+        <Pressable
+          style={styles.adminButton}
+          onPress={async () => {
+            await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+            await AsyncStorage.setItem('@mindy/admin_mode', 'true');
+            await initUser();
+            router.replace('/(tabs)');
+          }}
+        >
+          <Text style={styles.adminButtonText}>🛠 Admin</Text>
+        </Pressable>
+      </Animated.View>
 
       {/* Footer */}
       <Animated.View entering={FadeInDown.delay(600).duration(400)} style={styles.footer}>
@@ -361,6 +432,23 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#E6EDF3',
   },
+  adminSection: {
+    alignItems: 'center',
+    paddingBottom: 8,
+  },
+  adminButton: {
+    paddingHorizontal: 14,
+    paddingVertical: 6,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#30363D',
+    backgroundColor: 'transparent',
+  },
+  adminButtonText: {
+    fontFamily: 'JetBrainsMono',
+    fontSize: 11,
+    color: '#484F58',
+  },
   footer: {
     paddingHorizontal: 24,
     paddingBottom: 24,
@@ -374,5 +462,29 @@ const styles = StyleSheet.create({
   },
   footerLink: {
     color: '#58A6FF',
+  },
+  usernameLoginRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#161B22',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#39FF14',
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    gap: 8,
+  },
+  usernameAtSign: {
+    fontFamily: 'JetBrainsMono',
+    fontSize: 18,
+    color: '#39FF14',
+    fontWeight: '700',
+  },
+  usernameLoginInput: {
+    flex: 1,
+    fontFamily: 'JetBrainsMono',
+    fontSize: 16,
+    color: '#E6EDF3',
+    padding: 0,
   },
 });

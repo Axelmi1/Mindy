@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import {
   View,
   Text,
@@ -6,6 +6,10 @@ import {
   StyleSheet,
   Dimensions,
   ActivityIndicator,
+  TextInput,
+  KeyboardAvoidingView,
+  Platform,
+  Share,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
@@ -25,7 +29,13 @@ import Animated, {
 } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import { useUser } from '@/hooks/useUser';
+import { useReferrals } from '@/hooks/useReferrals';
 import { Icon, IconName } from '@/components/ui/Icon';
+import {
+  abTestService,
+  trackABConversion,
+  type OnboardingVariant,
+} from '@/services/abtest';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -39,7 +49,8 @@ type OnboardingStep =
   | 'demo_q2'
   | 'demo_q3'
   | 'results'
-  | 'signup';
+  | 'signup'
+  | 'invite_friend';
 
 interface UserChoices {
   domain: 'CRYPTO' | 'FINANCE' | 'BOTH' | null;
@@ -89,7 +100,8 @@ const DEMO_QUESTIONS = [
 ];
 
 export default function OnboardingScreen() {
-  const { initUser } = useUser();
+  const { initUser, userId } = useUser();
+  const { stats: referralStats, shareReferralCode } = useReferrals(userId);
   const [step, setStep] = useState<OnboardingStep>('welcome');
   const [choices, setChoices] = useState<UserChoices>({
     domain: null,
@@ -98,9 +110,20 @@ export default function OnboardingScreen() {
     demoScore: 0,
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [abVariant, setAbVariant] = useState<OnboardingVariant>('control');
+
+  // Assign A/B variant on mount (anonymous user = hash of timestamp)
+  useEffect(() => {
+    const anonId = `anon_${Date.now().toString(36)}`;
+    abTestService.initialize(anonId).then(() =>
+      abTestService.getVariant('ONBOARDING_FLOW').then(setAbVariant),
+    );
+  }, []);
   const [selectedAnswer, setSelectedAnswer] = useState<string | boolean | null>(null);
   const [showFeedback, setShowFeedback] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
+  const [username, setUsername] = useState('');
+  const [usernameError, setUsernameError] = useState('');
 
   const progress = useSharedValue(0);
 
@@ -108,7 +131,7 @@ export default function OnboardingScreen() {
     const steps: OnboardingStep[] = [
       'welcome', 'domain', 'goal', 'time',
       'demo_intro', 'demo_q1', 'demo_q2', 'demo_q3',
-      'results', 'signup'
+      'results', 'signup', 'invite_friend',
     ];
     return ((steps.indexOf(currentStep) + 1) / steps.length) * 100;
   }, []);
@@ -141,18 +164,40 @@ export default function OnboardingScreen() {
   }, [step, goToStep]);
 
   const handleFinish = useCallback(async () => {
+    const trimmed = username.trim();
+    if (trimmed.length < 3) {
+      setUsernameError('Username must be at least 3 characters');
+      return;
+    }
+    if (trimmed.length > 20) {
+      setUsernameError('Max 20 characters');
+      return;
+    }
+    if (!/^[a-zA-Z0-9_]+$/.test(trimmed)) {
+      setUsernameError('Only letters, numbers and underscore');
+      return;
+    }
+
+    setUsernameError('');
     setIsLoading(true);
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 
     try {
-      await initUser();
-      // TODO: Save user choices to backend
-      router.replace('/(tabs)');
+      await initUser(trimmed, {
+        preferredDomain: choices.domain ?? undefined,
+        userGoal: choices.goal ?? undefined,
+      });
+
+      // Track A/B test conversion: onboarding completed
+      trackABConversion('ONBOARDING_FLOW', 'onboarding_completed');
+
+      // Go to invite_friend step before main app
+      goToStep('invite_friend');
     } catch (err) {
       console.error('Error creating user:', err);
       setIsLoading(false);
     }
-  }, [initUser]);
+  }, [initUser, username, abVariant, goToStep]);
 
   const handleSkipToLogin = useCallback(() => {
     router.replace('/login');
@@ -684,52 +729,168 @@ export default function OnboardingScreen() {
     return (
       <SafeAreaView style={styles.container}>
         {renderProgressBar()}
-
-        <Animated.View
-          entering={FadeIn.duration(400)}
-          style={styles.content}
+        <KeyboardAvoidingView
+          style={{ flex: 1 }}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
-          <View style={styles.signupHeader}>
-            <View style={styles.signupIconContainer}>
-              <Icon name="sparkles" size={64} color="#FFD700" />
+          <Animated.View entering={FadeIn.duration(400)} style={styles.content}>
+            <View style={styles.signupHeader}>
+              <View style={styles.signupIconContainer}>
+                <Icon name="user" size={48} color="#39FF14" />
+              </View>
+              <Text style={styles.signupTitle}>Choose your username</Text>
+              <Text style={styles.signupSubtitle}>
+                This is how you'll appear on the leaderboard
+              </Text>
             </View>
-            <Text style={styles.signupTitle}>You're all set!</Text>
-            <Text style={styles.signupSubtitle}>
-              Create an account to save your progress and continue learning
+
+            {/* Username input */}
+            <View style={styles.usernameInputWrapper}>
+              <View style={[
+                styles.usernameInputContainer,
+                usernameError ? styles.usernameInputError : username.length >= 3 && styles.usernameInputValid,
+              ]}>
+                <Text style={styles.usernamePrefix}>@</Text>
+                <TextInput
+                  style={styles.usernameInput}
+                  placeholder="satoshi"
+                  placeholderTextColor="#484F58"
+                  value={username}
+                  onChangeText={(t) => {
+                    setUsername(t);
+                    setUsernameError('');
+                  }}
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  maxLength={20}
+                  returnKeyType="done"
+                  onSubmitEditing={handleFinish}
+                />
+                {username.length >= 3 && !usernameError && (
+                  <Icon name="check" size={18} color="#39FF14" />
+                )}
+              </View>
+              {usernameError ? (
+                <Text style={styles.usernameErrorText}>{usernameError}</Text>
+              ) : (
+                <Text style={styles.usernameHint}>Letters, numbers, underscore — 3 to 20 chars</Text>
+              )}
+            </View>
+
+            <View style={styles.signupBenefits}>
+              <View style={styles.benefitItem}>
+                <Icon name="trophy" size={18} color="#FFD700" />
+                <Text style={styles.benefitText}>Appear on the leaderboard</Text>
+              </View>
+              <View style={styles.benefitItem}>
+                <Icon name="flame" size={18} color="#FF6B35" />
+                <Text style={styles.benefitText}>Track your streak</Text>
+              </View>
+              <View style={styles.benefitItem}>
+                <Icon name="gift" size={18} color="#58A6FF" />
+                <Text style={styles.benefitText}>Share your referral code</Text>
+              </View>
+            </View>
+          </Animated.View>
+
+          <View style={styles.footer}>
+            <Pressable
+              style={[styles.primaryButton, (isLoading || username.trim().length < 3) && styles.buttonDisabled]}
+              onPress={handleFinish}
+              disabled={isLoading || username.trim().length < 3}
+            >
+              {isLoading ? (
+                <ActivityIndicator color="#0D1117" />
+              ) : (
+                <Text style={styles.primaryButtonText}>Start Learning 🚀</Text>
+              )}
+            </Pressable>
+
+            <Pressable style={styles.textButton} onPress={handleSkipToLogin}>
+              <Text style={styles.textButtonText}>I already have an account</Text>
+            </Pressable>
+          </View>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
+    );
+  }
+
+  // Invite Friend Screen
+  if (step === 'invite_friend') {
+    const referralCode = referralStats?.referralCode ?? '…';
+    const shareMessage = [
+      `🧠 Je viens de rejoindre MINDY — l'app qui t'apprend la crypto & la finance en 5 min/jour !`,
+      ``,
+      `📱 Rejoins-moi avec mon code de parrainage : ${referralCode}`,
+      `👉 mindy://invite/${referralCode}`,
+      ``,
+      `On apprend ensemble ! 🚀`,
+    ].join('\n');
+
+    const handleShareInvite = async () => {
+      await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+      try {
+        await Share.share({
+          message: shareMessage,
+          title: 'Rejoins-moi sur Mindy',
+        });
+      } catch {
+        // User cancelled — silent
+      }
+    };
+
+    return (
+      <SafeAreaView style={styles.container}>
+        {renderProgressBar()}
+
+        <Animated.View entering={FadeIn.duration(400)} style={styles.content}>
+          {/* Celebration header */}
+          <View style={inviteStyles.celebrationBox}>
+            <Text style={inviteStyles.emoji}>🎉</Text>
+            <Text style={inviteStyles.welcomeTitle}>Tu es prêt !</Text>
+            <Text style={inviteStyles.welcomeSub}>
+              Bienvenue dans Mindy. Maintenant, invite tes amis et montez ensemble.
             </Text>
           </View>
 
-          <View style={styles.signupBenefits}>
-            <View style={styles.benefitItem}>
-              <Icon name="save" size={20} color="#39FF14" />
-              <Text style={styles.benefitText}>Save your progress</Text>
+          {/* Referral code card */}
+          <Animated.View entering={FadeInUp.delay(200)} style={inviteStyles.codeCard}>
+            <Text style={inviteStyles.codeLabel}>Ton code de parrainage</Text>
+            <View style={inviteStyles.codeBox}>
+              <Text style={inviteStyles.codeText}>{referralCode}</Text>
             </View>
-            <View style={styles.benefitItem}>
-              <Icon name="flame" size={20} color="#FF6B35" />
-              <Text style={styles.benefitText}>Track your streak</Text>
+            <Text style={inviteStyles.codeHint}>
+              Chaque ami parrainé te rapporte 50 XP bonus 🎁
+            </Text>
+          </Animated.View>
+
+          {/* Perks */}
+          <Animated.View entering={FadeInUp.delay(350)} style={inviteStyles.perksContainer}>
+            <View style={inviteStyles.perkRow}>
+              <Text style={inviteStyles.perkIcon}>⚡</Text>
+              <Text style={inviteStyles.perkText}>+50 XP pour toi à chaque inscription</Text>
             </View>
-            <View style={styles.benefitItem}>
-              <Icon name="trophy" size={20} color="#FFD700" />
-              <Text style={styles.benefitText}>Earn achievements</Text>
+            <View style={inviteStyles.perkRow}>
+              <Text style={inviteStyles.perkIcon}>🔥</Text>
+              <Text style={inviteStyles.perkText}>Défie tes amis sur des leçons</Text>
             </View>
-          </View>
+            <View style={inviteStyles.perkRow}>
+              <Text style={inviteStyles.perkIcon}>🏆</Text>
+              <Text style={inviteStyles.perkText}>Grimpe au classement ensemble</Text>
+            </View>
+          </Animated.View>
         </Animated.View>
 
         <View style={styles.footer}>
-          <Pressable
-            style={styles.primaryButton}
-            onPress={handleFinish}
-            disabled={isLoading}
-          >
-            {isLoading ? (
-              <ActivityIndicator color="#0D1117" />
-            ) : (
-              <Text style={styles.primaryButtonText}>Start Learning</Text>
-            )}
+          {/* Share button */}
+          <Pressable style={inviteStyles.shareButton} onPress={handleShareInvite}>
+            <Icon name="share" size={18} color="#0D1117" />
+            <Text style={inviteStyles.shareButtonText}>Inviter des amis 🚀</Text>
           </Pressable>
 
-          <Pressable style={styles.textButton} onPress={handleSkipToLogin}>
-            <Text style={styles.textButtonText}>I have an account</Text>
+          {/* Skip */}
+          <Pressable style={styles.textButton} onPress={() => router.replace('/(tabs)')}>
+            <Text style={styles.textButtonText}>Passer pour l'instant</Text>
           </Pressable>
         </View>
       </SafeAreaView>
@@ -738,6 +899,113 @@ export default function OnboardingScreen() {
 
   return null;
 }
+
+// ─── Invite screen styles ─────────────────────────────────────────────────────
+const inviteStyles = StyleSheet.create({
+  celebrationBox: {
+    alignItems: 'center',
+    marginBottom: 28,
+  },
+  emoji: {
+    fontSize: 56,
+    marginBottom: 12,
+  },
+  welcomeTitle: {
+    fontFamily: 'Inter',
+    fontSize: 28,
+    fontWeight: '700',
+    color: '#E6EDF3',
+    marginBottom: 8,
+  },
+  welcomeSub: {
+    fontFamily: 'Inter',
+    fontSize: 15,
+    color: '#8B949E',
+    textAlign: 'center',
+    lineHeight: 22,
+    paddingHorizontal: 8,
+  },
+  codeCard: {
+    backgroundColor: '#161B22',
+    borderRadius: 16,
+    padding: 20,
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: 'rgba(57,255,20,0.4)',
+    gap: 12,
+    marginBottom: 20,
+    shadowColor: '#39FF14',
+    shadowOpacity: 0.2,
+    shadowRadius: 12,
+    elevation: 6,
+  },
+  codeLabel: {
+    fontFamily: 'Inter',
+    fontSize: 13,
+    color: '#8B949E',
+    fontWeight: '600',
+  },
+  codeBox: {
+    backgroundColor: '#0D1117',
+    borderRadius: 10,
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderWidth: 1,
+    borderColor: '#39FF14',
+  },
+  codeText: {
+    fontFamily: 'JetBrainsMono',
+    fontSize: 26,
+    fontWeight: '700',
+    color: '#39FF14',
+    letterSpacing: 3,
+  },
+  codeHint: {
+    fontFamily: 'Inter',
+    fontSize: 12,
+    color: '#8B949E',
+    textAlign: 'center',
+  },
+  perksContainer: {
+    backgroundColor: '#161B22',
+    borderRadius: 14,
+    padding: 16,
+    gap: 14,
+    borderWidth: 1,
+    borderColor: '#30363D',
+  },
+  perkRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  perkIcon: {
+    fontSize: 20,
+    width: 28,
+    textAlign: 'center',
+  },
+  perkText: {
+    fontFamily: 'Inter',
+    fontSize: 14,
+    color: '#E6EDF3',
+    flex: 1,
+  },
+  shareButton: {
+    backgroundColor: '#39FF14',
+    paddingVertical: 18,
+    borderRadius: 12,
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 10,
+  },
+  shareButtonText: {
+    fontFamily: 'Inter',
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#0D1117',
+  },
+});
 
 const styles = StyleSheet.create({
   container: {
@@ -1239,42 +1507,86 @@ const styles = StyleSheet.create({
   // Signup
   signupHeader: {
     alignItems: 'center',
-    marginBottom: 32,
+    marginBottom: 24,
   },
   signupIconContainer: {
     marginBottom: 16,
   },
   signupTitle: {
     fontFamily: 'Inter',
-    fontSize: 28,
+    fontSize: 26,
     fontWeight: '700',
     color: '#E6EDF3',
     marginBottom: 8,
+    textAlign: 'center',
   },
   signupSubtitle: {
     fontFamily: 'Inter',
-    fontSize: 15,
+    fontSize: 14,
     color: '#8B949E',
     textAlign: 'center',
-    lineHeight: 22,
+    lineHeight: 20,
+  },
+  usernameInputWrapper: {
+    marginBottom: 20,
+    gap: 6,
+  },
+  usernameInputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#161B22',
+    borderRadius: 14,
+    borderWidth: 2,
+    borderColor: '#30363D',
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    gap: 8,
+  },
+  usernameInputValid: {
+    borderColor: '#39FF14',
+  },
+  usernameInputError: {
+    borderColor: '#F85149',
+  },
+  usernamePrefix: {
+    fontFamily: 'JetBrainsMono',
+    fontSize: 18,
+    color: '#39FF14',
+    fontWeight: '700',
+  },
+  usernameInput: {
+    flex: 1,
+    fontFamily: 'JetBrainsMono',
+    fontSize: 18,
+    color: '#E6EDF3',
+    padding: 0,
+  },
+  usernameHint: {
+    fontFamily: 'Inter',
+    fontSize: 11,
+    color: '#484F58',
+    paddingHorizontal: 4,
+  },
+  usernameErrorText: {
+    fontFamily: 'Inter',
+    fontSize: 12,
+    color: '#F85149',
+    paddingHorizontal: 4,
   },
   signupBenefits: {
     backgroundColor: '#161B22',
     borderRadius: 16,
-    padding: 20,
-    gap: 16,
+    padding: 16,
+    gap: 14,
   },
   benefitItem: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
   },
-  benefitIcon: {
-    fontSize: 20,
-  },
   benefitText: {
     fontFamily: 'Inter',
-    fontSize: 15,
+    fontSize: 14,
     color: '#E6EDF3',
   },
 });

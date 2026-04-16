@@ -1,3 +1,4 @@
+import { ApiTags } from '@nestjs/swagger';
 import {
   Controller,
   Post,
@@ -30,6 +31,7 @@ interface UpdateNotificationPreferencesDto {
   timezone?: string;
 }
 
+@ApiTags('notifications')
 @Controller('notifications')
 export class NotificationsController {
   constructor(
