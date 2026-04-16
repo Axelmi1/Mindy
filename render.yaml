@@ -7,7 +7,7 @@ services:
     rootDir: server
     buildCommand: |
       cd ../shared && npm install --include=dev --legacy-peer-deps && npm run build && \
-      cd ../server && npm install --include=dev --legacy-peer-deps && ./node_modules/.bin/prisma generate && npm run build && ./node_modules/.bin/prisma migrate deploy
+      cd ../server && npm install --include=dev --legacy-peer-deps && ./node_modules/.bin/prisma generate && npm run build && ./node_modules/.bin/prisma db push --accept-data-loss
     startCommand: npm run start:prod
     healthCheckPath: /api/docs
     autoDeploy: true
