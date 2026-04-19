@@ -16,6 +16,7 @@ import { SubscriptionsModule } from './subscriptions/subscriptions.module';
 import { FriendsModule } from './friends/friends.module';
 import { RecommendationsModule } from './recommendations/recommendations.module';
 import { ChallengesModule } from './challenges/challenges.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -51,6 +52,7 @@ import { ChallengesModule } from './challenges/challenges.module';
     FriendsModule,
     RecommendationsModule,
     ChallengesModule,
+    AuthModule,
   ],
   providers: [
     // Apply throttling globally to all routes

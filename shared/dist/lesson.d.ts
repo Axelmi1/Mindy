@@ -220,6 +220,8 @@ export interface DragSortItem {
     label: string;
     emoji: string;
     value?: string;
+    /** Items with the same group can be in any order relative to each other */
+    group?: string;
 }
 export interface DragSortStep {
     type: 'drag_sort';
@@ -296,5 +298,7 @@ export interface Lesson {
     xpReward: number;
     orderIndex: number;
     createdAt: string;
+    /** True for the domain Master Quiz — unlocked only when all regular lessons are done */
+    isMasterQuiz?: boolean;
 }
 //# sourceMappingURL=lesson.d.ts.map

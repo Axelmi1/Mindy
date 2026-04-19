@@ -17,15 +17,24 @@ export class UsersService {
   ) {}
 
   /**
-   * Create a new user
+   * Create a new user.
+   * Email is optional — falls back to a generated address when omitted.
    */
   async create(data: CreateUserDto) {
     const referralCode = this.generateShortCode();
+    const ts = Date.now();
+    const finalEmail =
+      data.email ??
+      `${data.username.toLowerCase().replace(/[^a-z0-9]/g, '_')}_${ts}@mindy.app`;
     return this.prisma.user.create({
       data: {
-        email: data.email,
+        email: finalEmail,
         username: data.username,
         referralCode,
+        preferredDomain: data.preferredDomain ?? null,
+        userGoal: data.userGoal ?? null,
+        dailyMinutes: data.dailyMinutes ?? null,
+        reminderHour: data.reminderHour ?? null,
       },
     });
   }
@@ -101,6 +110,9 @@ export class UsersService {
       where: { id },
       data: {
         ...data,
+        ...(data.dailyMinutes !== undefined && { dailyMinutes: data.dailyMinutes }),
+        ...(data.reminderHour !== undefined && { reminderHour: data.reminderHour }),
+        ...(data.hasSeenInvitePrompt !== undefined && { hasSeenInvitePrompt: data.hasSeenInvitePrompt }),
         lastActiveAt: new Date(),
       },
     });
@@ -313,6 +325,7 @@ export class UsersService {
       referralCode: user.referralCode,
       userRank: weeklyStats?.rank ?? null,
       domainStats: domainBreakdown,
+      hasSeenInvitePrompt: user.hasSeenInvitePrompt,
     };
   }
 

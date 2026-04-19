@@ -3,6 +3,7 @@ import { NotificationsService } from './notifications.service';
 import { NotificationsController } from './notifications.controller';
 import { PushTokenService } from './push-token.service';
 import { NotificationScheduler } from './notification.scheduler';
+import { EmailService } from './email.service';
 
 @Module({
   controllers: [NotificationsController],
@@ -10,7 +11,8 @@ import { NotificationScheduler } from './notification.scheduler';
     NotificationsService,
     PushTokenService,
     NotificationScheduler,
+    EmailService,
   ],
-  exports: [NotificationsService, PushTokenService],
+  exports: [NotificationsService, PushTokenService, EmailService],
 })
 export class NotificationsModule {}

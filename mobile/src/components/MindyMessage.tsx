@@ -1,5 +1,6 @@
 import React, { useEffect, useCallback, useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { MindyMascot } from './mindy';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -30,6 +31,10 @@ interface MindyMessageProps {
   onComplete?: () => void;
   /** Enable haptic feedback during typing */
   hapticFeedback?: boolean;
+  /** Render the mascot next to the message card (default false) */
+  showMascot?: boolean;
+  /** Mascot size in px (default 64) */
+  mascotSize?: number;
 }
 
 // ============================================================================
@@ -67,6 +72,8 @@ export function MindyMessage({
   showPrefix = true,
   onComplete,
   hapticFeedback = false,
+  showMascot = false,
+  mascotSize = 64,
 }: MindyMessageProps) {
   // State for displayed text
   const [displayText, setDisplayText] = useState('');
@@ -164,34 +171,48 @@ export function MindyMessage({
     opacity: cursorOpacity.value,
   }));
 
-  return (
-    <View style={styles.container}>
-      {/* Terminal frame */}
-      <View style={styles.terminalFrame}>
-        {/* Terminal header dots */}
-        <View style={styles.terminalHeader}>
-          <View style={[styles.dot, { backgroundColor: '#F85149' }]} />
-          <View style={[styles.dot, { backgroundColor: '#F7C843' }]} />
-          <View style={[styles.dot, { backgroundColor: '#39FF14' }]} />
-        </View>
+  const terminalCard = (
+    <View style={styles.terminalFrame}>
+      {/* Terminal header dots */}
+      <View style={styles.terminalHeader}>
+        <View style={[styles.dot, { backgroundColor: '#F85149' }]} />
+        <View style={[styles.dot, { backgroundColor: '#F7C843' }]} />
+        <View style={[styles.dot, { backgroundColor: '#39FF14' }]} />
+      </View>
 
-        {/* Message content */}
-        <View style={styles.messageContainer}>
-          {showPrefix && (
-            <Text style={[styles.prefix, { color: prefixColor }]}>
-              [MINDY]{'>'}{' '}
-            </Text>
-          )}
-          <View style={styles.textWrapper}>
-            <Text style={styles.messageText}>
-              {displayText}
-            </Text>
-            <Animated.Text style={[styles.cursor, cursorStyle]}>
-              _
-            </Animated.Text>
-          </View>
+      {/* Message content */}
+      <View style={styles.messageContainer}>
+        {showPrefix && (
+          <Text style={[styles.prefix, { color: prefixColor }]}>
+            [MINDY]{'>'}{' '}
+          </Text>
+        )}
+        <View style={styles.textWrapper}>
+          <Text style={styles.messageText}>
+            {displayText}
+          </Text>
+          <Animated.Text style={[styles.cursor, cursorStyle]}>
+            _
+          </Animated.Text>
         </View>
       </View>
+    </View>
+  );
+
+  if (showMascot) {
+    return (
+      <View style={styles.rowContainer}>
+        <MindyMascot mood={mood} size={mascotSize} />
+        <View style={styles.rowCard}>
+          {terminalCard}
+        </View>
+      </View>
+    );
+  }
+
+  return (
+    <View style={styles.container}>
+      {terminalCard}
     </View>
   );
 }
@@ -252,6 +273,14 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#39FF14',
     fontWeight: 'bold',
+  },
+  rowContainer: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    gap: 12,
+  },
+  rowCard: {
+    flex: 1,
   },
 });
 

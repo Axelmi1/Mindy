@@ -26,6 +26,11 @@ model User {
   referralXpEarned        Int                      @default(0)
   preferredDomain         String?
   userGoal                String?
+  dailyMinutes            Int?
+  reminderHour            Int?
+  emailVerified           Boolean                  @default(false)
+  hasSeenInvitePrompt     Boolean                  @default(false)
+  magicLinks              MagicLinkToken[]
   analyticsEvents         AnalyticsEvent[]
   dailyChallenges         DailyChallenge[]
   notificationLogs        NotificationLog[]
@@ -374,4 +379,19 @@ enum ChallengeStatus {
   COMPLETED
   EXPIRED
   DECLINED
+}
+
+model MagicLinkToken {
+  id        String    @id @default(cuid())
+  userId    String
+  token     String    @unique
+  email     String
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("magic_link_tokens")
 }
