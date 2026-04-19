@@ -19,6 +19,8 @@ import type { Lesson, LessonStep, UserProgress } from '@mindy/shared';
 import { lessonsApi, progressApi, usersApi } from '@/api/client';
 import { useUser } from '@/hooks/useUser';
 import { useSound } from '@/hooks/useSound';
+import { useReferrals } from '@/hooks/useReferrals';
+import { InviteFriendsPrompt } from '@/components/friends/InviteFriendsPrompt';
 import { ProgressBar } from '@/components/ui/ProgressBar';
 import { MindyMessage } from '@/components/MindyMessage';
 import { Icon } from '@/components/ui/Icon';
@@ -90,6 +92,10 @@ export default function LessonScreen() {
   const isPracticeMode = practice === 'true';
   const { userId, isLoading: isUserLoading } = useUser();
   const { play: playSound } = useSound();
+  const { stats: referralStats } = useReferrals(userId);
+
+  // Invite prompt state
+  const [invitePromptVisible, setInvitePromptVisible] = useState(false);
 
   // Core state
   const [screenState, setScreenState] = useState<ScreenState>('loading');
@@ -383,6 +389,25 @@ export default function LessonScreen() {
       setScreenState('completed');
     }
   }, [progress, userId, lesson, totalSteps, playSound, isPracticeMode]);
+
+  // Show invite prompt after first completed lesson (non-practice only)
+  useEffect(() => {
+    if (screenState !== 'completed' || isPracticeMode || !userId) return;
+    (async () => {
+      try {
+        const resp = await fetch(
+          `${process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000/api'}/users/${userId}/stats`
+        );
+        const body = await resp.json();
+        const statsData = body?.data ?? body;
+        if (statsData.completedLessons === 1 && statsData.hasSeenInvitePrompt === false) {
+          setInvitePromptVisible(true);
+        }
+      } catch {
+        // silent — non-critical
+      }
+    })();
+  }, [screenState, isPracticeMode, userId]);
 
   // Handle continue button for info steps
   const handleContinue = useCallback(() => {
@@ -758,6 +783,13 @@ export default function LessonScreen() {
             </>
           )}
         </Animated.View>
+
+        <InviteFriendsPrompt
+          visible={invitePromptVisible}
+          referralCode={referralStats?.referralCode ?? ''}
+          userId={userId ?? ''}
+          onDismiss={() => setInvitePromptVisible(false)}
+        />
       </SafeAreaView>
     );
   }
