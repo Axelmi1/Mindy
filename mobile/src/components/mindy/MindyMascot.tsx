@@ -10,6 +10,9 @@ import Animated, {
   Easing,
 } from 'react-native-reanimated';
 import { NeutralFace } from './moods/NeutralFace';
+import { HypeFace } from './moods/HypeFace';
+import { RoastFace } from './moods/RoastFace';
+import { ThinkingFace } from './moods/ThinkingFace';
 
 export type MindyMood = 'neutral' | 'hype' | 'roast' | 'thinking';
 
@@ -74,6 +77,9 @@ export function MindyMascot({ mood = 'neutral', size = 120, animated = true, sty
           <Path d="M50,118 Q 68,132 50,142" stroke="#0D1117" strokeWidth="1.5" fill="none" opacity="0.4" />
           <Path d="M150,118 Q 132,132 150,142" stroke="#0D1117" strokeWidth="1.5" fill="none" opacity="0.4" />
           {mood === 'neutral' && <NeutralFace />}
+          {mood === 'hype' && <HypeFace />}
+          {mood === 'roast' && <RoastFace />}
+          {mood === 'thinking' && <ThinkingFace />}
         </Svg>
       </Animated.View>
     </View>
