@@ -19,7 +19,7 @@ export async function finalizeOnboarding(): Promise<void> {
   if (!createResp.ok) throw new Error('Failed to create user');
   const { data: user } = await createResp.json();
 
-  await fetch(`${API_URL}/users/${user.id}`, {
+  const patchResp = await fetch(`${API_URL}/users/${user.id}`, {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -29,6 +29,9 @@ export async function finalizeOnboarding(): Promise<void> {
       reminderHour: s.reminderHour,
     }),
   });
+  if (!patchResp.ok) {
+    console.warn('Failed to persist onboarding preferences (non-blocking)');
+  }
 
   if (s.notificationsEnabled) {
     try {

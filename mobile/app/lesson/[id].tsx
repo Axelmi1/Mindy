@@ -400,7 +400,7 @@ export default function LessonScreen() {
         );
         const body = await resp.json();
         const statsData = body?.data ?? body;
-        if (statsData.completedLessons === 1 && statsData.hasSeenInvitePrompt === false) {
+        if (statsData.lessonsCompleted === 1 && statsData.hasSeenInvitePrompt === false) {
           setInvitePromptVisible(true);
         }
       } catch {
