@@ -37,8 +37,12 @@ export interface UpdateLessonDto {
     orderIndex?: number;
 }
 export interface CreateUserDto {
-    email: string;
     username: string;
+    email?: string;
+    preferredDomain?: 'CRYPTO' | 'FINANCE' | 'BOTH';
+    userGoal?: string;
+    dailyMinutes?: 5 | 10 | 15;
+    reminderHour?: number;
 }
 export interface UpdateUserDto {
     username?: string;
@@ -47,6 +51,9 @@ export interface UpdateUserDto {
     streak?: number;
     preferredDomain?: string;
     userGoal?: string;
+    dailyMinutes?: 5 | 10 | 15;
+    reminderHour?: number;
+    hasSeenInvitePrompt?: boolean;
 }
 export interface CreateProgressDto {
     userId: string;

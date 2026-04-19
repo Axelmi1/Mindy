@@ -117,6 +117,37 @@ describe('UsersService', () => {
       // Collision probability < 1 in a million for 100 calls
       expect(codes.size).toBeGreaterThan(90);
     });
+
+    it('auto-generates email when missing', async () => {
+      const user = makeUser({ username: 'satoshi', email: 'satoshi_1234@mindy.app' });
+      mockPrisma.user.create.mockResolvedValue(user);
+
+      await service.create({ username: 'satoshi' });
+
+      const arg = mockPrisma.user.create.mock.calls[0][0];
+      expect(arg.data.email).toMatch(/^satoshi_\d+@mindy\.app$/);
+    });
+
+    it('uses provided email when present', async () => {
+      const user = makeUser({ username: 'alice', email: 'alice@example.com' });
+      mockPrisma.user.create.mockResolvedValue(user);
+
+      await service.create({ username: 'alice', email: 'alice@example.com' });
+
+      const arg = mockPrisma.user.create.mock.calls[0][0];
+      expect(arg.data.email).toBe('alice@example.com');
+    });
+
+    it('persists dailyMinutes and reminderHour', async () => {
+      const user = makeUser({ username: 'bob' });
+      mockPrisma.user.create.mockResolvedValue(user);
+
+      await service.create({ username: 'bob', dailyMinutes: 10, reminderHour: 20 });
+
+      const arg = mockPrisma.user.create.mock.calls[0][0];
+      expect(arg.data.dailyMinutes).toBe(10);
+      expect(arg.data.reminderHour).toBe(20);
+    });
   });
 
   // ────────────────────────────────────────────────────────────────────────────
