@@ -1,5 +1,12 @@
-import React from 'react';
-import { View, StyleSheet, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import React, { useState } from 'react';
+import {
+  View,
+  StyleSheet,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  LayoutChangeEvent,
+} from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface Props {
@@ -11,11 +18,19 @@ interface Props {
 
 export function OnboardingScreen({ children, footer, keyboardAware }: Props) {
   const insets = useSafeAreaInsets();
+  const [footerHeight, setFooterHeight] = useState(0);
+
+  const handleFooterLayout = (e: LayoutChangeEvent) => {
+    setFooterHeight(e.nativeEvent.layout.height);
+  };
 
   const body = (
     <ScrollView
-      style={{ flex: 1 }}
-      contentContainerStyle={styles.content}
+      style={styles.scroll}
+      contentContainerStyle={[
+        styles.content,
+        { paddingBottom: footerHeight + 16 },
+      ]}
       keyboardShouldPersistTaps="handled"
       showsVerticalScrollIndicator={false}
     >
@@ -27,7 +42,7 @@ export function OnboardingScreen({ children, footer, keyboardAware }: Props) {
     <SafeAreaView style={styles.root} edges={['top', 'left', 'right']}>
       {keyboardAware ? (
         <KeyboardAvoidingView
-          style={{ flex: 1 }}
+          style={styles.flex1}
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
           {body}
@@ -36,7 +51,13 @@ export function OnboardingScreen({ children, footer, keyboardAware }: Props) {
         body
       )}
       {footer && (
-        <View style={[styles.footer, { paddingBottom: Math.max(insets.bottom, 16) + 16 }]}>
+        <View
+          onLayout={handleFooterLayout}
+          style={[
+            styles.footer,
+            { paddingBottom: Math.max(insets.bottom, 16) + 12 },
+          ]}
+        >
           {footer}
         </View>
       )}
@@ -46,6 +67,22 @@ export function OnboardingScreen({ children, footer, keyboardAware }: Props) {
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: '#0D1117' },
-  content: { flexGrow: 1, paddingHorizontal: 24, paddingTop: 24, paddingBottom: 24, justifyContent: 'center' },
-  footer: { paddingHorizontal: 24, paddingTop: 12, gap: 12, backgroundColor: '#0D1117' },
+  flex1: { flex: 1 },
+  scroll: { flex: 1 },
+  content: {
+    flexGrow: 1,
+    paddingHorizontal: 24,
+    paddingTop: 24,
+    justifyContent: 'center',
+  },
+  footer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    paddingHorizontal: 24,
+    paddingTop: 12,
+    backgroundColor: '#0D1117',
+    gap: 12,
+  },
 });
