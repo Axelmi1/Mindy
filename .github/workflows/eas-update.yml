@@ -13,6 +13,7 @@ jobs:
   update:
     name: Publish OTA update
     runs-on: ubuntu-latest
+    environment: main - mindy-api
     defaults:
       run:
         working-directory: mobile
