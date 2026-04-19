@@ -325,6 +325,7 @@ export class UsersService {
       referralCode: user.referralCode,
       userRank: weeklyStats?.rank ?? null,
       domainStats: domainBreakdown,
+      hasSeenInvitePrompt: user.hasSeenInvitePrompt,
     };
   }
 

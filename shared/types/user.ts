@@ -54,6 +54,8 @@ export interface UserStats {
   userRank: number | null;
   /** Completion breakdown by domain */
   domainStats: DomainStats[];
+  /** Whether the user has already seen the invite-friends prompt */
+  hasSeenInvitePrompt: boolean;
 }
 
 /**

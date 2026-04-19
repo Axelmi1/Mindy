@@ -197,6 +197,25 @@ describe('UsersService', () => {
   });
 
   // ────────────────────────────────────────────────────────────────────────────
+  // update()
+  // ────────────────────────────────────────────────────────────────────────────
+
+  describe('update()', () => {
+    it('persists hasSeenInvitePrompt', async () => {
+      const user = makeUser();
+      mockPrisma.user.findUnique.mockResolvedValue(user);
+      mockPrisma.user.update.mockResolvedValue({ id: 'u1', hasSeenInvitePrompt: true });
+
+      await service.update('u1', { hasSeenInvitePrompt: true });
+
+      expect(mockPrisma.user.update).toHaveBeenCalledWith(expect.objectContaining({
+        where: { id: 'u1' },
+        data: expect.objectContaining({ hasSeenInvitePrompt: true }),
+      }));
+    });
+  });
+
+  // ────────────────────────────────────────────────────────────────────────────
   // calculateLevel() — private, tested via addXp()
   // ────────────────────────────────────────────────────────────────────────────
 
