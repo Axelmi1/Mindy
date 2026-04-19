@@ -1,8 +1,6 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { KeyboardAvoidingView, Platform } from 'react-native';
-import Animated, { SlideInRight, SlideOutLeft } from 'react-native-reanimated';
+import { View, StyleSheet, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface Props {
   children: React.ReactNode;
@@ -11,31 +9,43 @@ interface Props {
   animationKey?: string;
 }
 
-export function OnboardingScreen({ children, footer, keyboardAware, animationKey }: Props) {
-  const Wrapper = keyboardAware ? KeyboardAvoidingView : View;
+export function OnboardingScreen({ children, footer, keyboardAware }: Props) {
+  const insets = useSafeAreaInsets();
+
+  const body = (
+    <ScrollView
+      style={{ flex: 1 }}
+      contentContainerStyle={styles.content}
+      keyboardShouldPersistTaps="handled"
+      showsVerticalScrollIndicator={false}
+    >
+      {children}
+    </ScrollView>
+  );
 
   return (
-    <SafeAreaView style={styles.root}>
-      <Wrapper
-        style={{ flex: 1 }}
-        {...(keyboardAware ? { behavior: Platform.OS === 'ios' ? 'padding' : 'height' } : {})}
-      >
-        <Animated.View
-          key={animationKey}
-          entering={SlideInRight.duration(300)}
-          exiting={SlideOutLeft.duration(200)}
-          style={styles.content}
+    <SafeAreaView style={styles.root} edges={['top', 'left', 'right']}>
+      {keyboardAware ? (
+        <KeyboardAvoidingView
+          style={{ flex: 1 }}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
-          {children}
-        </Animated.View>
-        {footer && <View style={styles.footer}>{footer}</View>}
-      </Wrapper>
+          {body}
+        </KeyboardAvoidingView>
+      ) : (
+        body
+      )}
+      {footer && (
+        <View style={[styles.footer, { paddingBottom: Math.max(insets.bottom, 16) + 16 }]}>
+          {footer}
+        </View>
+      )}
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: '#0D1117' },
-  content: { flex: 1, paddingHorizontal: 24, justifyContent: 'center' },
-  footer: { paddingHorizontal: 24, paddingBottom: 32, gap: 12 },
+  content: { flexGrow: 1, paddingHorizontal: 24, paddingTop: 24, paddingBottom: 24, justifyContent: 'center' },
+  footer: { paddingHorizontal: 24, paddingTop: 12, gap: 12, backgroundColor: '#0D1117' },
 });
