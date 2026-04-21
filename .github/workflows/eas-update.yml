@@ -44,4 +44,9 @@ jobs:
       - name: Publish update
         env:
           EXPO_PUBLIC_API_URL: ${{ secrets.EXPO_PUBLIC_API_URL }}
-        run: eas update --branch preview --message "${{ github.event.head_commit.message }}" --non-interactive
+          COMMIT_MSG: ${{ github.event.head_commit.message }}
+        run: |
+          # Use only the first line of the commit message to avoid shell issues
+          # with multi-line commits containing quotes or special chars.
+          FIRST_LINE="${COMMIT_MSG%%$'\n'*}"
+          eas update --branch preview --message "$FIRST_LINE" --non-interactive
