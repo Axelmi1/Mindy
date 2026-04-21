@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pressable, Text, ActivityIndicator, StyleSheet } from 'react-native';
+import { Pressable, Text, ActivityIndicator, StyleSheet, View } from 'react-native';
 
 interface Props {
   onPress: () => void;
@@ -16,43 +16,50 @@ export function PrimaryButton({
   children,
   variant = 'primary',
 }: Props) {
-  const isPrimary = variant === 'primary';
   const isDisabled = !!disabled || !!loading;
 
-  const style = [
-    styles.base,
-    isPrimary ? styles.primary : styles.ghost,
-    isDisabled && isPrimary && styles.primaryDisabled,
-  ];
+  if (variant === 'ghost') {
+    return (
+      <Pressable
+        onPress={onPress}
+        disabled={isDisabled}
+        style={({ pressed }) => [
+          styles.ghost,
+          pressed && styles.pressed,
+        ]}
+      >
+        {typeof children === 'string' ? (
+          <Text style={styles.ghostText}>{children}</Text>
+        ) : (
+          children
+        )}
+      </Pressable>
+    );
+  }
 
-  const textStyle = [
-    styles.text,
-    isPrimary ? styles.primaryText : styles.ghostText,
-    isDisabled && isPrimary && styles.primaryDisabledText,
-  ];
+  const btnStyle = isDisabled ? styles.primaryDisabled : styles.primary;
+  const textStyle = isDisabled ? styles.primaryDisabledText : styles.primaryText;
 
   return (
     <Pressable
       onPress={onPress}
       disabled={isDisabled}
-      style={({ pressed }) => [
-        ...style,
-        pressed && { opacity: 0.8 },
-      ]}
+      style={({ pressed }) => [btnStyle, pressed && styles.pressed]}
     >
       {loading ? (
-        <ActivityIndicator color={isPrimary ? '#0D1117' : '#8B949E'} />
+        <ActivityIndicator color="#0D1117" />
       ) : typeof children === 'string' ? (
         <Text style={textStyle}>{children}</Text>
       ) : (
-        children
+        <View>{children}</View>
       )}
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
-  base: {
+  primary: {
+    backgroundColor: '#39FF14',
     paddingVertical: 18,
     paddingHorizontal: 24,
     borderRadius: 999,
@@ -60,33 +67,41 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     minHeight: 56,
   },
-  primary: {
-    backgroundColor: '#39FF14',
-  },
   primaryDisabled: {
     backgroundColor: 'transparent',
     borderWidth: 2,
     borderColor: '#39FF14',
+    paddingVertical: 16,
+    paddingHorizontal: 24,
+    borderRadius: 999,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 56,
   },
-  ghost: {
-    backgroundColor: 'transparent',
-    paddingVertical: 14,
-    minHeight: 0,
-  },
-  text: {
+  primaryText: {
     fontFamily: 'Inter',
     fontSize: 16,
     fontWeight: '700',
-  },
-  primaryText: {
     color: '#0D1117',
   },
   primaryDisabledText: {
+    fontFamily: 'Inter',
+    fontSize: 16,
+    fontWeight: '700',
     color: '#39FF14',
   },
+  ghost: {
+    paddingVertical: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   ghostText: {
-    color: '#8B949E',
-    fontWeight: '500',
+    fontFamily: 'Inter',
     fontSize: 14,
+    fontWeight: '500',
+    color: '#8B949E',
+  },
+  pressed: {
+    opacity: 0.8,
   },
 });
