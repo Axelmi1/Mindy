@@ -1,6 +1,5 @@
 import React from 'react';
 import { View, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface Props {
   children: React.ReactNode;
@@ -10,50 +9,35 @@ interface Props {
 }
 
 export function OnboardingScreen({ children, footer, keyboardAware }: Props) {
-  const insets = useSafeAreaInsets();
+  const body = (
+    <>
+      <View style={styles.content}>{children}</View>
+      {footer && <View style={styles.footer}>{footer}</View>}
+    </>
+  );
 
-  if (keyboardAware) {
-    return (
-      <SafeAreaView style={styles.root} edges={['top', 'left', 'right']}>
+  return (
+    <View style={styles.root}>
+      {keyboardAware ? (
         <KeyboardAvoidingView
           style={styles.flex1}
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
-          <View style={styles.content}>{children}</View>
-          {footer && (
-            <View
-              style={[
-                styles.footer,
-                { paddingBottom: Math.max(insets.bottom, 16) + 12 },
-              ]}
-            >
-              {footer}
-            </View>
-          )}
+          {body}
         </KeyboardAvoidingView>
-      </SafeAreaView>
-    );
-  }
-
-  return (
-    <SafeAreaView style={styles.root} edges={['top', 'left', 'right']}>
-      <View style={styles.content}>{children}</View>
-      {footer && (
-        <View
-          style={[
-            styles.footer,
-            { paddingBottom: Math.max(insets.bottom, 16) + 12 },
-          ]}
-        >
-          {footer}
-        </View>
+      ) : (
+        body
       )}
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: '#0D1117' },
+  root: {
+    flex: 1,
+    backgroundColor: '#0D1117',
+    paddingTop: 60,
+  },
   flex1: { flex: 1 },
   content: {
     flex: 1,
@@ -64,6 +48,7 @@ const styles = StyleSheet.create({
   footer: {
     paddingHorizontal: 24,
     paddingTop: 12,
+    paddingBottom: 40,
     gap: 12,
   },
 });

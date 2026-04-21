@@ -12,8 +12,6 @@ const VALUE_PROPS = [
   { icon: '🎮', label: 'Interactive' },
 ];
 
-const BUILD_TAG = 'build-2026-04-21-welcome-v6';
-
 export function WelcomeStep() {
   const next = useOnboardingStore((s) => s.next);
 
@@ -28,10 +26,6 @@ export function WelcomeStep() {
 
   return (
     <View style={styles.root}>
-      <View style={styles.debugBanner}>
-        <Text style={styles.debugText}>{BUILD_TAG}</Text>
-      </View>
-
       <View style={styles.content}>
         <Animated.View entering={FadeIn.duration(600)} style={styles.hero}>
           <MindyMascot mood="neutral" size={140} />
@@ -78,18 +72,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#0D1117',
     paddingTop: 60,
-  },
-  debugBanner: {
-    backgroundColor: '#F7C843',
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    alignItems: 'center',
-  },
-  debugText: {
-    fontFamily: 'JetBrainsMono',
-    fontSize: 11,
-    color: '#0D1117',
-    fontWeight: '700',
   },
   content: {
     flex: 1,
