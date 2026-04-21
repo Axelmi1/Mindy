@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pressable, Text, ActivityIndicator } from 'react-native';
+import { Pressable, Text, ActivityIndicator, StyleSheet } from 'react-native';
 
 interface Props {
   onPress: () => void;
@@ -19,50 +19,74 @@ export function PrimaryButton({
   const isPrimary = variant === 'primary';
   const isDisabled = !!disabled || !!loading;
 
-  const backgroundColor = isDisabled
-    ? '#30363D'
-    : isPrimary
-      ? '#39FF14'
-      : 'transparent';
+  const style = [
+    styles.base,
+    isPrimary ? styles.primary : styles.ghost,
+    isDisabled && isPrimary && styles.primaryDisabled,
+  ];
 
-  const textColor = isDisabled
-    ? '#484F58'
-    : isPrimary
-      ? '#0D1117'
-      : '#8B949E';
+  const textStyle = [
+    styles.text,
+    isPrimary ? styles.primaryText : styles.ghostText,
+    isDisabled && isPrimary && styles.primaryDisabledText,
+  ];
 
   return (
     <Pressable
       onPress={onPress}
       disabled={isDisabled}
-      style={({ pressed }) => ({
-        backgroundColor,
-        paddingVertical: 18,
-        paddingHorizontal: 24,
-        borderRadius: 999,
-        alignItems: 'center',
-        justifyContent: 'center',
-        alignSelf: 'stretch',
-        minHeight: 56,
-        opacity: pressed ? 0.8 : 1,
-      })}
+      style={({ pressed }) => [
+        ...style,
+        pressed && { opacity: 0.8 },
+      ]}
     >
       {loading ? (
-        <ActivityIndicator color={textColor} />
+        <ActivityIndicator color={isPrimary ? '#0D1117' : '#8B949E'} />
       ) : typeof children === 'string' ? (
-        <Text
-          style={{
-            fontFamily: 'Inter',
-            fontSize: 16,
-            fontWeight: '700',
-            color: textColor,
-          }}
-        >
-          {children}
-        </Text>
+        <Text style={textStyle}>{children}</Text>
       ) : (
         children
       )}
     </Pressable>
   );
 }
+
+const styles = StyleSheet.create({
+  base: {
+    paddingVertical: 18,
+    paddingHorizontal: 24,
+    borderRadius: 999,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 56,
+  },
+  primary: {
+    backgroundColor: '#39FF14',
+  },
+  primaryDisabled: {
+    backgroundColor: 'transparent',
+    borderWidth: 2,
+    borderColor: '#39FF14',
+  },
+  ghost: {
+    backgroundColor: 'transparent',
+    paddingVertical: 14,
+    minHeight: 0,
+  },
+  text: {
+    fontFamily: 'Inter',
+    fontSize: 16,
+    fontWeight: '700',
+  },
+  primaryText: {
+    color: '#0D1117',
+  },
+  primaryDisabledText: {
+    color: '#39FF14',
+  },
+  ghostText: {
+    color: '#8B949E',
+    fontWeight: '500',
+    fontSize: 14,
+  },
+});
