@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pressable, Text, ActivityIndicator, StyleSheet, View } from 'react-native';
+import { Pressable, Text, ActivityIndicator, View } from 'react-native';
 
 interface Props {
   onPress: () => void;
@@ -23,85 +23,85 @@ export function PrimaryButton({
       <Pressable
         onPress={onPress}
         disabled={isDisabled}
-        style={({ pressed }) => [
-          styles.ghost,
-          pressed && styles.pressed,
-        ]}
+        style={{
+          paddingVertical: 14,
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: '100%',
+        }}
       >
-        {typeof children === 'string' ? (
-          <Text style={styles.ghostText}>{children}</Text>
-        ) : (
-          children
-        )}
+        <Text
+          style={{
+            fontFamily: 'Inter',
+            fontSize: 14,
+            fontWeight: '500',
+            color: '#8B949E',
+          }}
+        >
+          {typeof children === 'string' ? children : null}
+        </Text>
       </Pressable>
     );
   }
 
-  const btnStyle = isDisabled ? styles.primaryDisabled : styles.primary;
-  const textStyle = isDisabled ? styles.primaryDisabledText : styles.primaryText;
+  if (isDisabled) {
+    return (
+      <View
+        style={{
+          backgroundColor: 'transparent',
+          borderWidth: 2,
+          borderColor: '#39FF14',
+          borderRadius: 999,
+          minHeight: 56,
+          width: '100%',
+          justifyContent: 'center',
+          alignItems: 'center',
+          paddingVertical: 14,
+          paddingHorizontal: 24,
+        }}
+      >
+        {loading ? (
+          <ActivityIndicator color="#39FF14" />
+        ) : (
+          <Text
+            style={{
+              fontFamily: 'Inter',
+              fontSize: 16,
+              fontWeight: '700',
+              color: '#39FF14',
+            }}
+          >
+            {typeof children === 'string' ? children : null}
+          </Text>
+        )}
+      </View>
+    );
+  }
 
   return (
     <Pressable
       onPress={onPress}
-      disabled={isDisabled}
-      style={({ pressed }) => [btnStyle, pressed && styles.pressed]}
+      style={{
+        backgroundColor: '#39FF14',
+        borderRadius: 999,
+        minHeight: 56,
+        width: '100%',
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingVertical: 16,
+        paddingHorizontal: 24,
+      }}
     >
-      {loading ? (
-        <ActivityIndicator color="#0D1117" />
-      ) : typeof children === 'string' ? (
-        <Text style={textStyle}>{children}</Text>
-      ) : (
-        <View>{children}</View>
-      )}
+      <Text
+        style={{
+          fontFamily: 'Inter',
+          fontSize: 16,
+          fontWeight: '700',
+          color: '#0D1117',
+        }}
+      >
+        {typeof children === 'string' ? children : null}
+      </Text>
     </Pressable>
   );
 }
-
-const styles = StyleSheet.create({
-  primary: {
-    backgroundColor: '#39FF14',
-    paddingVertical: 18,
-    paddingHorizontal: 24,
-    borderRadius: 999,
-    alignItems: 'center',
-    justifyContent: 'center',
-    minHeight: 56,
-  },
-  primaryDisabled: {
-    backgroundColor: 'transparent',
-    borderWidth: 2,
-    borderColor: '#39FF14',
-    paddingVertical: 16,
-    paddingHorizontal: 24,
-    borderRadius: 999,
-    alignItems: 'center',
-    justifyContent: 'center',
-    minHeight: 56,
-  },
-  primaryText: {
-    fontFamily: 'Inter',
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#0D1117',
-  },
-  primaryDisabledText: {
-    fontFamily: 'Inter',
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#39FF14',
-  },
-  ghost: {
-    paddingVertical: 14,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  ghostText: {
-    fontFamily: 'Inter',
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#8B949E',
-  },
-  pressed: {
-    opacity: 0.8,
-  },
-});
