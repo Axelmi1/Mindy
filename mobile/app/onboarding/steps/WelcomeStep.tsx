@@ -1,6 +1,5 @@
 import React from 'react';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import Animated, { FadeIn, FadeInUp, FadeInDown } from 'react-native-reanimated';
 import { router } from 'expo-router';
 import * as Haptics from 'expo-haptics';
@@ -13,9 +12,10 @@ const VALUE_PROPS = [
   { icon: '🎮', label: 'Interactive' },
 ];
 
+const BUILD_TAG = 'build-2026-04-21-welcome-v6';
+
 export function WelcomeStep() {
   const next = useOnboardingStore((s) => s.next);
-  const insets = useSafeAreaInsets();
 
   const handleStart = async () => {
     try {
@@ -27,7 +27,11 @@ export function WelcomeStep() {
   const handleLogin = () => router.replace('/login');
 
   return (
-    <SafeAreaView style={styles.root} edges={['top', 'left', 'right']}>
+    <View style={styles.root}>
+      <View style={styles.debugBanner}>
+        <Text style={styles.debugText}>{BUILD_TAG}</Text>
+      </View>
+
       <View style={styles.content}>
         <Animated.View entering={FadeIn.duration(600)} style={styles.hero}>
           <MindyMascot mood="neutral" size={140} />
@@ -48,27 +52,45 @@ export function WelcomeStep() {
         </Animated.View>
       </View>
 
-      <View style={[styles.footer, { paddingBottom: Math.max(insets.bottom, 16) + 12 }]}>
-        <Pressable
+      <View style={styles.footer}>
+        <TouchableOpacity
+          activeOpacity={0.8}
           onPress={handleStart}
-          style={({ pressed }) => [styles.btnPrimary, pressed && { opacity: 0.8 }]}
+          style={styles.btnPrimary}
         >
           <Text style={styles.btnPrimaryText}>Get started</Text>
-        </Pressable>
+        </TouchableOpacity>
 
-        <Pressable
+        <TouchableOpacity
+          activeOpacity={0.6}
           onPress={handleLogin}
-          style={({ pressed }) => [styles.btnGhost, pressed && { opacity: 0.6 }]}
+          style={styles.btnGhost}
         >
           <Text style={styles.btnGhostText}>I already have an account</Text>
-        </Pressable>
+        </TouchableOpacity>
       </View>
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: '#0D1117' },
+  root: {
+    flex: 1,
+    backgroundColor: '#0D1117',
+    paddingTop: 60,
+  },
+  debugBanner: {
+    backgroundColor: '#F7C843',
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    alignItems: 'center',
+  },
+  debugText: {
+    fontFamily: 'JetBrainsMono',
+    fontSize: 11,
+    color: '#0D1117',
+    fontWeight: '700',
+  },
   content: {
     flex: 1,
     paddingHorizontal: 24,
@@ -118,15 +140,18 @@ const styles = StyleSheet.create({
   footer: {
     paddingHorizontal: 24,
     paddingTop: 12,
+    paddingBottom: 40,
   },
   btnPrimary: {
     backgroundColor: '#39FF14',
     paddingVertical: 18,
+    paddingHorizontal: 24,
     borderRadius: 999,
     alignItems: 'center',
     justifyContent: 'center',
     minHeight: 56,
-    marginBottom: 12,
+    width: '100%',
+    marginBottom: 8,
   },
   btnPrimaryText: {
     fontFamily: 'Inter',
@@ -138,10 +163,12 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     alignItems: 'center',
     justifyContent: 'center',
+    width: '100%',
   },
   btnGhostText: {
     fontFamily: 'Inter',
     fontSize: 14,
+    fontWeight: '500',
     color: '#8B949E',
   },
 });
