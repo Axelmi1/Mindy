@@ -386,6 +386,18 @@ export default function LessonScreen() {
       setScreenState('completed');
     } catch (err) {
       console.error('Error completing lesson:', err);
+      // Safety net: force-mark the lesson as completed so the next lesson
+      // unlocks even if the per-step API calls choked mid-loop. XP is not
+      // re-awarded here — we just ensure the completion flag is set.
+      try {
+        const allStepIndices = Array.from({ length: totalSteps }, (_, i) => i);
+        await progressApi.update(progress.id, {
+          completedSteps: allStepIndices,
+          isCompleted: true,
+        });
+      } catch (updateErr) {
+        console.error('Failed to force-complete lesson via PATCH:', updateErr);
+      }
       setScreenState('completed');
     }
   }, [progress, userId, lesson, totalSteps, playSound, isPracticeMode]);

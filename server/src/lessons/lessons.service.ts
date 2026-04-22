@@ -143,15 +143,18 @@ export class LessonsService {
   }
 
   /**
-   * Get total step count for a lesson
+   * Get total step count for a lesson.
+   *
+   * IMPORTANT: this does NOT validate step shapes with Zod — if a single step
+   * has a slightly off field the count would fall back to 0 and break
+   * `completeStep` across the entire lesson (it rejects every stepIndex as
+   * out-of-range, which silently fails completion in the client). Just trust
+   * the shape of `content.steps` as a plain array.
    */
   getStepCount(lessonContent: unknown): number {
-    try {
-      const content = validateLessonContent(lessonContent);
-      return content.steps.length;
-    } catch {
-      return 0;
-    }
+    if (!lessonContent || typeof lessonContent !== 'object') return 0;
+    const steps = (lessonContent as { steps?: unknown }).steps;
+    return Array.isArray(steps) ? steps.length : 0;
   }
 
   /**

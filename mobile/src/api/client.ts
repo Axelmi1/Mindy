@@ -258,6 +258,16 @@ export const progressApi = {
     }),
 
   /**
+   * Force-update progress (safety net to ensure completion is recorded
+   * even if individual completeStep calls fail).
+   */
+  update: (progressId: string, data: { completedSteps?: number[]; isCompleted?: boolean }) =>
+    fetchApi<UserProgress>(`/progress/${progressId}`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    }),
+
+  /**
    * Get activity heatmap data (last N days)
    */
   getActivityHeatmap: (userId: string, days = 56) =>
