@@ -48,5 +48,10 @@ jobs:
         run: |
           # Use only the first line of the commit message to avoid shell issues
           # with multi-line commits containing quotes or special chars.
+          # On workflow_dispatch, head_commit.message is empty — fall back to
+          # the latest commit on the checked-out ref so --message is never blank.
           FIRST_LINE="${COMMIT_MSG%%$'\n'*}"
+          if [ -z "$FIRST_LINE" ]; then
+            FIRST_LINE="$(git log -1 --pretty=%s)"
+          fi
           eas update --branch preview --message "$FIRST_LINE" --non-interactive

@@ -26,7 +26,7 @@ Une fois ces étapes faites, **chaque `git push` sur `main`** déclenchera :
 4. Render te demandera de remplir la variable secrète **`DATABASE_URL`** :
    - Colle l'URL Neon de l'étape 1
 5. Clique **Apply** → premier déploiement lance (~5 min)
-6. Quand c'est vert, copie l'URL publique : `https://mindy-api.onrender.com` (le nom peut varier)
+6. Quand c'est vert, copie l'URL publique : `https://mindy-api-zsvf.onrender.com` (Render a ajouté le suffixe `-zsvf` car `mindy-api` était pris ; vérifie l'URL exacte affichée sur ton dashboard)
 
 ⚠️ Le plan free Render s'endort après 15 min d'inactivité (cold-start ~50s au réveil). Acceptable pour démo.
 
@@ -46,7 +46,7 @@ Après `eas init`, ouvre `mobile/app.json` et **vérifie** que `updates.url` ne 
 
 Premier publish manuel (sert à créer la branche `preview`) :
 ```bash
-EXPO_PUBLIC_API_URL=https://mindy-api.onrender.com/api eas update --branch preview --message "initial"
+EXPO_PUBLIC_API_URL=https://mindy-api-zsvf.onrender.com/api eas update --branch preview --message "initial"
 ```
 
 → EAS te donne un **lien** (ex: `https://expo.dev/preview/update?...`) et un **QR code**.
@@ -61,7 +61,7 @@ Pour que chaque `git push` publie une mise à jour OTA :
 2. Va dans le repo GitHub : `Axelmi1/Mindy` → **Settings** → **Secrets and variables** → **Actions** → **New repository secret**
 3. Crée 2 secrets :
    - `EXPO_TOKEN` = le token Expo
-   - `EXPO_PUBLIC_API_URL` = `https://mindy-api.onrender.com/api`
+   - `EXPO_PUBLIC_API_URL` = `https://mindy-api-zsvf.onrender.com/api` (⚠️ utilise l'URL exacte affichée sur Render — le suffixe `-zsvf` est spécifique à ton service)
 4. Done ✅ — `.github/workflows/eas-update.yml` est déjà en place.
 
 ---
@@ -101,5 +101,5 @@ open https://dashboard.render.com
 cd mobile && eas update:list --branch preview
 
 # Tester l'API locale
-curl https://mindy-api.onrender.com/api/docs
+curl https://mindy-api-zsvf.onrender.com/api/docs
 ```
