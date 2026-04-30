@@ -38,8 +38,30 @@ export async function finalizeOnboarding(): Promise<void> {
     const msg = (err as Error).message || String(err);
     throw new Error(`Cannot reach the server (${msg}). API: ${API_URL}`);
   }
-  if (!createResp.ok) throw new Error(`Failed to create user (HTTP ${createResp.status})`);
+  if (!createResp.ok) {
+    // Try to extract a server-provided message (e.g. 409 with field-specific text).
+    let serverMsg = '';
+    try {
+      const body = await createResp.json();
+      const inner = body?.message;
+      if (typeof inner === 'string') serverMsg = inner;
+      else if (inner?.message) serverMsg = inner.message;
+    } catch {
+      // ignore
+    }
+    if (createResp.status === 409) {
+      throw new Error(serverMsg || 'Ce nom est déjà pris, choisis-en un autre.');
+    }
+    throw new Error(`Failed to create user (HTTP ${createResp.status}${serverMsg ? ` — ${serverMsg}` : ''})`);
+  }
   const { data: user } = await createResp.json();
+
+  // Persist user_id IMMEDIATELY so a crash in any later step doesn't leave us
+  // with an orphaned user in DB and an empty AsyncStorage on the next launch.
+  await AsyncStorage.multiSet([
+    ['@mindy/user_id', user.id],
+    ['@mindy/username', user.username],
+  ]);
 
   try {
     const patchResp = await fetchWithTimeout(`${API_URL}/users/${user.id}`, {
@@ -79,11 +101,6 @@ export async function finalizeOnboarding(): Promise<void> {
       body: JSON.stringify({ userId: user.id, email: s.email }),
     }).catch((err) => console.warn('Magic link send failed:', err));
   }
-
-  await AsyncStorage.multiSet([
-    ['@mindy/user_id', user.id],
-    ['@mindy/username', user.username],
-  ]);
 
   s.reset();
   await AsyncStorage.removeItem('@mindy/onboarding_state');

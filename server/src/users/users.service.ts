@@ -1,4 +1,5 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, ConflictException } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { AnalyticsService } from '../analytics/analytics.service';
@@ -26,17 +27,35 @@ export class UsersService {
     const finalEmail =
       data.email ??
       `${data.username.toLowerCase().replace(/[^a-z0-9]/g, '_')}_${ts}@mindy.app`;
-    return this.prisma.user.create({
-      data: {
-        email: finalEmail,
-        username: data.username,
-        referralCode,
-        preferredDomain: data.preferredDomain ?? null,
-        userGoal: data.userGoal ?? null,
-        dailyMinutes: data.dailyMinutes ?? null,
-        reminderHour: data.reminderHour ?? null,
-      },
-    });
+    try {
+      return await this.prisma.user.create({
+        data: {
+          email: finalEmail,
+          username: data.username,
+          referralCode,
+          preferredDomain: data.preferredDomain ?? null,
+          userGoal: data.userGoal ?? null,
+          dailyMinutes: data.dailyMinutes ?? null,
+          reminderHour: data.reminderHour ?? null,
+        },
+      });
+    } catch (err) {
+      // P2002 = unique constraint violation. Translate to a 409 with a field-
+      // specific message so clients can recover (e.g. ask user to pick another
+      // username) instead of seeing a generic 500.
+      if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
+        const target = (err.meta?.target as string[] | string | undefined);
+        const fields = Array.isArray(target) ? target : target ? [target] : [];
+        if (fields.includes('username')) {
+          throw new ConflictException({ field: 'username', message: 'Ce nom est déjà pris' });
+        }
+        if (fields.includes('email')) {
+          throw new ConflictException({ field: 'email', message: 'Cette adresse e-mail est déjà utilisée' });
+        }
+        throw new ConflictException('Ressource déjà existante');
+      }
+      throw err;
+    }
   }
 
   /**
