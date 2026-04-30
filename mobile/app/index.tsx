@@ -1,16 +1,17 @@
-import { useEffect } from 'react';
 import { View, ActivityIndicator, Text, StyleSheet } from 'react-native';
 import { Redirect } from 'expo-router';
 import { useUser } from '@/hooks/useUser';
 import { Icon } from '@/components/ui/Icon';
 
 /**
- * Root index - handles auth redirect
+ * Root index - sends logged-in users to the main tabs and new users to
+ * onboarding. Previously redirected everyone to /onboarding unconditionally
+ * (a TODO left over from testing), which forced returning users to redo the
+ * whole flow on every cold start.
  */
 export default function RootIndex() {
   const { isLoading, isLoggedIn } = useUser();
 
-  // Show loading while checking auth state
   if (isLoading) {
     return (
       <View style={styles.container}>
@@ -23,14 +24,7 @@ export default function RootIndex() {
     );
   }
 
-  // TODO: Remove this for production - always show onboarding for testing
-  return <Redirect href="/onboarding" />;
-
-  // Redirect based on auth state
-  // if (isLoggedIn) {
-  //   return <Redirect href="/(tabs)" />;
-  // }
-  // return <Redirect href="/onboarding" />;
+  return <Redirect href={isLoggedIn ? '/(tabs)' : '/onboarding'} />;
 }
 
 const styles = StyleSheet.create({

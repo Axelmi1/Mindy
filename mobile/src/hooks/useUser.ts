@@ -3,6 +3,21 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const USER_ID_KEY = '@mindy/user_id';
 const USERNAME_KEY = '@mindy/username';
+const REQUEST_TIMEOUT_MS = 15000;
+
+async function fetchWithTimeout(
+  input: string,
+  init: RequestInit = {},
+  timeoutMs = REQUEST_TIMEOUT_MS,
+): Promise<Response> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    return await fetch(input, { ...init, signal: controller.signal });
+  } finally {
+    clearTimeout(timer);
+  }
+}
 
 interface UserState {
   userId: string | null;
@@ -36,15 +51,13 @@ export function useUser() {
       ]);
 
       if (storedUserId) {
-        // Verify the user still exists in the database (with 5s timeout)
+        // Verify the user still exists in the database (with timeout)
         try {
-          const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 5000);
-
-          const verifyResponse = await fetch(`${API_URL}/users/${storedUserId}`, {
-            signal: controller.signal,
-          });
-          clearTimeout(timeoutId);
+          const verifyResponse = await fetchWithTimeout(
+            `${API_URL}/users/${storedUserId}`,
+            {},
+            5000,
+          );
 
           if (verifyResponse.ok) {
             const data = await verifyResponse.json();
@@ -95,7 +108,7 @@ export function useUser() {
       const storedUserId = await AsyncStorage.getItem(USER_ID_KEY);
       if (storedUserId && !customUsername) {
         try {
-          const verifyResponse = await fetch(`${API_URL}/users/${storedUserId}`);
+          const verifyResponse = await fetchWithTimeout(`${API_URL}/users/${storedUserId}`);
           if (verifyResponse.ok) {
             const data = await verifyResponse.json();
             const username = data?.data?.username ?? null;
@@ -113,17 +126,35 @@ export function useUser() {
       const finalEmail = `${finalUsername.toLowerCase().replace(/[^a-z0-9]/g, '_')}_${ts}@mindy.app`;
 
       // Create new user
-      const response = await fetch(`${API_URL}/users`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: finalEmail,
-          username: finalUsername,
-        }),
-      });
+      let response: Response;
+      try {
+        response = await fetchWithTimeout(`${API_URL}/users`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: finalEmail,
+            username: finalUsername,
+          }),
+        });
+      } catch (err) {
+        const msg = (err as Error).message || String(err);
+        throw new Error(`Cannot reach the server (${msg}). API: ${API_URL}`);
+      }
 
       if (!response.ok) {
-        throw new Error('Failed to create user');
+        let serverMsg = '';
+        try {
+          const body = await response.json();
+          const inner = body?.message;
+          if (typeof inner === 'string') serverMsg = inner;
+          else if (inner?.message) serverMsg = inner.message;
+        } catch {
+          // ignore
+        }
+        if (response.status === 409) {
+          throw new Error(serverMsg || 'Ce nom est déjà pris.');
+        }
+        throw new Error(`Failed to create user (HTTP ${response.status}${serverMsg ? ` — ${serverMsg}` : ''})`);
       }
 
       const result = await response.json();
@@ -133,7 +164,7 @@ export function useUser() {
       // Save onboarding preferences (domain + goal) if provided
       if (preferences && (preferences.preferredDomain || preferences.userGoal)) {
         try {
-          await fetch(`${API_URL}/users/${userId}`, {
+          await fetchWithTimeout(`${API_URL}/users/${userId}`, {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
