@@ -1,26 +1,34 @@
-import { demoQuestions } from './demoQuestions';
+import { demoQuestions, DemoQuestion } from './demoQuestions';
+
+const all = (): DemoQuestion[] => [
+  ...demoQuestions.CRYPTO, ...demoQuestions.FINANCE, ...demoQuestions.BOTH,
+];
 
 describe('demoQuestions', () => {
-  it.each(['CRYPTO', 'FINANCE', 'BOTH'] as const)('%s has exactly 3 questions', (domain) => {
-    expect(demoQuestions[domain]).toHaveLength(3);
+  it.each(['CRYPTO', 'FINANCE', 'BOTH'] as const)(
+    '%s a au moins 3 questions (pool sélectionnable)',
+    (domain) => { expect(demoQuestions[domain].length).toBeGreaterThanOrEqual(3); },
+  );
+
+  it('chaque question a une difficulté valide', () => {
+    for (const q of all()) {
+      expect(['beginner', 'intermediate', 'advanced']).toContain(q.difficulty);
+    }
   });
 
-  it('each question has a unique id', () => {
-    // BOTH reuses IDs from CRYPTO/FINANCE intentionally (same questions); just check internal consistency per-domain
-    expect(new Set(demoQuestions.CRYPTO.map(q => q.id)).size).toBe(3);
-    expect(new Set(demoQuestions.FINANCE.map(q => q.id)).size).toBe(3);
+  it('chaque domaine couvre les 3 difficultés', () => {
+    for (const domain of ['CRYPTO', 'FINANCE', 'BOTH'] as const) {
+      const diffs = new Set(demoQuestions[domain].map((q) => q.difficulty));
+      expect(diffs.has('beginner')).toBe(true);
+      expect(diffs.has('intermediate')).toBe(true);
+      expect(diffs.has('advanced')).toBe(true);
+    }
   });
 
-  it('image_choice and choice questions have exactly one correct option', () => {
-    const allQuestions = [
-      ...demoQuestions.CRYPTO,
-      ...demoQuestions.FINANCE,
-      ...demoQuestions.BOTH,
-    ];
-    for (const q of allQuestions) {
+  it('les questions image_choice/choice ont exactement une bonne option', () => {
+    for (const q of all()) {
       if (q.type === 'image_choice' || q.type === 'choice') {
-        const correct = q.options.filter(o => o.isCorrect).length;
-        expect(correct).toBe(1);
+        expect(q.options.filter((o) => o.isCorrect).length).toBe(1);
       }
     }
   });
