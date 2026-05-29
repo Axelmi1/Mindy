@@ -2,118 +2,122 @@ export type Difficulty = 'beginner' | 'intermediate' | 'advanced';
 
 type Base = { id: string; question: string; explanation: string; difficulty: Difficulty };
 
+/** Option à symbole (image_choice) : `color` colore le glyphe pour qu'il ressorte sur fond sombre. */
+type SymbolOption = { id: string; label: string; isCorrect: boolean; color?: string };
+type TextOption = { id: string; label: string; isCorrect: boolean };
+
 export type DemoQuestion =
-  | (Base & { type: 'image_choice'; options: { id: string; label: string; isCorrect: boolean }[] })
+  | (Base & { type: 'image_choice'; options: SymbolOption[] })
   | (Base & { type: 'true_false'; correctAnswer: boolean })
-  | (Base & { type: 'choice'; options: { id: string; label: string; isCorrect: boolean }[] });
+  | (Base & { type: 'choice'; options: TextOption[] });
 
 export type Domain = 'CRYPTO' | 'FINANCE' | 'BOTH';
 
 const CRYPTO: DemoQuestion[] = [
   {
     id: 'crypto-b1', type: 'image_choice', difficulty: 'beginner',
-    question: 'Which one is Bitcoin?',
+    question: 'Lequel est le Bitcoin ?',
     options: [
-      { id: 'btc', label: '₿', isCorrect: true },
-      { id: 'eth', label: 'Ξ', isCorrect: false },
-      { id: 'dollar', label: '$', isCorrect: false },
+      { id: 'btc', label: '₿', isCorrect: true, color: '#F7931A' },   // orange Bitcoin
+      { id: 'eth', label: 'Ξ', isCorrect: false, color: '#7B8CFF' },  // bleu Ethereum
+      { id: 'dollar', label: '$', isCorrect: false, color: '#5FD08A' }, // vert dollar
     ],
-    explanation: '₿ is the symbol for Bitcoin.',
+    explanation: '₿ est le symbole du Bitcoin.',
   },
   {
     id: 'crypto-b2', type: 'true_false', difficulty: 'beginner',
-    question: '"HODL" means to hold your crypto long-term',
+    question: '« HODL » signifie garder sa crypto sur le long terme',
     correctAnswer: true,
-    explanation: 'HODL originated from a typo of "HOLD" and became crypto slang.',
+    explanation: 'HODL vient d’une faute de frappe de « HOLD » devenue un classique de la crypto.',
   },
   {
     id: 'crypto-i1', type: 'choice', difficulty: 'intermediate',
-    question: 'What happens when you "buy the dip"?',
+    question: 'Que veut dire « acheter le creux » (buy the dip) ?',
     options: [
-      { id: 'a', label: 'Buy when price drops', isCorrect: true },
-      { id: 'b', label: 'Sell everything', isCorrect: false },
-      { id: 'c', label: 'Buy a snack', isCorrect: false },
+      { id: 'a', label: 'Acheter quand le prix chute', isCorrect: true },
+      { id: 'b', label: 'Tout revendre', isCorrect: false },
+      { id: 'c', label: 'Acheter un snack', isCorrect: false },
     ],
-    explanation: '"Buy the dip" means purchasing when prices drop.',
+    explanation: '« Acheter le creux », c’est acheter quand les prix baissent.',
   },
   {
     id: 'crypto-i2', type: 'true_false', difficulty: 'intermediate',
-    question: 'A blockchain is a public, shared ledger',
+    question: 'Une blockchain est un registre public et partagé',
     correctAnswer: true,
-    explanation: 'A blockchain records transactions on a distributed, public ledger.',
+    explanation: 'Une blockchain enregistre les transactions sur un registre public et distribué.',
   },
   {
     id: 'crypto-a1', type: 'choice', difficulty: 'advanced',
-    question: 'What is a "private key" used for?',
+    question: 'À quoi sert une « clé privée » ?',
     options: [
-      { id: 'a', label: 'Signing & controlling your funds', isCorrect: true },
-      { id: 'b', label: 'Logging into exchanges only', isCorrect: false },
-      { id: 'c', label: 'Mining new coins', isCorrect: false },
+      { id: 'a', label: 'À signer et contrôler tes fonds', isCorrect: true },
+      { id: 'b', label: 'À te connecter aux plateformes seulement', isCorrect: false },
+      { id: 'c', label: 'À miner de nouvelles pièces', isCorrect: false },
     ],
-    explanation: 'Your private key signs transactions — whoever holds it controls the funds.',
+    explanation: 'Ta clé privée signe les transactions — qui la détient contrôle les fonds.',
   },
 ];
 
 const FINANCE: DemoQuestion[] = [
   {
     id: 'finance-b1', type: 'image_choice', difficulty: 'beginner',
-    question: 'Which symbol is the Euro?',
+    question: 'Quel symbole est l’Euro ?',
     options: [
-      { id: 'eur', label: '€', isCorrect: true },
-      { id: 'gbp', label: '£', isCorrect: false },
-      { id: 'yen', label: '¥', isCorrect: false },
+      { id: 'eur', label: '€', isCorrect: true, color: '#5B8DEF' },   // bleu Euro
+      { id: 'gbp', label: '£', isCorrect: false, color: '#C9A0FF' },  // violet Livre
+      { id: 'yen', label: '¥', isCorrect: false, color: '#FF9F6B' },  // orange Yen
     ],
-    explanation: '€ is the symbol of the Euro, used by 20+ countries.',
+    explanation: '€ est le symbole de l’Euro, utilisé par plus de 20 pays.',
   },
   {
     id: 'finance-b2', type: 'true_false', difficulty: 'beginner',
-    question: 'A "bull market" means prices are going down',
+    question: 'Un « marché haussier » (bull market) veut dire que les prix baissent',
     correctAnswer: false,
-    explanation: 'A bull market is when prices are rising — a bear market is falling.',
+    explanation: 'Un marché haussier, c’est quand les prix montent — un marché baissier, quand ils baissent.',
   },
   {
     id: 'finance-i1', type: 'choice', difficulty: 'intermediate',
-    question: 'What is compound interest?',
+    question: 'Que sont les intérêts composés ?',
     options: [
-      { id: 'a', label: 'Interest on your interest', isCorrect: true },
-      { id: 'b', label: 'A bank tax', isCorrect: false },
-      { id: 'c', label: 'A type of loan', isCorrect: false },
+      { id: 'a', label: 'Des intérêts sur tes intérêts', isCorrect: true },
+      { id: 'b', label: 'Une taxe bancaire', isCorrect: false },
+      { id: 'c', label: 'Un type de prêt', isCorrect: false },
     ],
-    explanation: 'Compound interest earns you interest on your previous interest.',
+    explanation: 'Les intérêts composés te rapportent des intérêts sur tes intérêts précédents.',
   },
   {
     id: 'finance-i2', type: 'true_false', difficulty: 'intermediate',
-    question: 'Diversifying spreads your risk across assets',
+    question: 'Diversifier répartit ton risque sur plusieurs actifs',
     correctAnswer: true,
-    explanation: 'Diversification reduces the impact of any single asset falling.',
+    explanation: 'La diversification réduit l’impact de la chute d’un seul actif.',
   },
   {
     id: 'finance-a1', type: 'choice', difficulty: 'advanced',
-    question: 'What does inflation do to cash sitting idle?',
+    question: 'Que fait l’inflation à de l’argent qui dort ?',
     options: [
-      { id: 'a', label: 'Erodes its purchasing power', isCorrect: true },
-      { id: 'b', label: 'Increases its value', isCorrect: false },
-      { id: 'c', label: 'Nothing at all', isCorrect: false },
+      { id: 'a', label: 'Elle érode son pouvoir d’achat', isCorrect: true },
+      { id: 'b', label: 'Elle augmente sa valeur', isCorrect: false },
+      { id: 'c', label: 'Rien du tout', isCorrect: false },
     ],
-    explanation: 'Inflation means each euro buys less over time, so idle cash loses value.',
+    explanation: 'Avec l’inflation, chaque euro achète moins avec le temps : l’argent qui dort perd de la valeur.',
   },
 ];
 
 const BOTH: DemoQuestion[] = [
   CRYPTO[0],          // beginner
-  FINANCE[2],         // intermediate (compound interest)
+  FINANCE[2],         // intermediate (intérêts composés)
   {
     id: 'both-a1', type: 'choice', difficulty: 'advanced',
-    question: 'Why diversify your investments?',
+    question: 'Pourquoi diversifier tes investissements ?',
     options: [
-      { id: 'a', label: 'To reduce risk', isCorrect: true },
-      { id: 'b', label: 'To look smart', isCorrect: false },
-      { id: 'c', label: "There's no reason", isCorrect: false },
+      { id: 'a', label: 'Pour réduire le risque', isCorrect: true },
+      { id: 'b', label: 'Pour avoir l’air malin', isCorrect: false },
+      { id: 'c', label: 'Il n’y a aucune raison', isCorrect: false },
     ],
-    explanation: 'Diversification spreads risk — if one asset tanks, others might hold up.',
+    explanation: 'Diversifier répartit le risque — si un actif s’effondre, les autres peuvent tenir.',
   },
-  CRYPTO[2],          // intermediate (buy the dip)
-  FINANCE[1],         // beginner (bull market)
+  CRYPTO[2],          // intermediate (acheter le creux)
+  FINANCE[1],         // beginner (marché haussier)
 ];
 
 export const demoQuestions: Record<Domain, DemoQuestion[]> = { CRYPTO, FINANCE, BOTH };

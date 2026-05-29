@@ -90,10 +90,10 @@ export default function LoginScreen() {
         ]);
         router.replace('/(tabs)');
       } else {
-        Alert.alert('User not found', `No account found for "@${trimmed}"\n\nGo back to create a new account.`, [{ text: 'OK' }]);
+        Alert.alert('Compte introuvable', `Aucun compte trouvé pour « @${trimmed} »\n\nReviens en arrière pour créer un nouveau compte.`, [{ text: 'OK' }]);
       }
     } catch {
-      Alert.alert('Error', 'Could not connect to the server. Check your connection.', [{ text: 'OK' }]);
+      Alert.alert('Erreur', 'Impossible de joindre le serveur. Vérifie ta connexion.', [{ text: 'OK' }]);
     } finally {
       setIsLoginLoading(false);
     }
@@ -102,13 +102,13 @@ export default function LoginScreen() {
   const handleGoogleLogin = async () => {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     // TODO: Implement Google Sign In
-    alert('Google Sign In coming soon!');
+    alert('Connexion Google bientôt disponible !');
   };
 
   const handleAppleLogin = async () => {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     // TODO: Implement Apple Sign In
-    alert('Apple Sign In coming soon!');
+    alert('Connexion Apple bientôt disponible !');
   };
 
   return (
@@ -120,14 +120,14 @@ export default function LoginScreen() {
             <Icon name="brain" size={48} color="#39FF14" />
           </View>
           <Text style={styles.appName}>MINDY</Text>
-          <Text style={styles.tagline}>Learn Crypto & Finance</Text>
+          <Text style={styles.tagline}>Apprends la crypto & la finance</Text>
         </Animated.View>
 
         {/* Welcome Text */}
         <Animated.View entering={FadeInUp.delay(200).duration(400)} style={styles.welcomeSection}>
-          <Text style={styles.welcomeTitle}>Welcome</Text>
+          <Text style={styles.welcomeTitle}>Bienvenue</Text>
           <Text style={styles.welcomeText}>
-            Master trading, crypto, and personal finance with bite-sized lessons and interactive games.
+            Deviens bon en trading, crypto et finances perso avec des mini-leçons et des jeux interactifs.
           </Text>
         </Animated.View>
 
@@ -145,7 +145,7 @@ export default function LoginScreen() {
               <>
                 <Icon name="rocket" size={20} color="#0D1117" />
                 <Text style={styles.buttonPrimaryText}>
-                  {isLoggedIn ? 'Continue Learning' : 'Start Learning'}
+                  {isLoggedIn ? 'Continuer à apprendre' : 'Commencer à apprendre'}
                 </Text>
               </>
             )}
@@ -158,11 +158,11 @@ export default function LoginScreen() {
               onPress={() => setShowReferralInput(true)}
             >
               <Icon name="gift" size={16} color="#58A6FF" />
-              <Text style={styles.referralToggleText}>Have a referral code?</Text>
+              <Text style={styles.referralToggleText}>Tu as un code de parrainage ?</Text>
             </Pressable>
           ) : (
             <View style={styles.referralInputContainer}>
-              <Text style={styles.referralLabel}>Referral Code (optional)</Text>
+              <Text style={styles.referralLabel}>Code de parrainage (optionnel)</Text>
               <TextInput
                 style={styles.referralInput}
                 value={referralCode}
@@ -186,14 +186,14 @@ export default function LoginScreen() {
             ) : (
               <>
                 <Icon name="refresh" size={20} color="#8B949E" />
-                <Text style={styles.buttonTestText}>New Test User</Text>
+                <Text style={styles.buttonTestText}>Nouveau compte test</Text>
               </>
             )}
           </Pressable>
 
           <View style={styles.dividerRow}>
             <View style={styles.divider} />
-            <Text style={styles.dividerText}>or login with username</Text>
+            <Text style={styles.dividerText}>ou connecte-toi avec ton pseudo</Text>
             <View style={styles.divider} />
           </View>
 
@@ -204,7 +204,7 @@ export default function LoginScreen() {
               onPress={() => setShowUsernameLogin(true)}
             >
               <Icon name="user" size={20} color="#8B949E" />
-              <Text style={styles.buttonTestText}>Login with @username</Text>
+              <Text style={styles.buttonTestText}>Se connecter avec @pseudo</Text>
             </Pressable>
           ) : (
             <View style={{ gap: 10 }}>
@@ -212,7 +212,7 @@ export default function LoginScreen() {
                 <Text style={styles.usernameAtSign}>@</Text>
                 <TextInput
                   style={styles.usernameLoginInput}
-                  placeholder="your_username"
+                  placeholder="ton_pseudo"
                   placeholderTextColor="#484F58"
                   value={loginUsername}
                   onChangeText={setLoginUsername}
@@ -231,7 +231,7 @@ export default function LoginScreen() {
                 {isLoginLoading ? (
                   <ActivityIndicator color="#0D1117" />
                 ) : (
-                  <Text style={styles.buttonPrimaryText}>Login</Text>
+                  <Text style={styles.buttonPrimaryText}>Se connecter</Text>
                 )}
               </Pressable>
             </View>
