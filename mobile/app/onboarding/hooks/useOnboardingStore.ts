@@ -3,17 +3,15 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export type StepId =
-  | 'welcome' | 'domain' | 'goal' | 'time'
-  | 'mindy_intro' | 'demo_intro'
-  | 'demo_q1' | 'demo_q2' | 'demo_q3'
-  | 'results' | 'signup' | 'notifications';
+  | 'hello' | 'level' | 'domain' | 'goal' | 'time'
+  | 'demo' | 'result' | 'signup' | 'plan';
 
 export const STEP_ORDER: StepId[] = [
-  'welcome', 'domain', 'goal', 'time',
-  'mindy_intro', 'demo_intro',
-  'demo_q1', 'demo_q2', 'demo_q3',
-  'results', 'signup', 'notifications',
+  'hello', 'level', 'domain', 'goal', 'time',
+  'demo', 'result', 'signup', 'plan',
 ];
+
+export type Level = 'beginner' | 'intermediate' | 'advanced';
 
 export type Domain = 'CRYPTO' | 'FINANCE' | 'BOTH';
 
@@ -21,6 +19,7 @@ interface DemoAnswer { questionId: string; correct: boolean }
 
 interface OnboardingState {
   currentStep: StepId;
+  level: Level | null;
 
   domain: Domain | null;
   goal: string | null;
@@ -41,6 +40,7 @@ interface OnboardingState {
   setDomain: (d: Domain) => void;
   setGoal: (g: string) => void;
   setDailyMinutes: (m: 5 | 10 | 15) => void;
+  setLevel: (l: Level) => void;
   recordDemoAnswer: (questionId: string, correct: boolean) => void;
   setUsername: (u: string) => void;
   setEmail: (e: string | null) => void;
@@ -49,7 +49,8 @@ interface OnboardingState {
 }
 
 const initialState = {
-  currentStep: 'welcome' as StepId,
+  currentStep: 'hello' as StepId,
+  level: null,
   domain: null,
   goal: null,
   dailyMinutes: null,
@@ -79,6 +80,7 @@ export const useOnboardingStore = create<OnboardingState>()(
       setDomain: (domain) => set({ domain }),
       setGoal: (goal) => set({ goal }),
       setDailyMinutes: (dailyMinutes) => set({ dailyMinutes }),
+      setLevel: (level) => set({ level }),
       recordDemoAnswer: (questionId, correct) =>
         set((s) => ({
           demoAnswers: [...s.demoAnswers, { questionId, correct }],

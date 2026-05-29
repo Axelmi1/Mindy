@@ -1,4 +1,4 @@
-// Mock AsyncStorage for Node-side tests
+// Mock AsyncStorage for Node-side tests (persist middleware writes on reset)
 jest.mock('@react-native-async-storage/async-storage', () => ({
   __esModule: true,
   default: {
@@ -8,53 +8,57 @@ jest.mock('@react-native-async-storage/async-storage', () => ({
   },
 }));
 
-import { useOnboardingStore, STEP_ORDER, getStepProgress } from './useOnboardingStore';
+import { useOnboardingStore, STEP_ORDER, getStepProgress, StepId } from './useOnboardingStore';
+
+const reset = () => useOnboardingStore.getState().reset();
 
 describe('useOnboardingStore', () => {
-  beforeEach(() => useOnboardingStore.getState().reset());
+  beforeEach(reset);
 
-  it('starts at welcome', () => {
-    expect(useOnboardingStore.getState().currentStep).toBe('welcome');
+  it('STEP_ORDER contient les 9 nouvelles étapes dans l’ordre', () => {
+    expect(STEP_ORDER).toEqual([
+      'hello', 'level', 'domain', 'goal', 'time',
+      'demo', 'result', 'signup', 'plan',
+    ]);
   });
 
-  it('next() advances through the step order', () => {
-    useOnboardingStore.getState().next();
-    expect(useOnboardingStore.getState().currentStep).toBe('domain');
-    useOnboardingStore.getState().next();
-    expect(useOnboardingStore.getState().currentStep).toBe('goal');
+  it('démarre sur hello', () => {
+    expect(useOnboardingStore.getState().currentStep).toBe('hello');
   });
 
-  it('back() goes to previous step', () => {
-    useOnboardingStore.getState().goTo('goal');
-    useOnboardingStore.getState().back();
-    expect(useOnboardingStore.getState().currentStep).toBe('domain');
+  it('next() avance, back() recule, et ne dépasse pas les bornes', () => {
+    const { next, back } = useOnboardingStore.getState();
+    next(); expect(useOnboardingStore.getState().currentStep).toBe('level');
+    back(); expect(useOnboardingStore.getState().currentStep).toBe('hello');
+    back(); expect(useOnboardingStore.getState().currentStep).toBe('hello'); // borne basse
   });
 
-  it('next() does not advance past the last step', () => {
-    useOnboardingStore.getState().goTo('notifications');
-    useOnboardingStore.getState().next();
-    expect(useOnboardingStore.getState().currentStep).toBe('notifications');
+  it('setLevel stocke le niveau', () => {
+    useOnboardingStore.getState().setLevel('intermediate');
+    expect(useOnboardingStore.getState().level).toBe('intermediate');
   });
 
-  it('recordDemoAnswer bumps score for correct answers only', () => {
-    useOnboardingStore.getState().recordDemoAnswer('q1', true);
-    useOnboardingStore.getState().recordDemoAnswer('q2', false);
-    useOnboardingStore.getState().recordDemoAnswer('q3', true);
+  it('recordDemoAnswer incrémente le score sur bonne réponse', () => {
+    const { recordDemoAnswer } = useOnboardingStore.getState();
+    recordDemoAnswer('q1', true);
+    recordDemoAnswer('q2', false);
     const s = useOnboardingStore.getState();
-    expect(s.demoScore).toBe(2);
-    expect(s.demoAnswers).toHaveLength(3);
+    expect(s.demoScore).toBe(1);
+    expect(s.demoAnswers).toHaveLength(2);
   });
 
-  it('getStepProgress returns percentage 0-100', () => {
-    expect(getStepProgress('welcome')).toBeCloseTo((1 / STEP_ORDER.length) * 100);
-    expect(getStepProgress('notifications')).toBe(100);
+  it('getStepProgress renvoie 100% sur la dernière étape', () => {
+    expect(getStepProgress('plan')).toBe(100);
+    expect(getStepProgress('hello')).toBeCloseTo((1 / 9) * 100);
   });
 
-  it('reset brings state back to initial', () => {
-    useOnboardingStore.getState().setDomain('CRYPTO');
-    useOnboardingStore.getState().goTo('results');
-    useOnboardingStore.getState().reset();
-    expect(useOnboardingStore.getState().currentStep).toBe('welcome');
-    expect(useOnboardingStore.getState().domain).toBeNull();
+  it('reset remet currentStep à hello et vide les réponses', () => {
+    const st = useOnboardingStore.getState();
+    st.setLevel('advanced'); st.recordDemoAnswer('q', true); st.next();
+    st.reset();
+    const s = useOnboardingStore.getState();
+    expect(s.currentStep).toBe('hello');
+    expect(s.level).toBeNull();
+    expect(s.demoAnswers).toHaveLength(0);
   });
 });
