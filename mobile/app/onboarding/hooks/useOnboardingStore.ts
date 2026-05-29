@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import type { MindyMood } from '@/components/mindy/MindyMascot';
 
 export type StepId =
   | 'hello' | 'level' | 'domain' | 'goal' | 'time'
@@ -20,6 +21,7 @@ interface DemoAnswer { questionId: string; correct: boolean }
 interface OnboardingState {
   currentStep: StepId;
   level: Level | null;
+  mood: MindyMood;
 
   domain: Domain | null;
   goal: string | null;
@@ -41,6 +43,7 @@ interface OnboardingState {
   setGoal: (g: string) => void;
   setDailyMinutes: (m: 5 | 10 | 15) => void;
   setLevel: (l: Level) => void;
+  setMood: (m: MindyMood) => void;
   recordDemoAnswer: (questionId: string, correct: boolean) => void;
   setUsername: (u: string) => void;
   setEmail: (e: string | null) => void;
@@ -51,6 +54,7 @@ interface OnboardingState {
 const initialState = {
   currentStep: 'hello' as StepId,
   level: null,
+  mood: 'neutral' as MindyMood,
   domain: null,
   goal: null,
   dailyMinutes: null,
@@ -81,6 +85,7 @@ export const useOnboardingStore = create<OnboardingState>()(
       setGoal: (goal) => set({ goal }),
       setDailyMinutes: (dailyMinutes) => set({ dailyMinutes }),
       setLevel: (level) => set({ level }),
+      setMood: (mood) => set({ mood }),
       recordDemoAnswer: (questionId, correct) =>
         set((s) => ({
           demoAnswers: [...s.demoAnswers, { questionId, correct }],

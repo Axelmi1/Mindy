@@ -5,7 +5,7 @@ import { useOnboardingStore, getStepProgress } from '../hooks/useOnboardingStore
 
 export function ProgressBar() {
   const currentStep = useOnboardingStore((s) => s.currentStep);
-  if (currentStep === 'welcome') return null;
+  if (currentStep === 'hello') return null;
   const pct = getStepProgress(currentStep);
 
   return (

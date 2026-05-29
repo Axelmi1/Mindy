@@ -52,6 +52,11 @@ describe('useOnboardingStore', () => {
     expect(getStepProgress('hello')).toBeCloseTo((1 / 9) * 100);
   });
 
+  it('setMood change le mood courant', () => {
+    useOnboardingStore.getState().setMood('hype');
+    expect(useOnboardingStore.getState().mood).toBe('hype');
+  });
+
   it('reset remet currentStep à hello et vide les réponses', () => {
     const st = useOnboardingStore.getState();
     st.setLevel('advanced'); st.recordDemoAnswer('q', true); st.next();
