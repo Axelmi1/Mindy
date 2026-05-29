@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { View, StyleSheet, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { MindyMessage } from '@/components/MindyMessage';
@@ -33,6 +33,15 @@ export function MindyTurn({
   // Le CTA reste verrouillé tant que Mindy n'a pas fini de "parler".
   const [typingDone, setTypingDone] = useState(false);
 
+  // Re-verrouille le CTA à chaque nouvel écran/message (ex. les 3 questions du quiz
+  // partagent la même instance de MindyTurn : sans ce reset, le verrou anti-spoil
+  // ne marcherait qu'à la 1re question).
+  useEffect(() => { setTypingDone(false); }, [turnKey, message]);
+
+  // Callback stable : sinon MindyMessage relance le typing à chaque render du parent,
+  // ce qui peut empêcher onComplete de se déclencher → CTA bloqué à vie.
+  const handleTypingComplete = useCallback(() => setTypingDone(true), []);
+
   const body = (
     <Animated.View
       key={turnKey}
@@ -48,7 +57,7 @@ export function MindyTurn({
         <MindyMessage
           message={message}
           mood={mood}
-          onComplete={() => setTypingDone(true)}
+          onComplete={handleTypingComplete}
         />
         <View style={styles.answers}>{children}</View>
       </ScrollView>
