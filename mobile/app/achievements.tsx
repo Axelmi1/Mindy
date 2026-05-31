@@ -77,7 +77,7 @@ export default function AchievementsScreen() {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.centerContent}>
-          (<View style={{padding:20,gap:12}}>{[0,1,2,3,4].map(i=><SkeletonBox key={i} height={80} borderRadius={16}/>)}</View>)
+          <View style={{padding:20,gap:12}}>{[0,1,2,3,4].map(i=><SkeletonBox key={i} height={80} borderRadius={16}/>)}</View>
         </View>
       </SafeAreaView>
     );
