@@ -5,6 +5,7 @@
  * Provides typed methods for each endpoint.
  */
 
+import { localizeAchievements } from '../data/achievementsFr';
 import type {
   ApiResponse,
   User,
@@ -643,13 +644,25 @@ export const achievementsApi = {
   /**
    * Get all achievement definitions
    */
-  getAll: () => fetchApi<Achievement[]>('/achievements'),
+  getAll: async () => {
+    const res = await fetchApi<Achievement[]>('/achievements');
+    if (res.success && Array.isArray(res.data)) {
+      res.data = localizeAchievements(res.data);
+    }
+    return res;
+  },
 
   /**
    * Get user's achievements (unlocked + locked with progress)
    */
-  getUserAchievements: (userId: string) =>
-    fetchApi<UserAchievementsResponse>(`/achievements/user/${userId}`),
+  getUserAchievements: async (userId: string) => {
+    const res = await fetchApi<UserAchievementsResponse>(`/achievements/user/${userId}`);
+    if (res.success && res.data) {
+      res.data.unlocked = localizeAchievements(res.data.unlocked);
+      res.data.locked = localizeAchievements(res.data.locked);
+    }
+    return res;
+  },
 
   /**
    * Force check achievements (for testing)
