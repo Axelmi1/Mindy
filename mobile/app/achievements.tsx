@@ -133,7 +133,7 @@ export default function AchievementsScreen() {
       >
         {isLoading ? (
           <View style={styles.loadingContainer}>
-            (<View style={{padding:20,gap:12}}>{[0,1,2,3,4].map(i=><SkeletonBox key={i} height={80} borderRadius={16}/>)}</View>)
+            <View style={{padding:20,gap:12}}>{[0,1,2,3,4].map(i=><SkeletonBox key={i} height={80} borderRadius={16}/>)}</View>
           </View>
         ) : (
           CATEGORY_ORDER.map((category, categoryIndex) => {
