@@ -1,4 +1,4 @@
-import { suggestUsername, isValidUsername } from './usernameSuggest';
+import { suggestUsername, isValidUsername } from '../../app/onboarding/lib/usernameSuggest';
 
 describe('usernameSuggest', () => {
   it('génère un pseudo valide (3-20 chars, alphanum + _)', () => {

@@ -1,4 +1,4 @@
-import { demoQuestions, DemoQuestion } from './demoQuestions';
+import { demoQuestions, DemoQuestion } from '../../app/onboarding/data/demoQuestions';
 
 const all = (): DemoQuestion[] => [
   ...demoQuestions.CRYPTO, ...demoQuestions.FINANCE, ...demoQuestions.BOTH,

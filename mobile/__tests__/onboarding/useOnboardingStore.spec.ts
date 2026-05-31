@@ -8,7 +8,7 @@ jest.mock('@react-native-async-storage/async-storage', () => ({
   },
 }));
 
-import { useOnboardingStore, STEP_ORDER, getStepProgress, StepId } from './useOnboardingStore';
+import { useOnboardingStore, STEP_ORDER, getStepProgress, StepId } from '../../app/onboarding/hooks/useOnboardingStore';
 
 const reset = () => useOnboardingStore.getState().reset();
 

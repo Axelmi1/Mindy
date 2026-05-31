@@ -1,4 +1,4 @@
-import { runFinalize, toPlatformEnum, FinalizeDeps } from './finalizeOnboarding';
+import { runFinalize, toPlatformEnum, FinalizeDeps } from '../../app/onboarding/hooks/finalizeOnboarding';
 
 const baseState = {
   username: 'satoshi', email: null as string | null,

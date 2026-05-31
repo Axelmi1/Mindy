@@ -1,4 +1,4 @@
-import { selectDemoQuestions, levelToDifficulty } from './selectDemoQuestions';
+import { selectDemoQuestions, levelToDifficulty } from '../../app/onboarding/data/selectDemoQuestions';
 
 describe('selectDemoQuestions', () => {
   it('mappe le niveau vers une difficulté', () => {
