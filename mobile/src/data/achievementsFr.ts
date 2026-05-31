@@ -60,38 +60,25 @@ export const ACHIEVEMENTS_FR: Record<string, { name: string; description: string
   referral_25: { name: 'Légende du réseau', description: 'Parraine 25 amis' },
 };
 
-/** Type minimal d'un succès localisable (champs présents quelle que soit la forme). */
-type LocalizableAchievement = {
-  key?: string;
-  name?: string;
-  description?: string;
-  title?: string;
-  achievement?: LocalizableAchievement;
-  [k: string]: unknown;
-};
+/** Forme « à plat » : le succès porte directement key/name/description (Achievement, LockedAchievement). */
+type FlatAchievement = { key: string; name: string; description: string };
+/** Forme imbriquée : le succès débloqué porte un sous-objet `achievement` (UserAchievement). */
+type NestedAchievement = { achievement: FlatAchievement };
 
-/**
- * Remplace name/description (et title) d'un succès par leur version FR si la key
- * est connue. Gère la forme à plat ET la forme imbriquée sous `.achievement`.
- */
-export function localizeAchievement<T extends LocalizableAchievement>(a: T): T {
-  if (!a) return a;
-  const key = a.key ?? a.achievement?.key;
-  const fr = key ? ACHIEVEMENTS_FR[key] : undefined;
-  if (!fr) return a;
-  return {
-    ...a,
-    name: fr.name,
-    description: fr.description,
-    ...(a.title !== undefined ? { title: fr.name } : {}),
-    ...(a.achievement
-      ? { achievement: { ...a.achievement, name: fr.name, description: fr.description } }
-      : {}),
-  };
+/** Localise une liste de succès « à plat » (Achievement / LockedAchievement). */
+export function localizeFlat<T extends FlatAchievement>(list: T[]): T[] {
+  return list.map((a) => {
+    const fr = ACHIEVEMENTS_FR[a.key];
+    return fr ? ({ ...a, name: fr.name, description: fr.description } as T) : a;
+  });
 }
 
-/** Applique localizeAchievement à un tableau (ignore les valeurs nulles). */
-export function localizeAchievements<T extends LocalizableAchievement>(list: T[] | undefined): T[] {
-  if (!Array.isArray(list)) return list ?? [];
-  return list.map(localizeAchievement);
+/** Localise une liste de succès débloqués (UserAchievement, libellés sous `.achievement`). */
+export function localizeNested<T extends NestedAchievement>(list: T[]): T[] {
+  return list.map((a) => {
+    const fr = ACHIEVEMENTS_FR[a.achievement.key];
+    return fr
+      ? ({ ...a, achievement: { ...a.achievement, name: fr.name, description: fr.description } } as T)
+      : a;
+  });
 }

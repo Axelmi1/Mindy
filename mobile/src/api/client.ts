@@ -5,7 +5,7 @@
  * Provides typed methods for each endpoint.
  */
 
-import { localizeAchievements } from '../data/achievementsFr';
+import { localizeFlat, localizeNested } from '../data/achievementsFr';
 import type {
   ApiResponse,
   User,
@@ -647,7 +647,7 @@ export const achievementsApi = {
   getAll: async () => {
     const res = await fetchApi<Achievement[]>('/achievements');
     if (res.success && Array.isArray(res.data)) {
-      res.data = localizeAchievements(res.data);
+      res.data = localizeFlat(res.data);
     }
     return res;
   },
@@ -658,8 +658,8 @@ export const achievementsApi = {
   getUserAchievements: async (userId: string) => {
     const res = await fetchApi<UserAchievementsResponse>(`/achievements/user/${userId}`);
     if (res.success && res.data) {
-      res.data.unlocked = localizeAchievements(res.data.unlocked);
-      res.data.locked = localizeAchievements(res.data.locked);
+      res.data.unlocked = localizeNested(res.data.unlocked);
+      res.data.locked = localizeFlat(res.data.locked);
     }
     return res;
   },
