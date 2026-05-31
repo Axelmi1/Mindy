@@ -38,12 +38,12 @@ export function ReferralCard({ stats, onShare, isLoading = false }: ReferralCard
         setTimeout(() => setCopied(false), 2000);
       } else {
         // Fallback: show the code in an alert
-        Alert.alert('Referral Code', stats.referralCode, [{ text: 'OK' }]);
+        Alert.alert('Code de parrainage', stats.referralCode, [{ text: 'OK' }]);
         await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       }
     } catch (err) {
       console.error('Error copying:', err);
-      Alert.alert('Referral Code', stats.referralCode, [{ text: 'OK' }]);
+      Alert.alert('Code de parrainage', stats.referralCode, [{ text: 'OK' }]);
     }
   };
 
@@ -89,17 +89,17 @@ export function ReferralCard({ stats, onShare, isLoading = false }: ReferralCard
           <View style={styles.header}>
             <View style={styles.headerLeft}>
               <Icon name="gift" size={20} color="#58A6FF" />
-              <Text style={styles.title}>Invite Friends</Text>
+              <Text style={styles.title}>Inviter des amis</Text>
             </View>
             <View style={styles.statBadge}>
               <Text style={styles.statValue}>{stats.totalReferrals}</Text>
-              <Text style={styles.statLabel}>referred</Text>
+              <Text style={styles.statLabel}>parrainés</Text>
             </View>
           </View>
 
           {/* Referral Code */}
           <View style={styles.codeContainer}>
-            <Text style={styles.codeLabel}>Your referral code</Text>
+            <Text style={styles.codeLabel}>Ton code de parrainage</Text>
             <View style={styles.codeRow}>
               <View style={styles.codeBox}>
                 <Text style={styles.codeText}>{stats.referralCode}</Text>
@@ -114,11 +114,11 @@ export function ReferralCard({ stats, onShare, isLoading = false }: ReferralCard
           <View style={styles.xpRow}>
             <View style={styles.xpInfo}>
               <Icon name="zap" size={16} color="#FFD700" />
-              <Text style={styles.xpEarned}>{stats.xpEarned} XP earned</Text>
+              <Text style={styles.xpEarned}>{stats.xpEarned} XP gagnés</Text>
             </View>
             {stats.nextTierAt && stats.nextTierBonus && (
               <Text style={styles.tierInfo}>
-                +{stats.nextTierBonus} XP at {stats.nextTierAt} referrals
+                +{stats.nextTierBonus} XP à {stats.nextTierAt} parrainages
               </Text>
             )}
           </View>
@@ -143,7 +143,7 @@ export function ReferralCard({ stats, onShare, isLoading = false }: ReferralCard
           {/* Share Button */}
           <Pressable style={styles.shareButton} onPress={onShare}>
             <Icon name="share" size={18} color="#0D1117" />
-            <Text style={styles.shareButtonText}>Share Code</Text>
+            <Text style={styles.shareButtonText}>Partager le code</Text>
           </Pressable>
         </View>
       </View>

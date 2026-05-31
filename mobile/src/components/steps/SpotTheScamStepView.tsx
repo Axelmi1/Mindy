@@ -105,7 +105,7 @@ export function SpotTheScamStepView({ step, onAnswer }: SpotTheScamStepViewProps
                     </Text>
                     {gameState !== 'playing' && card.isScam && (
                       <Animated.View entering={ZoomIn.duration(200)} style={styles.scamBadge}>
-                        <Text style={styles.scamBadgeText}>SCAM</Text>
+                        <Text style={styles.scamBadgeText}>ARNAQUE</Text>
                       </Animated.View>
                     )}
                   </View>
@@ -116,7 +116,7 @@ export function SpotTheScamStepView({ step, onAnswer }: SpotTheScamStepViewProps
                   {/* Red flags on scam card after answer */}
                   {gameState !== 'playing' && card.isScam && card.redFlags && card.redFlags.length > 0 && (
                     <Animated.View entering={FadeInUp.delay(200).duration(300)} style={styles.redFlagsContainer}>
-                      <Text style={styles.redFlagsTitle}>Red flags :</Text>
+                      <Text style={styles.redFlagsTitle}>Signaux d'alerte :</Text>
                       {card.redFlags.map((flag, i) => (
                         <View key={i} style={styles.redFlagRow}>
                           <Text style={styles.redFlagIcon}>🚩</Text>

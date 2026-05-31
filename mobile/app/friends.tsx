@@ -128,7 +128,7 @@ function LessonPickerModal({
         <View style={pickerStyles.header}>
           <View>
             <Text style={pickerStyles.title}>⚔️ Défier {friendUsername}</Text>
-            <Text style={pickerStyles.subtitle}>Choisis une leçon pour la battle</Text>
+            <Text style={pickerStyles.subtitle}>Choisis une leçon pour le duel</Text>
           </View>
           <Pressable style={pickerStyles.closeBtn} onPress={onClose}>
             <Text style={pickerStyles.closeBtnText}>✕</Text>
@@ -311,7 +311,7 @@ function FriendRow({
       <View style={styles.friendInfo}>
         <Text style={styles.friendUsername}>{friend.username}</Text>
         <View style={styles.friendMeta}>
-          <Text style={styles.friendMetaText}>Lvl {friend.level}</Text>
+          <Text style={styles.friendMetaText}>Niv {friend.level}</Text>
           <Text style={styles.dot}>·</Text>
           <Text style={styles.friendMetaText}>🔥 {friend.streak}</Text>
         </View>
@@ -319,7 +319,7 @@ function FriendRow({
 
       <View style={styles.friendRight}>
         <Text style={styles.weeklyXp}>{friend.weeklyXp}</Text>
-        <Text style={styles.weeklyXpLabel}>XP this week</Text>
+        <Text style={styles.weeklyXpLabel}>XP cette semaine</Text>
         <LeagueBadge xp={friend.xp} size="sm" />
       </View>
 
@@ -357,19 +357,19 @@ function SearchResultRow({
       </View>
       <View style={styles.friendInfo}>
         <Text style={styles.friendUsername}>{user.username}</Text>
-        <Text style={styles.friendMetaText}>Lvl {user.level} · {user.league}</Text>
+        <Text style={styles.friendMetaText}>Niv {user.level} · {user.league}</Text>
       </View>
       {isFriend ? (
         <View style={[styles.addBtn, styles.addBtnDisabled]}>
-          <Text style={styles.addBtnText}>Friends ✓</Text>
+          <Text style={styles.addBtnText}>Amis ✓</Text>
         </View>
       ) : isPending ? (
         <View style={[styles.addBtn, styles.addBtnPending]}>
-          <Text style={styles.addBtnText}>Pending…</Text>
+          <Text style={styles.addBtnText}>En attente…</Text>
         </View>
       ) : (
         <Pressable style={styles.addBtn} onPress={() => onAdd(user.id)}>
-          <Text style={[styles.addBtnText, { color: C.primary }]}>+ Add</Text>
+          <Text style={[styles.addBtnText, { color: C.primary }]}>+ Ajouter</Text>
         </Pressable>
       )}
     </View>
@@ -394,14 +394,14 @@ function PendingRequestRow({
       </View>
       <View style={styles.friendInfo}>
         <Text style={styles.friendUsername}>{request.sender.username}</Text>
-        <Text style={styles.friendMetaText}>wants to be your friend</Text>
+        <Text style={styles.friendMetaText}>veut devenir ton ami</Text>
       </View>
       <View style={styles.requestActions}>
         <Pressable
           style={[styles.addBtn, { backgroundColor: `${C.primary}22` }]}
           onPress={() => onAccept(request.id)}
         >
-          <Text style={[styles.addBtnText, { color: C.primary }]}>Accept</Text>
+          <Text style={[styles.addBtnText, { color: C.primary }]}>Accepter</Text>
         </Pressable>
         <Pressable
           style={[styles.addBtn, styles.addBtnDanger]}
@@ -453,7 +453,7 @@ export default function FriendsScreen() {
         <Pressable style={styles.backBtn} onPress={() => router.back()}>
           <Text style={styles.backBtnText}>←</Text>
         </Pressable>
-        <Text style={styles.title}>Friends</Text>
+        <Text style={styles.title}>Amis</Text>
         {pendingRequests.length > 0 && (
           <View style={styles.badge}>
             <Text style={styles.badgeText}>{pendingRequests.length}</Text>
@@ -467,7 +467,7 @@ export default function FriendsScreen() {
           <Text style={styles.searchIcon}>🔍</Text>
           <TextInput
             style={styles.searchInput}
-            placeholder="Search by username…"
+            placeholder="Rechercher par nom d'utilisateur…"
             placeholderTextColor={C.muted}
             value={searchQuery}
             onChangeText={setSearchQuery}
@@ -490,7 +490,7 @@ export default function FriendsScreen() {
             onPress={() => setTab('friends')}
           >
             <Text style={[styles.tabText, tab === 'friends' && styles.tabTextActive]}>
-              My Friends {friends.length > 0 ? `(${friends.length})` : ''}
+              Mes amis {friends.length > 0 ? `(${friends.length})` : ''}
             </Text>
           </Pressable>
           <Pressable
@@ -498,7 +498,7 @@ export default function FriendsScreen() {
             onPress={() => setTab('search')}
           >
             <Text style={[styles.tabText, tab === 'search' && styles.tabTextActive]}>
-              Requests {pendingRequests.length > 0 ? `(${pendingRequests.length})` : ''}
+              Demandes {pendingRequests.length > 0 ? `(${pendingRequests.length})` : ''}
             </Text>
           </Pressable>
         </View>
@@ -512,12 +512,12 @@ export default function FriendsScreen() {
         {/* Search results */}
         {isSearchMode && (
           <Animated.View entering={FadeInDown}>
-            <Text style={styles.sectionTitle}>Search results</Text>
+            <Text style={styles.sectionTitle}>Résultats de recherche</Text>
             {loadingSearch ? (
               <ActivityIndicator color={C.primary} style={{ marginTop: 16 }} />
             ) : searchResults.length === 0 ? (
               <View style={styles.empty}>
-                <Text style={styles.emptyText}>No users found for "{searchQuery}"</Text>
+                <Text style={styles.emptyText}>Aucun utilisateur trouvé pour "{searchQuery}"</Text>
               </View>
             ) : (
               searchResults.map((u) => (
@@ -539,16 +539,16 @@ export default function FriendsScreen() {
             ) : friends.length === 0 ? (
               <View style={styles.empty}>
                 <Text style={styles.emptyEmoji}>👥</Text>
-                <Text style={styles.emptyTitle}>No friends yet</Text>
+                <Text style={styles.emptyTitle}>Pas encore d'amis</Text>
                 <Text style={styles.emptyText}>
-                  Search for friends by username to compete on the weekly leaderboard!
+                  Cherche des amis par nom d'utilisateur pour les affronter dans le classement de la semaine !
                 </Text>
               </View>
             ) : (
               <>
                 <View style={styles.leaderboardHeader}>
-                  <Text style={styles.sectionTitle}>Weekly Leaderboard</Text>
-                  <Text style={styles.muted}>resets every Monday</Text>
+                  <Text style={styles.sectionTitle}>Classement de la semaine</Text>
+                  <Text style={styles.muted}>réinitialisé chaque lundi</Text>
                 </View>
                 {/* Challenge hint */}
                 <View style={styles.challengeHint}>
@@ -576,9 +576,9 @@ export default function FriendsScreen() {
             {pendingRequests.length === 0 ? (
               <View style={styles.empty}>
                 <Text style={styles.emptyEmoji}>📬</Text>
-                <Text style={styles.emptyTitle}>No pending requests</Text>
+                <Text style={styles.emptyTitle}>Aucune demande en attente</Text>
                 <Text style={styles.emptyText}>
-                  When someone adds you, their request will appear here.
+                  Quand quelqu'un t'ajoute, sa demande apparaîtra ici.
                 </Text>
               </View>
             ) : (

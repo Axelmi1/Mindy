@@ -129,9 +129,9 @@ export default function WeeklyRecapScreen() {
       .getRecap(userId)
       .then((res) => {
         if (res.data) setRecap(res.data);
-        else setError('No data returned');
+        else setError('Aucune donnée disponible');
       })
-      .catch((e) => setError(e.message ?? 'Failed to load recap'))
+      .catch((e) => setError(e.message ?? 'Échec du chargement du récap'))
       .finally(() => setLoading(false));
   }, [userId]);
 
@@ -140,7 +140,7 @@ export default function WeeklyRecapScreen() {
       <SafeAreaView style={styles.container}>
         <View style={styles.loadingCenter}>
           <ActivityIndicator size="large" color="#39FF14" />
-          <Text style={styles.loadingText}>Loading your week…</Text>
+          <Text style={styles.loadingText}>Chargement de ta semaine…</Text>
         </View>
       </SafeAreaView>
     );
@@ -150,9 +150,9 @@ export default function WeeklyRecapScreen() {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.loadingCenter}>
-          <Text style={styles.errorText}>Failed to load recap 😕</Text>
+          <Text style={styles.errorText}>Échec du chargement du récap 😕</Text>
           <Pressable style={styles.backBtn} onPress={() => router.back()}>
-            <Text style={styles.backBtnText}>← Go back</Text>
+            <Text style={styles.backBtnText}>← Retour</Text>
           </Pressable>
         </View>
       </SafeAreaView>
@@ -169,7 +169,7 @@ export default function WeeklyRecapScreen() {
         <Pressable onPress={() => router.back()} style={styles.backButton}>
           <Icon name="arrow-left" size={22} color="#E6EDF3" />
         </Pressable>
-        <Text style={styles.headerTitle}>Weekly Recap</Text>
+        <Text style={styles.headerTitle}>Récap de la semaine</Text>
         <View style={{ width: 22 }} />
       </View>
 
@@ -197,7 +197,7 @@ export default function WeeklyRecapScreen() {
             <Text style={styles.heroXp}>
               +{recap.xpThisWeek.toLocaleString()} XP
             </Text>
-            <Text style={styles.heroSub}>earned this week</Text>
+            <Text style={styles.heroSub}>gagnés cette semaine</Text>
 
             {/* XP delta */}
             {recap.xpDelta !== 0 && (
@@ -214,7 +214,7 @@ export default function WeeklyRecapScreen() {
                   ]}
                 >
                   {recap.xpDelta > 0 ? '+' : ''}
-                  {recap.xpDelta} vs last week
+                  {recap.xpDelta} vs semaine passée
                 </Text>
               </View>
             )}
@@ -224,20 +224,20 @@ export default function WeeklyRecapScreen() {
         {/* Stats row */}
         <View style={styles.statsRow}>
           <StatCard
-            label="Lessons"
+            label="Leçons"
             value={String(recap.lessonsThisWeek)}
-            sub={recap.lessonsDelta > 0 ? `+${recap.lessonsDelta} vs last week` : undefined}
+            sub={recap.lessonsDelta > 0 ? `+${recap.lessonsDelta} vs semaine passée` : undefined}
             color="#39FF14"
             delay={100}
           />
           <StatCard
-            label="Active Days"
+            label="Jours actifs"
             value={`${recap.activeDays}/7`}
             color="#F7931A"
             delay={150}
           />
           <StatCard
-            label="Streak"
+            label="Série"
             value={`${recap.currentStreak} 🔥`}
             color="#FFD700"
             delay={200}
@@ -246,7 +246,7 @@ export default function WeeklyRecapScreen() {
 
         {/* Daily activity bar chart */}
         <Animated.View entering={FadeInUp.delay(200)} style={styles.section}>
-          <Text style={styles.sectionTitle}>Daily Activity</Text>
+          <Text style={styles.sectionTitle}>Activité quotidienne</Text>
           <View style={styles.barChart}>
             {recap.dailyActivity.map((day, i) => (
               <View key={day.date} style={styles.barCol}>
@@ -267,7 +267,7 @@ export default function WeeklyRecapScreen() {
 
         {/* Domain breakdown */}
         <Animated.View entering={FadeInUp.delay(300)} style={styles.section}>
-          <Text style={styles.sectionTitle}>Domain Breakdown</Text>
+          <Text style={styles.sectionTitle}>Répartition par domaine</Text>
           <View style={styles.domainRow}>
             {Object.entries(recap.domainBreakdown).map(([domain, count]) => (
               <View key={domain} style={styles.domainChip}>
@@ -277,7 +277,7 @@ export default function WeeklyRecapScreen() {
                     {domain.charAt(0) + domain.slice(1).toLowerCase()}
                   </Text>
                   <Text style={styles.domainCount}>
-                    {count} lesson{count !== 1 ? 's' : ''}
+                    {count} leçon{count !== 1 ? 's' : ''}
                   </Text>
                 </View>
               </View>
@@ -288,7 +288,7 @@ export default function WeeklyRecapScreen() {
         {/* Best day */}
         {recap.bestDay && recap.bestDay.xpEarned > 0 && (
           <Animated.View entering={FadeInUp.delay(380)} style={styles.section}>
-            <Text style={styles.sectionTitle}>Best Day</Text>
+            <Text style={styles.sectionTitle}>Meilleur jour</Text>
             <View style={styles.bestDayCard}>
               <Text style={styles.bestDayDay}>
                 {recap.bestDay.dayName}
@@ -298,7 +298,7 @@ export default function WeeklyRecapScreen() {
                   +{recap.bestDay.xpEarned} XP
                 </Text>
                 <Text style={styles.bestDaySub}>
-                  {recap.bestDay.lessonsCompleted} lesson
+                  {recap.bestDay.lessonsCompleted} leçon
                   {recap.bestDay.lessonsCompleted !== 1 ? 's' : ''}
                 </Text>
               </View>
@@ -330,7 +330,7 @@ export default function WeeklyRecapScreen() {
               style={styles.ctaGradient}
             >
               <Icon name="zap" size={18} color="#0D1117" />
-              <Text style={styles.ctaText}>Start a Lesson Now</Text>
+              <Text style={styles.ctaText}>Commencer une leçon</Text>
             </LinearGradient>
           </Pressable>
         </Animated.View>
@@ -344,7 +344,7 @@ export default function WeeklyRecapScreen() {
 // ────────────────────────────────────────────────────────────────────────────
 
 function formatDate(iso: string): string {
-  return new Date(iso).toLocaleDateString('en-US', {
+  return new Date(iso).toLocaleDateString('fr-FR', {
     month: 'short',
     day: 'numeric',
   });

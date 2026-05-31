@@ -110,7 +110,7 @@ export default function LeaderboardScreen() {
           <View style={styles.usernameRow}>
             <Text style={[styles.username, item.isCurrentUser && styles.usernameCurrentUser]}>
               {item.username}
-              {item.isCurrentUser && ' (You)'}
+              {item.isCurrentUser && ' (Toi)'}
             </Text>
             {item.rankDelta !== null && item.rankDelta !== 0 && (
               <View style={[
@@ -127,7 +127,7 @@ export default function LeaderboardScreen() {
             )}
             {item.rankDelta === null && (
               <View style={styles.rankNewBadge}>
-                <Text style={styles.rankNewText}>NEW</Text>
+                <Text style={styles.rankNewText}>NOUVEAU</Text>
               </View>
             )}
           </View>
@@ -171,7 +171,7 @@ export default function LeaderboardScreen() {
         <Pressable onPress={() => router.back()} style={styles.backButton}>
           <Icon name="arrow-left" size={24} color="#8B949E" />
         </Pressable>
-        <Text style={styles.headerTitle}>Leaderboard</Text>
+        <Text style={styles.headerTitle}>Classement</Text>
         <View style={styles.timerBadge}>
           <Icon name="clock" size={14} color="#8B949E" />
           <Text style={styles.timerText}>{timeUntilReset}</Text>
@@ -183,14 +183,14 @@ export default function LeaderboardScreen() {
         <Animated.View entering={FadeIn.duration(400)} style={styles.userStatsCard}>
           <View style={styles.statItem}>
             <Text style={styles.statValue}>{userStats.xpThisWeek.toLocaleString()}</Text>
-            <Text style={styles.statLabel}>XP this week</Text>
+            <Text style={styles.statLabel}>XP cette semaine</Text>
           </View>
           <View style={styles.statDivider} />
           <View style={styles.statItem}>
             <Text style={styles.statValue}>
               {userStats.rank ? `#${userStats.rank}` : '-'}
             </Text>
-            <Text style={styles.statLabel}>Your rank</Text>
+            <Text style={styles.statLabel}>Ton rang</Text>
           </View>
           <View style={styles.statDivider} />
           <View style={styles.statItem}>
@@ -218,14 +218,14 @@ export default function LeaderboardScreen() {
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
             <Icon name="trophy" size={48} color="#30363D" />
-            <Text style={styles.emptyText}>No rankings yet this week</Text>
-            <Text style={styles.emptySubtext}>Complete lessons to earn XP!</Text>
+            <Text style={styles.emptyText}>Aucun classement cette semaine</Text>
+            <Text style={styles.emptySubtext}>Termine des leçons pour gagner de l'XP !</Text>
           </View>
         }
         ListFooterComponent={
           userPosition && !leaderboard.find(e => e.isCurrentUser) ? (
             <View style={styles.userPositionFooter}>
-              <Text style={styles.userPositionLabel}>Your position</Text>
+              <Text style={styles.userPositionLabel}>Ta position</Text>
               {renderEntry({ item: userPosition, index: 0 })}
             </View>
           ) : null

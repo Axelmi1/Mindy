@@ -102,7 +102,7 @@ export function SpeedRoundStepView({ step, onComplete }: SpeedRoundStepViewProps
             {step.pairs.length} questions en {step.timeLimitSeconds}s
           </Text>
           <Text style={styles.readyHint}>
-            Combo x2 a 3 bonnes, x3 a 6 !
+            Combo x2 à 3 bonnes, x3 à 6 !
           </Text>
         </Animated.View>
         <Animated.View entering={FadeInUp.delay(200)}>
@@ -193,7 +193,7 @@ export function SpeedRoundStepView({ step, onComplete }: SpeedRoundStepViewProps
           </View>
           <View style={styles.statItem}>
             <Text style={styles.statValue}>{totalCorrect}/{step.pairs.length}</Text>
-            <Text style={styles.statLabel}>Correct</Text>
+            <Text style={styles.statLabel}>Bonnes</Text>
           </View>
           <View style={styles.statItem}>
             <Text style={styles.statValue}>{accuracy}%</Text>

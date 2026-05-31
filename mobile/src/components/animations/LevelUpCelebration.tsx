@@ -103,19 +103,19 @@ export function LevelUpCelebration({ level, onDismiss, visible }: LevelUpCelebra
 
         {/* Congratulations text */}
         <Animated.View style={[styles.textContainer, textAnimatedStyle]}>
-          <Text style={styles.title}>LEVEL UP!</Text>
+          <Text style={styles.title}>NIVEAU SUPÉRIEUR !</Text>
           <Text style={styles.subtitle}>
-            You've reached level {level}
+            Tu as atteint le niveau {level}
           </Text>
           <Text style={styles.encouragement}>
-            Keep crushing those lessons!
+            Continue à enchaîner les leçons !
           </Text>
         </Animated.View>
 
         {/* Dismiss button */}
         <Animated.View style={[styles.buttonContainer, buttonAnimatedStyle]}>
           <Pressable style={styles.button} onPress={onDismiss}>
-            <Text style={styles.buttonText}>Continue</Text>
+            <Text style={styles.buttonText}>Continuer</Text>
           </Pressable>
         </Animated.View>
       </View>

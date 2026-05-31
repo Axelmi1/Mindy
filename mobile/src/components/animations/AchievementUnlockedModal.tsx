@@ -115,7 +115,7 @@ export function AchievementUnlockedModal({
 
         {/* Congratulations text */}
         <Animated.View style={[styles.textContainer, textAnimatedStyle]}>
-          <Text style={styles.title}>ACHIEVEMENT UNLOCKED!</Text>
+          <Text style={styles.title}>SUCCÈS DÉBLOQUÉ !</Text>
           <Text style={[styles.achievementName, { color: rarityColor }]}>
             {achievement.name}
           </Text>
@@ -140,7 +140,7 @@ export function AchievementUnlockedModal({
         {/* Dismiss button */}
         <Animated.View style={[styles.buttonContainer, buttonAnimatedStyle]}>
           <Pressable style={styles.button} onPress={onDismiss}>
-            <Text style={styles.buttonText}>Awesome!</Text>
+            <Text style={styles.buttonText}>Génial !</Text>
           </Pressable>
         </Animated.View>
       </View>

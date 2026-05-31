@@ -6,6 +6,18 @@ import { Icon, IconName } from './Icon';
 import { Achievement, AchievementRarity } from '@/api/client';
 import { getRarityColor, getCategoryIcon } from '@/hooks/useAchievements';
 
+// Libellés FR affichés pour la rareté (les valeurs d'enum restent inchangées)
+const RARITY_LABELS: Record<string, string> = {
+  common: 'Commun',
+  rare: 'Rare',
+  epic: 'Épique',
+  legendary: 'Légendaire',
+  COMMON: 'Commun',
+  RARE: 'Rare',
+  EPIC: 'Épique',
+  LEGENDARY: 'Légendaire',
+};
+
 interface AchievementCardProps {
   achievement: Achievement;
   isUnlocked: boolean;
@@ -77,7 +89,7 @@ export function AchievementCard({
               </Text>
               <View style={[styles.rarityBadge, { backgroundColor: rarityColor + '20' }]}>
                 <Text style={[styles.rarityText, { color: rarityColor }]}>
-                  {achievement.rarity}
+                  {RARITY_LABELS[achievement.rarity] ?? achievement.rarity}
                 </Text>
               </View>
             </View>

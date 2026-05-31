@@ -165,7 +165,7 @@ export default function LessonScreen() {
 
         const lessonRes = await lessonsApi.getById(id);
         if (!lessonRes.success || !lessonRes.data) {
-          throw new Error('Lesson not found');
+          throw new Error('Leçon introuvable');
         }
         setLesson(lessonRes.data);
 
@@ -192,7 +192,7 @@ export default function LessonScreen() {
         setScreenState('ready');
       } catch (err) {
         console.error('Error loading lesson:', err);
-        setError(err instanceof Error ? err.message : 'Failed to load lesson');
+        setError(err instanceof Error ? err.message : 'Échec du chargement de la leçon');
         setScreenState('error');
       }
     };
@@ -482,7 +482,7 @@ export default function LessonScreen() {
       <SafeAreaView style={styles.container}>
         <View style={styles.centerContent}>
           <ActivityIndicator size="large" color="#39FF14" />
-          <Text style={styles.loadingText}>Loading...</Text>
+          <Text style={styles.loadingText}>Chargement...</Text>
         </View>
       </SafeAreaView>
     );
@@ -497,9 +497,9 @@ export default function LessonScreen() {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.centerContent}>
-          <MindyMessage message={`Oops! ${error || 'Something went wrong.'}`} mood="roast" />
+          <MindyMessage message={`Oups ! ${error || 'Une erreur est survenue.'}`} mood="roast" />
           <Pressable style={styles.errorButton} onPress={() => router.back()}>
-            <Text style={styles.errorButtonText}>Go Back</Text>
+            <Text style={styles.errorButtonText}>Retour</Text>
           </Pressable>
         </View>
       </SafeAreaView>
@@ -541,7 +541,7 @@ export default function LessonScreen() {
               }]}>
                 <Text style={styles.badgeText}>{lesson.domain}</Text>
               </View>
-              <Text style={styles.metaText}>{totalSteps} steps</Text>
+              <Text style={styles.metaText}>{totalSteps} étapes</Text>
               {!isPracticeMode && <Text style={styles.metaText}>+{lesson.xpReward} XP</Text>}
             </View>
           </Animated.View>
@@ -667,7 +667,7 @@ export default function LessonScreen() {
             <MindyMessage
               message={
                 erroredSteps.size === 0
-                  ? "Perfect run. Zéro erreur. Tu m'impressionnes. 🔥"
+                  ? "Sans-faute. Zéro erreur. Tu m'impressionnes. 🔥"
                   : erroredSteps.size <= 2
                   ? "Bien joué, quelques ratés mais tu t'es corrigé. Ça compte."
                   : "On va dire que tu avais faim. Reviens une fois reposé. 😅"
@@ -692,7 +692,7 @@ export default function LessonScreen() {
 
             {isPracticeMode && (
               <Animated.View entering={FadeIn.delay(200)} style={styles.practiceBadge}>
-                <Text style={styles.practiceBadgeText}>🔄 PRACTICE MODE</Text>
+                <Text style={styles.practiceBadgeText}>🔄 MODE PRATIQUE</Text>
               </Animated.View>
             )}
 
@@ -759,7 +759,7 @@ export default function LessonScreen() {
                       <View style={[styles.statItem, { backgroundColor: 'rgba(57,255,20,0.1)', borderRadius: 8, paddingHorizontal: 10, paddingVertical: 4 }]}>
                         <Icon name="sparkles" size={14} color="#FFD700" />
                         <Text style={[styles.statText, { color: '#FFD700', fontWeight: '700' }]}>
-                          Perfect run! 🏆
+                          Sans-faute ! 🏆
                         </Text>
                       </View>
                     )}

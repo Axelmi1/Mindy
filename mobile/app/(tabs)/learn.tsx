@@ -124,7 +124,7 @@ function MasterQuizUnlockToast({
       <View style={[toastStyles.inner, { borderColor: domainColor + '60' }]}>
         <Text style={toastStyles.trophyEmoji}>🏆</Text>
         <View style={toastStyles.textBlock}>
-          <Text style={[toastStyles.title, { color: '#FFD700' }]}>Master Quiz débloqué !</Text>
+          <Text style={[toastStyles.title, { color: '#FFD700' }]}>Quiz final débloqué !</Text>
           <Text style={toastStyles.subtitle}>
             Tu as terminé toutes les leçons {domainLabel} — le test ultime t'attend !
           </Text>
@@ -348,7 +348,7 @@ function LessonPath({
             {/* Master badge label */}
             {isMasterQuiz && !isLocked && (
               <View style={styles.masterBadge}>
-                <Text style={styles.masterBadgeText}>MASTER</Text>
+                <Text style={styles.masterBadgeText}>FINAL</Text>
               </View>
             )}
 
@@ -429,7 +429,7 @@ function AiRecoCard({ lessonId, title, domain, reason, xpReward, isWeak }: {
       <View style={aiRecoStyles.right}>
         <Text style={aiRecoStyles.xp}>+{xpReward}</Text>
         <Text style={aiRecoStyles.xpLabel}>XP</Text>
-        {isWeak && <Text style={aiRecoStyles.weakBadge}>⚠️ weak</Text>}
+        {isWeak && <Text style={aiRecoStyles.weakBadge}>⚠️ point faible</Text>}
       </View>
     </Pressable>
   );
@@ -762,7 +762,7 @@ export default function LearnScreen() {
             setIsAdminMode(false);
           }}
         >
-          <Text style={styles.adminBannerText}>🛠 Admin Mode — toutes les leçons déverrouillées</Text>
+          <Text style={styles.adminBannerText}>🛠 Mode Admin — toutes les leçons déverrouillées</Text>
           <Text style={styles.adminBannerClose}>✕</Text>
         </Pressable>
       )}

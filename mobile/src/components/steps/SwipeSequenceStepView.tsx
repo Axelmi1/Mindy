@@ -172,17 +172,17 @@ export function SwipeSequenceStepView({ step, onComplete }: SwipeSequenceStepVie
             <View style={styles.resultIconContainer}>
               <Icon name={passed ? 'target' : 'alert'} size={48} color={passed ? '#39FF14' : '#F85149'} />
             </View>
-            <Text style={styles.resultTitle}>{passed ? 'Nice Trading!' : 'Keep Practicing!'}</Text>
+            <Text style={styles.resultTitle}>{passed ? 'Bien trading !' : 'Continue à t\'entraîner !'}</Text>
             <Text style={styles.resultScore}>{score}/{totalCards}</Text>
-            <Text style={styles.resultPercentage}>{percentage}% Accuracy</Text>
+            <Text style={styles.resultPercentage}>{percentage}% de précision</Text>
           </View>
         </Animated.View>
 
         <Animated.View entering={FadeInDown.delay(300)}>
           <MindyMessage
             message={passed
-              ? "Sharp instincts! You've got the eye of a trader."
-              : "Markets are tough. Let's run it back and level up."
+              ? "Sacré instinct ! Tu as l'œil d'un trader."
+              : "Les marchés sont rudes. On recommence et on monte en niveau."
             }
             mood={passed ? 'hype' : 'roast'}
           />
@@ -278,7 +278,7 @@ export function SwipeSequenceStepView({ step, onComplete }: SwipeSequenceStepVie
 
       {/* Swipe instruction */}
       <View style={styles.hintsRow}>
-        <Text style={styles.hintText}>Swipe the card left or right</Text>
+        <Text style={styles.hintText}>Glisse la carte à gauche ou à droite</Text>
       </View>
     </View>
   );

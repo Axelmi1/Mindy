@@ -69,7 +69,7 @@ function CountdownTimer({ timeUntilReset }: { timeUntilReset: string }) {
   return (
     <View style={styles.timerRow}>
       <Icon name="clock" size={14} color="#FFD700" />
-      <Text style={styles.timerText}>Reset dans </Text>
+      <Text style={styles.timerText}>Réinitialisation dans </Text>
       <Text style={styles.timerValue}>{timeUntilReset}</Text>
     </View>
   );
@@ -203,7 +203,7 @@ export default function DailyChallengeScreen() {
             </Animated.View>
             {challenge && (
               <Animated.Text entering={FadeInUp.delay(500)} style={styles.completedLesson}>
-                {challenge.lesson?.title ?? 'Daily Challenge'}
+                {challenge.lesson?.title ?? 'Défi du jour'}
               </Animated.Text>
             )}
           </Animated.View>
@@ -268,7 +268,7 @@ export default function DailyChallengeScreen() {
                 onPress={() => router.push(`/lesson/${challenge.lessonId}?practice=true` as any)}
               >
                 <Icon name="refresh" size={16} color="#58A6FF" />
-                <Text style={styles.practiceBtnText}>Mode Practice</Text>
+                <Text style={styles.practiceBtnText}>Mode entraînement</Text>
               </Pressable>
             </Animated.View>
           )}
@@ -313,7 +313,7 @@ export default function DailyChallengeScreen() {
           </View>
 
           <View style={styles.heroBadge}>
-            <Text style={styles.heroBadgeText}>🎯 DAILY CHALLENGE</Text>
+            <Text style={styles.heroBadgeText}>🎯 DÉFI DU JOUR</Text>
           </View>
 
           <Text style={styles.heroDate}>
@@ -335,7 +335,7 @@ export default function DailyChallengeScreen() {
             </View>
 
             <Text style={styles.challengeTitle}>
-              {challenge.lesson?.title ?? 'Daily Challenge'}
+              {challenge.lesson?.title ?? 'Défi du jour'}
             </Text>
 
             {/* XP Reward */}
@@ -348,7 +348,7 @@ export default function DailyChallengeScreen() {
                 </View>
               </View>
               <View style={styles.xpBonusBadge}>
-                <Text style={styles.xpBonusText}>🔥 x2 BONUS</Text>
+                <Text style={styles.xpBonusText}>🔥 BONUS x2</Text>
               </View>
             </View>
 
@@ -362,7 +362,7 @@ export default function DailyChallengeScreen() {
         {/* Streak Info */}
         <Animated.View entering={FadeInUp.delay(250)} style={styles.streakCard}>
           <Icon name="flame" size={18} color="#FF6B35" />
-          <Text style={styles.streakText}>Complete pour maintenir ton streak</Text>
+          <Text style={styles.streakText}>Termine pour maintenir ta série</Text>
           <Icon name="shield" size={18} color="#58A6FF" />
         </Animated.View>
 

@@ -49,14 +49,14 @@ const COLORS = {
 };
 
 const PRO_FEATURES = [
-  { icon: '∞', label: 'Unlimited lessons' },
-  { icon: '🤖', label: 'AI-powered learning path' },
-  { icon: '📊', label: 'Advanced analytics dashboard' },
-  { icon: '❄️', label: '10 streak freezes / month' },
-  { icon: '📡', label: 'Full offline mode' },
-  { icon: '🚫', label: 'Ad-free experience' },
-  { icon: '👑', label: 'Pro profile badge' },
-  { icon: '🏆', label: 'Priority leaderboard' },
+  { icon: '∞', label: 'Leçons illimitées' },
+  { icon: '🤖', label: 'Parcours personnalisé par IA' },
+  { icon: '📊', label: 'Tableau de bord analytique avancé' },
+  { icon: '❄️', label: '10 gels de série / mois' },
+  { icon: '📡', label: 'Mode hors ligne complet' },
+  { icon: '🚫', label: 'Sans publicité' },
+  { icon: '👑', label: 'Badge de profil Pro' },
+  { icon: '🏆', label: 'Classement prioritaire' },
 ];
 
 // ─── Props ────────────────────────────────────────────────────────────────────
@@ -93,7 +93,7 @@ function PlanCard({
     >
       {isAnnual && (
         <View style={styles.bestValueBadge}>
-          <Text style={styles.bestValueText}>BEST VALUE · SAVE 33%</Text>
+          <Text style={styles.bestValueText}>MEILLEURE OFFRE · -33%</Text>
         </View>
       )}
 
@@ -106,20 +106,20 @@ function PlanCard({
           <Text style={styles.planName}>{plan.name}</Text>
           {plan.interval && (
             <Text style={styles.planInterval}>
-              {isAnnual ? 'billed annually' : 'billed monthly'}
+              {isAnnual ? 'facturé annuellement' : 'facturé mensuellement'}
             </Text>
           )}
         </View>
 
         <View style={styles.planPriceBlock}>
           {isFree ? (
-            <Text style={styles.planPrice}>Free</Text>
+            <Text style={styles.planPrice}>Gratuit</Text>
           ) : (
             <>
               <Text style={styles.planPrice}>
-                ${plan.price.toFixed(2)}
+                {plan.price.toFixed(2)} €
               </Text>
-              <Text style={styles.planPriceSuffix}>/{plan.interval}</Text>
+              <Text style={styles.planPriceSuffix}>{isAnnual ? '/an' : '/mois'}</Text>
             </>
           )}
         </View>
@@ -138,7 +138,7 @@ export function PaywallModal({ visible, onClose, userId, onSubscribed }: Paywall
   const plans: PlanDetails[] = [
     {
       plan: 'PRO_MONTHLY',
-      name: 'Pro Monthly',
+      name: 'Pro Mensuel',
       price: 9.99,
       currency: 'USD',
       interval: 'month',
@@ -146,7 +146,7 @@ export function PaywallModal({ visible, onClose, userId, onSubscribed }: Paywall
     },
     {
       plan: 'PRO_ANNUAL',
-      name: 'Pro Annual',
+      name: 'Pro Annuel',
       price: 79.99,
       currency: 'USD',
       interval: 'year',
@@ -206,9 +206,9 @@ export function PaywallModal({ visible, onClose, userId, onSubscribed }: Paywall
                 </LinearGradient>
               </View>
 
-              <Text style={styles.headline}>Unlock Your Full{'\n'}Financial Education</Text>
+              <Text style={styles.headline}>Débloque toute ton{'\n'}éducation financière</Text>
               <Text style={styles.subheadline}>
-                Join 10,000+ learners mastering crypto & finance
+                Rejoins plus de 10 000 apprenants qui maîtrisent la crypto et la finance
               </Text>
             </Animated.View>
           </SafeAreaView>
@@ -237,7 +237,7 @@ export function PaywallModal({ visible, onClose, userId, onSubscribed }: Paywall
 
           {/* Plan selection */}
           <Animated.View entering={FadeInDown.delay(500)} style={styles.plansSection}>
-            <Text style={styles.sectionTitle}>Choose your plan</Text>
+            <Text style={styles.sectionTitle}>Choisis ton offre</Text>
             {plans.map((plan) => (
               <PlanCard
                 key={plan.plan}
@@ -250,8 +250,8 @@ export function PaywallModal({ visible, onClose, userId, onSubscribed }: Paywall
 
           {/* Legal disclaimer */}
           <Text style={styles.legal}>
-            Subscription renews automatically. Cancel anytime in Settings.
-            By subscribing you agree to our Terms of Service.
+            L'abonnement se renouvelle automatiquement. Tu peux l'annuler à tout moment dans les Paramètres.
+            En t'abonnant, tu acceptes nos Conditions d'utilisation.
           </Text>
         </ScrollView>
 
@@ -279,13 +279,13 @@ export function PaywallModal({ visible, onClose, userId, onSubscribed }: Paywall
               ) : (
                 <>
                   <Text style={styles.ctaText}>
-                    Start Pro{' '}
+                    Passer à Pro{' '}
                     <Text style={styles.ctaPrice}>
-                      {selectedPlan === 'PRO_ANNUAL' ? '· $79.99/yr' : '· $9.99/mo'}
+                      {selectedPlan === 'PRO_ANNUAL' ? '· 79,99 €/an' : '· 9,99 €/mois'}
                     </Text>
                   </Text>
                   <Text style={styles.ctaSub}>
-                    {selectedPlan === 'PRO_ANNUAL' ? '≈ $6.67/month · 2 months free' : 'Cancel anytime'}
+                    {selectedPlan === 'PRO_ANNUAL' ? '≈ 6,67 €/mois · 2 mois offerts' : 'Annulable à tout moment'}
                   </Text>
                 </>
               )}
