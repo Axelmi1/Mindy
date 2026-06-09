@@ -12,6 +12,7 @@ import {
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiParam, ApiQuery, ApiBody, ApiResponse as SwaggerApiResponse } from '@nestjs/swagger';
 import { UsersService } from './users.service';
+import { mapUserToResponse } from './user.mapper';
 import type { CreateUserDto, UpdateUserDto, ApiResponse, User, UserStats } from '@mindy/shared';
 
 @ApiTags('users')
@@ -26,7 +27,7 @@ export class UsersController {
     const user = await this.usersService.create(createUserDto);
     return {
       success: true,
-      data: this.mapUserToResponse(user),
+      data: mapUserToResponse(user),
       message: 'User created successfully',
     };
   }
@@ -43,7 +44,7 @@ export class UsersController {
     );
     return {
       success: true,
-      data: users.map(this.mapUserToResponse),
+      data: users.map(mapUserToResponse),
     };
   }
 
@@ -56,7 +57,7 @@ export class UsersController {
     }
     return {
       success: true,
-      data: this.mapUserToResponse(user),
+      data: mapUserToResponse(user),
     };
   }
 
@@ -66,7 +67,7 @@ export class UsersController {
     const user = await this.usersService.findById(id);
     return {
       success: true,
-      data: this.mapUserToResponse(user),
+      data: mapUserToResponse(user),
     };
   }
 
@@ -116,7 +117,7 @@ export class UsersController {
     const user = await this.usersService.update(id, updateUserDto);
     return {
       success: true,
-      data: this.mapUserToResponse(user),
+      data: mapUserToResponse(user),
       message: 'User updated successfully',
     };
   }
@@ -133,7 +134,7 @@ export class UsersController {
     const user = await this.usersService.addXp(id, amount);
     return {
       success: true,
-      data: this.mapUserToResponse(user),
+      data: mapUserToResponse(user),
       message: `Added ${amount} XP`,
     };
   }
@@ -147,7 +148,7 @@ export class UsersController {
     const user = await this.usersService.updateStreak(id);
     return {
       success: true,
-      data: this.mapUserToResponse(user),
+      data: mapUserToResponse(user),
     };
   }
 
@@ -174,7 +175,7 @@ export class UsersController {
     const user = await this.usersService.update(id, { username });
     return {
       success: true,
-      data: this.mapUserToResponse(user),
+      data: mapUserToResponse(user),
       message: 'Username updated',
     };
   }
@@ -211,7 +212,7 @@ export class UsersController {
     const user = await this.usersService.updateSettings(id, settings);
     return {
       success: true,
-      data: this.mapUserToResponse(user),
+      data: mapUserToResponse(user),
       message: 'Settings updated',
     };
   }
@@ -253,41 +254,5 @@ export class UsersController {
     return { success: true, data };
   }
 
-  /**
-   * Map Prisma User to API response format
-   */
-  private mapUserToResponse(user: {
-    id: string;
-    email: string;
-    username: string;
-    xp: number;
-    level: number;
-    streak: number;
-    maxStreak: number;
-    streakFreezes: number;
-    soundEnabled: boolean;
-    lastActiveAt: Date | null;
-    preferredDomain?: string | null;
-    userGoal?: string | null;
-    createdAt: Date;
-    updatedAt: Date;
-  }): User {
-    return {
-      id: user.id,
-      email: user.email,
-      username: user.username,
-      xp: user.xp,
-      level: user.level,
-      streak: user.streak,
-      maxStreak: user.maxStreak,
-      streakFreezes: user.streakFreezes,
-      soundEnabled: user.soundEnabled,
-      lastActiveAt: user.lastActiveAt?.toISOString() ?? null,
-      preferredDomain: user.preferredDomain ?? null,
-      userGoal: user.userGoal ?? null,
-      createdAt: user.createdAt.toISOString(),
-      updatedAt: user.updatedAt.toISOString(),
-    };
-  }
 }
 

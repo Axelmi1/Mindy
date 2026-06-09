@@ -32,6 +32,7 @@ export class UsersService {
         data: {
           email: finalEmail,
           username: data.username,
+          password: data.password ?? null,
           referralCode,
           preferredDomain: data.preferredDomain ?? null,
           userGoal: data.userGoal ?? null,
