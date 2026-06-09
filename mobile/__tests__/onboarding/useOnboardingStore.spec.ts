@@ -67,3 +67,26 @@ describe('useOnboardingStore', () => {
     expect(s.demoAnswers).toHaveLength(0);
   });
 });
+
+describe('onboarding password', () => {
+  beforeEach(() => useOnboardingStore.getState().reset());
+
+  it('stores the password in memory', () => {
+    useOnboardingStore.getState().setPassword('secret12');
+    expect(useOnboardingStore.getState().password).toBe('secret12');
+  });
+
+  it('clears the password on reset', () => {
+    useOnboardingStore.getState().setPassword('secret12');
+    useOnboardingStore.getState().reset();
+    expect(useOnboardingStore.getState().password).toBe('');
+  });
+
+  it('excludes the password from the persisted slice', () => {
+    const persisted = (useOnboardingStore.persist.getOptions().partialize as any)({
+      ...useOnboardingStore.getState(),
+      password: 'secret12',
+    });
+    expect(persisted.password).toBeUndefined();
+  });
+});

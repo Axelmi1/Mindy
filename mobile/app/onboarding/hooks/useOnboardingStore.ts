@@ -32,6 +32,7 @@ interface OnboardingState {
 
   username: string;
   email: string | null;
+  password: string;
 
   notificationsEnabled: boolean;
   reminderHour: number | null;
@@ -47,6 +48,7 @@ interface OnboardingState {
   recordDemoAnswer: (questionId: string, correct: boolean) => void;
   setUsername: (u: string) => void;
   setEmail: (e: string | null) => void;
+  setPassword: (p: string) => void;
   setNotifications: (enabled: boolean, hour: number | null) => void;
   reset: () => void;
 }
@@ -62,6 +64,7 @@ const initialState = {
   demoAnswers: [],
   username: '',
   email: null,
+  password: '',
   notificationsEnabled: false,
   reminderHour: null,
 };
@@ -93,12 +96,18 @@ export const useOnboardingStore = create<OnboardingState>()(
         })),
       setUsername: (username) => set({ username }),
       setEmail: (email) => set({ email }),
+      setPassword: (password) => set({ password }),
       setNotifications: (enabled, hour) => set({ notificationsEnabled: enabled, reminderHour: hour }),
       reset: () => set({ ...initialState }),
     }),
     {
       name: '@mindy/onboarding_state',
       storage: createJSONStorage(() => AsyncStorage),
+      partialize: (state) => {
+        // Never persist the plaintext password to AsyncStorage.
+        const { password: _password, ...rest } = state;
+        return rest as OnboardingState;
+      },
     },
   ),
 );
