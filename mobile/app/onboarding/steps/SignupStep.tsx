@@ -4,26 +4,35 @@ import { MindyTurn } from '../components/MindyTurn';
 import { useOnboardingStore } from '../hooks/useOnboardingStore';
 import { suggestUsername, isValidUsername } from '../lib/usernameSuggest';
 
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 export function SignupStep() {
   const next = useOnboardingStore((s) => s.next);
   const username = useOnboardingStore((s) => s.username);
   const setUsername = useOnboardingStore((s) => s.setUsername);
   const email = useOnboardingStore((s) => s.email);
   const setEmail = useOnboardingStore((s) => s.setEmail);
+  const password = useOnboardingStore((s) => s.password);
+  const setPassword = useOnboardingStore((s) => s.setPassword);
   const setMood = useOnboardingStore((s) => s.setMood);
   useEffect(() => { setMood('neutral'); }, [setMood]);
 
-  // Pré-remplit un pseudo suggéré une seule fois si vide.
   const suggested = useMemo(() => suggestUsername(Date.now()), []);
   useEffect(() => {
     if (!username) setUsername(suggested);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const [emailText, setEmailText] = useState(email ?? '');
-  const valid = isValidUsername(username);
+  const [pwText, setPwText] = useState(password ?? '');
+
+  const usernameOk = isValidUsername(username);
+  const emailOk = EMAIL_RE.test(emailText.trim());
+  const pwOk = pwText.length >= 8;
+  const valid = usernameOk && emailOk && pwOk;
 
   const handleNext = () => {
-    setEmail(emailText.trim() ? emailText.trim() : null);
+    setEmail(emailText.trim());
+    setPassword(pwText);
     next();
   };
 
@@ -31,7 +40,7 @@ export function SignupStep() {
     <MindyTurn
       turnKey="signup"
       mood="neutral"
-      message="Choisis ton pseudo — c'est comme ça que tu apparaîtras dans le classement."
+      message="Crée ton compte — pseudo, email et mot de passe."
       ctaLabel="Continuer"
       ctaDisabled={!valid}
       onCta={handleNext}
@@ -46,12 +55,12 @@ export function SignupStep() {
           autoCorrect={false}
           placeholder="satoshi"
           placeholderTextColor="#484F58"
-          style={[styles.input, valid ? styles.inputOk : styles.inputBad]}
+          style={[styles.input, usernameOk ? styles.inputOk : styles.inputBad]}
         />
       </View>
       <Text style={styles.hint}>Lettres, chiffres, underscore — 3 à 20 caractères.</Text>
 
-      <Text style={styles.label}>Email (optionnel)</Text>
+      <Text style={styles.label}>Email</Text>
       <TextInput
         value={emailText}
         onChangeText={setEmailText}
@@ -60,9 +69,22 @@ export function SignupStep() {
         keyboardType="email-address"
         placeholder="ton@email.com"
         placeholderTextColor="#484F58"
-        style={[styles.input, styles.inputOk]}
+        style={[styles.input, emailText.length === 0 || emailOk ? styles.inputOk : styles.inputBad]}
       />
-      <Text style={styles.hint}>Pour récupérer ton compte sur un autre téléphone.</Text>
+      <Text style={styles.hint}>Sert à te reconnecter sur un autre téléphone.</Text>
+
+      <Text style={styles.label}>Mot de passe</Text>
+      <TextInput
+        value={pwText}
+        onChangeText={setPwText}
+        autoCapitalize="none"
+        autoCorrect={false}
+        secureTextEntry
+        placeholder="8 caractères minimum"
+        placeholderTextColor="#484F58"
+        style={[styles.input, pwText.length === 0 || pwOk ? styles.inputOk : styles.inputBad]}
+      />
+      <Text style={styles.hint}>Au moins 8 caractères.</Text>
     </MindyTurn>
   );
 }
