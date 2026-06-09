@@ -17,8 +17,8 @@ interface NewsImpactStepViewProps {
 }
 
 const IMPACT_OPTIONS: { value: 'bullish' | 'bearish' | 'neutral'; label: string; icon: IconName; color: string }[] = [
-  { value: 'bullish', label: 'Bullish', icon: 'trending-up', color: '#39FF14' },
-  { value: 'bearish', label: 'Bearish', icon: 'trending-down', color: '#F85149' },
+  { value: 'bullish', label: 'Haussier', icon: 'trending-up', color: '#39FF14' },
+  { value: 'bearish', label: 'Baissier', icon: 'trending-down', color: '#F85149' },
   { value: 'neutral', label: 'Neutre', icon: 'minus', color: '#8B949E' },
 ];
 
@@ -45,7 +45,7 @@ export function NewsImpactStepView({ step, onAnswer }: NewsImpactStepViewProps) 
       <Animated.View entering={FadeInDown.duration(400)} style={styles.newsCard}>
         <View style={styles.newsHeader}>
           <View style={styles.breakingBadge}>
-            <Text style={styles.breakingText}>BREAKING</Text>
+            <Text style={styles.breakingText}>URGENT</Text>
           </View>
           <Text style={styles.newsSource}>{step.source}</Text>
           <Text style={styles.newsDate}>{step.date}</Text>

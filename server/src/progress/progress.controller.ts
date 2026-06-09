@@ -16,6 +16,7 @@ import type { Response } from 'express';
 import { ProgressService } from './progress.service';
 import { ProgressExportService } from './progress-export.service';
 import { WeeklyRecapService } from './weekly-recap.service';
+import { Public } from '../auth/public.decorator';
 import type {
   ApiResponse,
   UserProgress,
@@ -268,6 +269,7 @@ export class ProgressController {
    * GET /api/progress/:userId/export/pdf
    * Export user progress as a PDF report (Pro feature).
    */
+  @Public()
   @Get(':userId/export/pdf')
   @ApiOperation({ summary: 'Export progress report as PDF (Pro only)' })
   @ApiParam({ name: 'userId', description: 'User ID' })

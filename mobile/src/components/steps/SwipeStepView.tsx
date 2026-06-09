@@ -96,17 +96,17 @@ export function SwipeStepView({ step, onAnswer }: SwipeStepViewProps) {
       {/* Instructions */}
       <Animated.View entering={FadeInDown.duration(300)}>
         <Text style={styles.instruction}>
-          Is this statement TRUE or FALSE?
+          Cette affirmation est-elle VRAIE ou FAUSSE ?
         </Text>
       </Animated.View>
 
       {/* Swipe indicators */}
       <View style={styles.indicatorRow}>
         <Animated.View style={[styles.indicator, styles.falseIndicator, leftIndicatorStyle]}>
-          <Text style={styles.indicatorText}>FALSE</Text>
+          <Text style={styles.indicatorText}>FAUX</Text>
         </Animated.View>
         <Animated.View style={[styles.indicator, styles.trueIndicator, rightIndicatorStyle]}>
-          <Text style={styles.indicatorText}>TRUE</Text>
+          <Text style={styles.indicatorText}>VRAI</Text>
         </Animated.View>
       </View>
 
@@ -134,7 +134,7 @@ export function SwipeStepView({ step, onAnswer }: SwipeStepViewProps) {
                 styles.resultText,
                 answerState === 'correct' ? styles.resultCorrect : styles.resultIncorrect
               ]}>
-                {answerState === 'correct' ? 'Correct!' : 'Wrong!'}
+                {answerState === 'correct' ? 'Correct !' : 'Faux !'}
               </Text>
             </View>
           )}
@@ -151,13 +151,13 @@ export function SwipeStepView({ step, onAnswer }: SwipeStepViewProps) {
             style={[styles.button, styles.falseButton]}
             onPress={() => handleAnswer(false)}
           >
-            <Text style={styles.buttonText}>FALSE</Text>
+            <Text style={styles.buttonText}>FAUX</Text>
           </Pressable>
           <Pressable
             style={[styles.button, styles.trueButton]}
             onPress={() => handleAnswer(true)}
           >
-            <Text style={styles.buttonText}>TRUE</Text>
+            <Text style={styles.buttonText}>VRAI</Text>
           </Pressable>
         </Animated.View>
       )}

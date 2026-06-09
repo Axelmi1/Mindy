@@ -68,7 +68,7 @@ export function LessonCard({
           {isCompleted && (
             <View style={styles.completedBadge}>
               <Icon name="check" size={12} color="#39FF14" />
-              <Text style={styles.completedBadgeText}>DONE</Text>
+              <Text style={styles.completedBadgeText}>FAIT</Text>
             </View>
           )}
         </View>
@@ -78,7 +78,7 @@ export function LessonCard({
 
         {/* Footer */}
         <View style={styles.footerRow}>
-          <Text style={styles.metaText}>{stepsCount} steps</Text>
+          <Text style={styles.metaText}>{stepsCount} étapes</Text>
           <Text style={styles.xpText}>+{xpReward} XP</Text>
           {completedSteps > 0 && !isCompleted && (
             <Text style={[styles.progressText, { color: domainColor }]}>{progress}%</Text>

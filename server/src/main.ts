@@ -4,6 +4,10 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { json } from 'express';
 
 async function bootstrap() {
+  if (!process.env.JWT_SECRET) {
+    throw new Error('JWT_SECRET is not set — refusing to start (tokens would be signed with an insecure default).');
+  }
+
   const app = await NestFactory.create(AppModule, {
     // Preserve raw body for Stripe webhook signature verification
     rawBody: true,

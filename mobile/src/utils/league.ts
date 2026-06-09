@@ -14,11 +14,11 @@ export interface League {
 }
 
 const LEAGUES: League[] = [
-  { rank: 0, name: 'Iron',     emoji: '⚙️',  color: '#8B949E', glowColor: 'rgba(139,148,158,0.4)', minXp: 0,    maxXp: 99    },
-  { rank: 1, name: 'Bronze',   emoji: '🥉',  color: '#CD7F32', glowColor: 'rgba(205,127,50,0.4)',   minXp: 100,  maxXp: 499   },
-  { rank: 2, name: 'Silver',   emoji: '🥈',  color: '#C0C0C0', glowColor: 'rgba(192,192,192,0.4)',  minXp: 500,  maxXp: 1999  },
-  { rank: 3, name: 'Gold',     emoji: '🥇',  color: '#FFD700', glowColor: 'rgba(255,215,0,0.4)',    minXp: 2000, maxXp: 4999  },
-  { rank: 4, name: 'Platinum', emoji: '💠',  color: '#39FF14', glowColor: 'rgba(57,255,20,0.4)',    minXp: 5000, maxXp: null  },
+  { rank: 0, name: 'Fer',     emoji: '⚙️',  color: '#8B949E', glowColor: 'rgba(139,148,158,0.4)', minXp: 0,    maxXp: 99    },
+  { rank: 1, name: 'Bronze',  emoji: '🥉',  color: '#CD7F32', glowColor: 'rgba(205,127,50,0.4)',   minXp: 100,  maxXp: 499   },
+  { rank: 2, name: 'Argent',  emoji: '🥈',  color: '#C0C0C0', glowColor: 'rgba(192,192,192,0.4)',  minXp: 500,  maxXp: 1999  },
+  { rank: 3, name: 'Or',      emoji: '🥇',  color: '#FFD700', glowColor: 'rgba(255,215,0,0.4)',    minXp: 2000, maxXp: 4999  },
+  { rank: 4, name: 'Platine', emoji: '💠',  color: '#39FF14', glowColor: 'rgba(57,255,20,0.4)',    minXp: 5000, maxXp: null  },
 ];
 
 /**

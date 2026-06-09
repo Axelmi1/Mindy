@@ -67,14 +67,14 @@ export class ErrorBoundary extends Component<Props, State> {
 
         <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
           <Text style={styles.emoji}>⚠️</Text>
-          <Text style={styles.title}>Something went wrong</Text>
+          <Text style={styles.title}>Une erreur est survenue</Text>
           <Text style={styles.subtitle}>
-            An unexpected error occurred. Your progress has been saved.
+            Une erreur inattendue s'est produite. Ta progression a été sauvegardée.
           </Text>
 
           {__DEV__ && error && (
             <View style={styles.devBox}>
-              <Text style={styles.devTitle}>Dev Info</Text>
+              <Text style={styles.devTitle}>Infos dev</Text>
               <Text style={styles.devText}>{error.toString()}</Text>
             </View>
           )}
@@ -86,7 +86,7 @@ export class ErrorBoundary extends Component<Props, State> {
               end={{ x: 1, y: 0 }}
               style={styles.retryGradient}
             >
-              <Text style={styles.retryText}>↻ Try Again</Text>
+              <Text style={styles.retryText}>↻ Réessayer</Text>
             </LinearGradient>
           </Pressable>
         </ScrollView>

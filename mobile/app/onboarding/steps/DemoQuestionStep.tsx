@@ -1,156 +1,156 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
-import Animated, { FadeIn } from 'react-native-reanimated';
+import React, { useEffect, useState } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import * as Haptics from 'expo-haptics';
-import { Icon } from '@/components/ui/Icon';
-import { MindyMascot } from '@/components/mindy';
-import { OnboardingScreen } from '../components/OnboardingScreen';
-import { useOnboardingStore, StepId } from '../hooks/useOnboardingStore';
-import { useDemoQuestions } from '../hooks/useDemoQuestions';
+import { MindyTurn } from '../components/MindyTurn';
+import { useOnboardingStore } from '../hooks/useOnboardingStore';
+import { selectDemoQuestions } from '../data/selectDemoQuestions';
 
-interface Props {
-  questionIndex: 0 | 1 | 2;
-  stepKey: Extract<StepId, 'demo_q1' | 'demo_q2' | 'demo_q3'>;
-}
-
-export function DemoQuestionStep({ questionIndex, stepKey }: Props) {
+export function DemoQuestionStep() {
   const domain = useOnboardingStore((s) => s.domain);
+  const level = useOnboardingStore((s) => s.level);
   const next = useOnboardingStore((s) => s.next);
-  const record = useOnboardingStore((s) => s.recordDemoAnswer);
-  const questions = useDemoQuestions(domain);
-  const question = questions[questionIndex];
+  const recordDemoAnswer = useOnboardingStore((s) => s.recordDemoAnswer);
+  const setMood = useOnboardingStore((s) => s.setMood);
 
-  const [selected, setSelected] = useState<string | boolean | null>(null);
-  const [showFeedback, setShowFeedback] = useState(false);
-  const [isCorrect, setIsCorrect] = useState(false);
+  const [questions] = useState(() => selectDemoQuestions(domain, level));
+  const [index, setIndex] = useState(0);
+  const [picked, setPicked] = useState<string | null>(null);
+  const [correct, setCorrect] = useState<boolean | null>(null);
 
-  useEffect(() => {
-    setSelected(null);
-    setShowFeedback(false);
-    setIsCorrect(false);
-  }, [stepKey]);
+  const q = questions[index];
 
-  const answer = useCallback(async (value: string | boolean, correct: boolean) => {
-    setSelected(value);
-    setIsCorrect(correct);
-    setShowFeedback(true);
-    record(question.id, correct);
+  useEffect(() => { setMood('neutral'); }, [setMood, index]);
+
+  const answer = async (optionId: string, isCorrect: boolean) => {
+    if (picked) return; // déjà répondu
+    setPicked(optionId);
+    setCorrect(isCorrect);
+    recordDemoAnswer(q.id, isCorrect);
+    setMood(isCorrect ? 'hype' : 'roast');
     await Haptics.notificationAsync(
-      correct ? Haptics.NotificationFeedbackType.Success : Haptics.NotificationFeedbackType.Error,
+      isCorrect ? Haptics.NotificationFeedbackType.Success : Haptics.NotificationFeedbackType.Warning,
     );
-    setTimeout(() => next(), 1500);
-  }, [question.id, next, record]);
+  };
+
+  const proceed = () => {
+    if (index < questions.length - 1) {
+      setIndex(index + 1);
+      setPicked(null);
+      setCorrect(null);
+    } else {
+      next(); // → result
+    }
+  };
+
+  const message = picked
+    ? (correct ? `Exact ! ${q.explanation}` : `Pas tout à fait. ${q.explanation}`)
+    : `Question ${index + 1}/3 — ${q.question}`;
 
   return (
-    <OnboardingScreen animationKey={stepKey}>
-      <View style={styles.header}>
-        <Text style={styles.num}>{questionIndex + 1}/3</Text>
-      </View>
-
-      <Text style={styles.question}>{question.question}</Text>
-
-      {question.type === 'image_choice' && (
-        <View style={styles.imageOpts}>
-          {question.options.map((o) => (
-            <Pressable
+    <MindyTurn
+      turnKey={`demo-${index}`}
+      mood={picked ? (correct ? 'hype' : 'roast') : 'neutral'}
+      message={message}
+      ctaLabel={picked ? (index < questions.length - 1 ? 'Suivant' : 'Voir mon score') : undefined}
+      onCta={proceed}
+    >
+      {q.type === 'image_choice' ? (
+        <View style={styles.symbolRow}>
+          {q.options.map((o) => (
+            <SymbolChoice
               key={o.id}
-              disabled={showFeedback}
-              style={[
-                styles.imageOpt,
-                selected === o.id && (o.isCorrect ? styles.correct : styles.wrong),
-                showFeedback && o.isCorrect && styles.correct,
-              ]}
+              label={o.label}
+              color={o.color}
+              active={picked === o.id}
+              good={picked != null && o.isCorrect}
+              bad={picked === o.id && !o.isCorrect}
               onPress={() => answer(o.id, o.isCorrect)}
-            >
-              <Text style={styles.imageOptText}>{o.label}</Text>
-            </Pressable>
+            />
           ))}
         </View>
-      )}
-
-      {question.type === 'true_false' && (
-        <View style={styles.tfOpts}>
-          <Pressable
-            disabled={showFeedback}
-            style={[
-              styles.tf, styles.tfTrue,
-              selected === true && (question.correctAnswer ? styles.correct : styles.wrong),
-              showFeedback && question.correctAnswer && styles.correct,
-            ]}
-            onPress={() => answer(true, question.correctAnswer === true)}
-          >
-            <Text style={styles.tfText}>TRUE</Text>
-          </Pressable>
-          <Pressable
-            disabled={showFeedback}
-            style={[
-              styles.tf, styles.tfFalse,
-              selected === false && (!question.correctAnswer ? styles.correct : styles.wrong),
-              showFeedback && !question.correctAnswer && styles.correct,
-            ]}
-            onPress={() => answer(false, question.correctAnswer === false)}
-          >
-            <Text style={styles.tfText}>FALSE</Text>
-          </Pressable>
+      ) : (
+        <View style={styles.options}>
+          {q.type === 'true_false' ? (
+            <>
+              <Choice label="VRAI" active={picked === 'true'} good={picked != null && q.correctAnswer === true}
+                bad={picked === 'true' && q.correctAnswer !== true}
+                onPress={() => answer('true', q.correctAnswer === true)} />
+              <Choice label="FAUX" active={picked === 'false'} good={picked != null && q.correctAnswer === false}
+                bad={picked === 'false' && q.correctAnswer !== false}
+                onPress={() => answer('false', q.correctAnswer === false)} />
+            </>
+          ) : (
+            q.options.map((o) => (
+              <Choice
+                key={o.id}
+                label={o.label}
+                active={picked === o.id}
+                good={picked != null && o.isCorrect}
+                bad={picked === o.id && !o.isCorrect}
+                onPress={() => answer(o.id, o.isCorrect)}
+              />
+            ))
+          )}
         </View>
       )}
-
-      {question.type === 'choice' && (
-        <View style={styles.choiceOpts}>
-          {question.options.map((o) => (
-            <Pressable
-              key={o.id}
-              disabled={showFeedback}
-              style={[
-                styles.choice,
-                selected === o.id && (o.isCorrect ? styles.correct : styles.wrong),
-                showFeedback && o.isCorrect && styles.correct,
-              ]}
-              onPress={() => answer(o.id, o.isCorrect)}
-            >
-              <Text style={styles.choiceText}>{o.label}</Text>
-            </Pressable>
-          ))}
-        </View>
-      )}
-
-      {showFeedback && (
-        <Animated.View entering={FadeIn} style={styles.feedback}>
-          <MindyMascot mood={isCorrect ? 'hype' : 'roast'} size={60} animated={false} />
-          <View style={{ flex: 1 }}>
-            <View style={styles.feedbackHeader}>
-              <Icon name={isCorrect ? 'check' : 'x'} size={20} color={isCorrect ? '#39FF14' : '#F85149'} />
-              <Text style={[styles.feedbackTitle, { color: isCorrect ? '#39FF14' : '#F85149' }]}>
-                {isCorrect ? 'Correct!' : 'Not quite!'}
-              </Text>
-            </View>
-            <Text style={styles.feedbackText}>{question.explanation}</Text>
-          </View>
-        </Animated.View>
-      )}
-    </OnboardingScreen>
+    </MindyTurn>
   );
 }
 
+function Choice({ label, onPress, active, good, bad }: {
+  label: string; onPress: () => void; active?: boolean; good?: boolean; bad?: boolean;
+}) {
+  let style = styles.choice;
+  if (good) style = styles.choiceGood;
+  else if (bad) style = styles.choiceBad;
+  else if (active) style = styles.choiceActive;
+  return (
+    <TouchableOpacity activeOpacity={0.8} onPress={onPress} style={style}>
+      <Text style={styles.choiceText}>{label}</Text>
+    </TouchableOpacity>
+  );
+}
+
+/** Grande tuile carrée pour les symboles (₿, €, …), avec glyphe coloré visible sur fond sombre. */
+function SymbolChoice({ label, color, onPress, active, good, bad }: {
+  label: string; color?: string; onPress: () => void; active?: boolean; good?: boolean; bad?: boolean;
+}) {
+  let tile = styles.symbolTile;
+  if (good) tile = styles.symbolTileGood;
+  else if (bad) tile = styles.symbolTileBad;
+  else if (active) tile = styles.symbolTileActive;
+  return (
+    <TouchableOpacity activeOpacity={0.8} onPress={onPress} style={tile}>
+      <Text style={[styles.symbolGlyph, { color: color ?? '#E6EDF3' }]}>{label}</Text>
+    </TouchableOpacity>
+  );
+}
+
+const base = {
+  padding: 16, borderRadius: 12, borderWidth: 2, borderColor: '#30363D',
+  backgroundColor: '#161B22', alignItems: 'center' as const,
+};
+const symbolBase = {
+  flex: 1,
+  aspectRatio: 1,
+  borderRadius: 16,
+  borderWidth: 2,
+  borderColor: '#30363D',
+  backgroundColor: '#161B22',
+  alignItems: 'center' as const,
+  justifyContent: 'center' as const,
+};
 const styles = StyleSheet.create({
-  header: { marginBottom: 32 },
-  num: { fontFamily: 'JetBrainsMono', fontSize: 14, color: '#8B949E', textAlign: 'center' },
-  question: { fontFamily: 'Inter', fontSize: 22, fontWeight: '600', color: '#E6EDF3', textAlign: 'center', marginBottom: 32 },
-  imageOpts: { flexDirection: 'row', justifyContent: 'center', gap: 16 },
-  imageOpt: { width: 80, height: 80, borderRadius: 16, backgroundColor: '#161B22', justifyContent: 'center', alignItems: 'center', borderWidth: 2, borderColor: '#30363D' },
-  imageOptText: { fontSize: 36 },
-  tfOpts: { flexDirection: 'row', gap: 16 },
-  tf: { flex: 1, paddingVertical: 20, borderRadius: 12, alignItems: 'center', borderWidth: 2 },
-  tfTrue: { backgroundColor: 'rgba(57,255,20,0.1)', borderColor: '#39FF14' },
-  tfFalse: { backgroundColor: 'rgba(248,81,73,0.1)', borderColor: '#F85149' },
-  tfText: { fontFamily: 'JetBrainsMono', fontSize: 16, fontWeight: '700', color: '#E6EDF3' },
-  choiceOpts: { gap: 12 },
-  choice: { backgroundColor: '#161B22', borderRadius: 12, padding: 18, borderWidth: 2, borderColor: '#30363D' },
-  choiceText: { fontFamily: 'Inter', fontSize: 16, color: '#E6EDF3', textAlign: 'center' },
-  correct: { borderColor: '#39FF14', backgroundColor: 'rgba(57,255,20,0.2)' },
-  wrong: { borderColor: '#F85149', backgroundColor: 'rgba(248,81,73,0.2)' },
-  feedback: { flexDirection: 'row', gap: 12, alignItems: 'center', marginTop: 24, backgroundColor: '#161B22', padding: 14, borderRadius: 12 },
-  feedbackHeader: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 4 },
-  feedbackTitle: { fontFamily: 'Inter', fontSize: 16, fontWeight: '700' },
-  feedbackText: { fontFamily: 'Inter', fontSize: 13, color: '#8B949E' },
+  options: { gap: 12 },
+  choice: base,
+  choiceActive: { ...base, borderColor: '#58A6FF' },
+  choiceGood: { ...base, borderColor: '#39FF14', backgroundColor: 'rgba(57,255,20,0.12)' },
+  choiceBad: { ...base, borderColor: '#F85149', backgroundColor: 'rgba(248,81,73,0.12)' },
+  choiceText: { fontFamily: 'Inter', fontSize: 16, color: '#E6EDF3', fontWeight: '600' },
+  symbolRow: { flexDirection: 'row', gap: 12 },
+  symbolTile: symbolBase,
+  symbolTileActive: { ...symbolBase, borderColor: '#58A6FF' },
+  symbolTileGood: { ...symbolBase, borderColor: '#39FF14', backgroundColor: 'rgba(57,255,20,0.12)' },
+  symbolTileBad: { ...symbolBase, borderColor: '#F85149', backgroundColor: 'rgba(248,81,73,0.12)' },
+  symbolGlyph: { fontSize: 44, fontWeight: '800' },
 });

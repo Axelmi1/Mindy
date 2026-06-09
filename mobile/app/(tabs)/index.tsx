@@ -278,7 +278,7 @@ export default function HomeScreen() {
               atRisk={userStats?.streakAtRisk ?? false}
             />
             <Text style={styles.statValue}>{userStats?.streak ?? 0}</Text>
-            <Text style={styles.statLabel}>STREAK</Text>
+            <Text style={styles.statLabel}>SÉRIE</Text>
           </Pressable>
 
           {/* Lessons Card */}
@@ -294,7 +294,7 @@ export default function HomeScreen() {
             />
             <Icon name="book" size={24} color="#39FF14" />
             <Text style={styles.statValue}>{lessonsCompleted}</Text>
-            <Text style={styles.statLabel}>DONE</Text>
+            <Text style={styles.statLabel}>TERMINÉES</Text>
           </View>
         </Animated.View>
 
@@ -347,8 +347,8 @@ export default function HomeScreen() {
               <View style={styles.streakRiskLeft}>
                 <Text style={styles.streakRiskEmoji}>🔥</Text>
                 <View>
-                  <Text style={styles.streakRiskTitle}>Streak en danger !</Text>
-                  <Text style={styles.streakRiskSub}>Fais une leçon pour garder ton streak de {userStats.streak} jours</Text>
+                  <Text style={styles.streakRiskTitle}>Série en danger !</Text>
+                  <Text style={styles.streakRiskSub}>Fais une leçon pour garder ta série de {userStats.streak} jours</Text>
                 </View>
               </View>
               <Icon name="chevron-right" size={16} color="#FF6B35" />
@@ -385,13 +385,13 @@ export default function HomeScreen() {
               <View style={styles.dailyHeader}>
                 <View style={styles.dailyBadge}>
                   <Icon name="target" size={14} color="#FFD700" />
-                  <Text style={styles.dailyBadgeText}>DAILY</Text>
+                  <Text style={styles.dailyBadgeText}>DU JOUR</Text>
                 </View>
                 <Text style={styles.dailyBonus}>+{dailyChallenge.xpBonus} XP</Text>
               </View>
               <Text style={styles.dailyTitle}>{dailyChallenge.lesson.title}</Text>
               <View style={styles.dailyAction}>
-                <Text style={styles.dailyActionText}>Tap to start</Text>
+                <Text style={styles.dailyActionText}>Touche pour commencer</Text>
                 <Icon name="chevron-right" size={16} color="#FFD700" />
               </View>
             </Pressable>
@@ -401,7 +401,7 @@ export default function HomeScreen() {
         {dailyChallenge?.isCompleted && (
           <Animated.View entering={FadeInDown.delay(300)} style={styles.dailyCompleted}>
             <Icon name="check" size={18} color="#39FF14" />
-            <Text style={styles.dailyCompletedText}>Daily Challenge Complete!</Text>
+            <Text style={styles.dailyCompletedText}>Défi du jour terminé !</Text>
           </Animated.View>
         )}
 
@@ -517,7 +517,7 @@ export default function HomeScreen() {
                 style={StyleSheet.absoluteFill}
               />
               <View style={styles.continueHeader}>
-                <Text style={styles.continueLabel}>CONTINUE</Text>
+                <Text style={styles.continueLabel}>CONTINUER</Text>
                 <View style={styles.domainBadge}>
                   <Text style={styles.domainText}>{currentLesson.domain}</Text>
                 </View>
@@ -528,7 +528,7 @@ export default function HomeScreen() {
                 <Text style={styles.continuePercent}>{currentLesson.progress}%</Text>
               </View>
               <View style={styles.continueAction}>
-                <Text style={styles.continueActionText}>Resume lesson</Text>
+                <Text style={styles.continueActionText}>Reprendre la leçon</Text>
                 <Icon name="arrow-right" size={18} color="#39FF14" />
               </View>
             </Pressable>
@@ -538,7 +538,7 @@ export default function HomeScreen() {
         {/* Overall Progress */}
         <Animated.View entering={FadeInDown.delay(500)} style={styles.progressSection}>
           <View style={styles.progressHeader}>
-            <Text style={styles.progressTitle}>Learning Path</Text>
+            <Text style={styles.progressTitle}>Parcours d’apprentissage</Text>
             <Text style={styles.progressCount}>{lessonsCompleted}/{totalLessons} leçons</Text>
           </View>
           {/* Global bar */}
@@ -598,9 +598,9 @@ export default function HomeScreen() {
             />
             <View style={styles.weeklyRecapInner}>
               <View style={styles.weeklyRecapLeft}>
-                <Text style={styles.weeklyRecapLabel}>📅 THIS WEEK</Text>
-                <Text style={styles.weeklyRecapTitle}>View Weekly Recap</Text>
-                <Text style={styles.weeklyRecapSub}>Progress · Stats · Message</Text>
+                <Text style={styles.weeklyRecapLabel}>📅 CETTE SEMAINE</Text>
+                <Text style={styles.weeklyRecapTitle}>Voir le récap de la semaine</Text>
+                <Text style={styles.weeklyRecapSub}>Progression · Stats · Message</Text>
               </View>
               <Icon name="chevron-right" size={20} color="#39FF14" />
             </View>
@@ -616,7 +616,7 @@ export default function HomeScreen() {
               <View style={[StyleSheet.absoluteFill, styles.androidBlur]} />
             )}
             <Icon name="trophy" size={20} color="#FFD700" />
-            <Text style={styles.quickActionText}>Leaderboard</Text>
+            <Text style={styles.quickActionText}>Classement</Text>
             <Icon name="chevron-right" size={16} color="#484F58" />
           </Pressable>
 
@@ -627,7 +627,7 @@ export default function HomeScreen() {
               <View style={[StyleSheet.absoluteFill, styles.androidBlur]} />
             )}
             <Icon name="user" size={20} color="#58A6FF" />
-            <Text style={styles.quickActionText}>Profile</Text>
+            <Text style={styles.quickActionText}>Profil</Text>
             <Icon name="chevron-right" size={16} color="#484F58" />
           </Pressable>
         </Animated.View>

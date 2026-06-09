@@ -211,12 +211,12 @@ export default function ProfileScreen() {
 
   const handleResetProgress = () => {
     Alert.alert(
-      'Reset Progress',
-      'This will clear all your progress. Are you sure?',
+      'Réinitialiser la progression',
+      'Cela effacera toute ta progression. Es-tu sûr ?',
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: 'Annuler', style: 'cancel' },
         {
-          text: 'Reset',
+          text: 'Réinitialiser',
           style: 'destructive',
           onPress: async () => {
             await clearUser();
@@ -229,12 +229,12 @@ export default function ProfileScreen() {
 
   const handleLogout = () => {
     Alert.alert(
-      'Logout',
-      'Are you sure you want to logout?',
+      'Se déconnecter',
+      'Veux-tu vraiment te déconnecter ?',
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: 'Annuler', style: 'cancel' },
         {
-          text: 'Logout',
+          text: 'Se déconnecter',
           style: 'destructive',
           onPress: async () => {
             await clearUser();
@@ -285,7 +285,7 @@ export default function ProfileScreen() {
           })()}
           <View style={styles.badgesRow}>
             <View style={styles.levelBadge}>
-              <Text style={styles.levelText}>Level {level}</Text>
+              <Text style={styles.levelText}>Niveau {level}</Text>
             </View>
             <LeagueBadge xp={totalXp} size="sm" />
             {subscription?.isPro && (
@@ -347,21 +347,21 @@ export default function ProfileScreen() {
             <View style={styles.statCardInner}>
               <Icon name="zap" size={20} color="#FFD700" />
               <Text style={styles.statValue}>{totalXp.toLocaleString()}</Text>
-              <Text style={styles.statLabel}>Total XP</Text>
+              <Text style={styles.statLabel}>XP total</Text>
             </View>
           </GlassCard>
           <GlassCard style={styles.statCardGlass} borderColor="#39FF14">
             <View style={styles.statCardInner}>
               <Icon name="book" size={20} color="#39FF14" />
               <Text style={styles.statValue}>{completedLessons}</Text>
-              <Text style={styles.statLabel}>Lessons</Text>
+              <Text style={styles.statLabel}>Leçons</Text>
             </View>
           </GlassCard>
           <GlassCard style={styles.statCardGlass} borderColor="#FF6B35">
             <View style={styles.statCardInner}>
               <StreakFire streak={userStats?.streak ?? 0} size="small" showCount={false} />
               <Text style={styles.statValue}>{userStats?.streak ?? 0}</Text>
-              <Text style={styles.statLabel}>Day Streak</Text>
+              <Text style={styles.statLabel}>Série de jours</Text>
             </View>
           </GlassCard>
         </Animated.View>
@@ -372,13 +372,13 @@ export default function ProfileScreen() {
             <View style={styles.streakRow}>
               <View style={styles.streakItem}>
                 <Icon name="trophy" size={18} color="#FFD700" />
-                <Text style={styles.streakLabel}>Best Streak</Text>
-                <Text style={styles.streakValue}>{userStats?.maxStreak ?? 0} days</Text>
+                <Text style={styles.streakLabel}>Meilleure série</Text>
+                <Text style={styles.streakValue}>{userStats?.maxStreak ?? 0} jours</Text>
               </View>
               <View style={styles.streakDivider} />
               <View style={styles.streakItem}>
                 <Icon name="shield" size={18} color="#58A6FF" />
-                <Text style={styles.streakLabel}>Streak Freezes</Text>
+                <Text style={styles.streakLabel}>Gels de série</Text>
                 <Text style={styles.streakValue}>{userStats?.streakFreezes ?? 0} / 3</Text>
               </View>
             </View>
@@ -599,8 +599,8 @@ export default function ProfileScreen() {
         <Animated.View entering={FadeInUp.delay(200)}>
           <GlassCard borderColor="#39FF14">
             <View style={styles.xpHeader}>
-              <Text style={styles.xpTitle}>Level Progress</Text>
-              <Text style={styles.xpRemaining}>{xpToNextLevel.toLocaleString()} XP to Level {level + 1}</Text>
+              <Text style={styles.xpTitle}>Progression du niveau</Text>
+              <Text style={styles.xpRemaining}>{xpToNextLevel.toLocaleString()} XP vers le niveau {level + 1}</Text>
             </View>
             <View style={styles.xpBar}>
               <LinearGradient
@@ -682,7 +682,7 @@ export default function ProfileScreen() {
               <View style={legendaryStyles.header}>
                 <Text style={legendaryStyles.crownEmoji}>👑</Text>
                 <View>
-                  <Text style={legendaryStyles.title}>Hall of Legends</Text>
+                  <Text style={legendaryStyles.title}>Panthéon des légendes</Text>
                   <Text style={legendaryStyles.subtitle}>
                     {achievements.unlocked.filter(ua => ua.achievement.rarity === 'LEGENDARY').length} badge{achievements.unlocked.filter(ua => ua.achievement.rarity === 'LEGENDARY').length > 1 ? 's' : ''} légendaire{achievements.unlocked.filter(ua => ua.achievement.rarity === 'LEGENDARY').length > 1 ? 's' : ''} obtenus
                   </Text>
@@ -728,9 +728,9 @@ export default function ProfileScreen() {
         {/* Achievements Preview */}
         <Animated.View entering={FadeInUp.delay(300)} style={styles.achievementsSection}>
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Achievements</Text>
+            <Text style={styles.sectionTitle}>Succès</Text>
             <Pressable onPress={() => router.push('/achievements')}>
-              <Text style={styles.viewAllText}>View All</Text>
+              <Text style={styles.viewAllText}>Voir tout</Text>
             </Pressable>
           </View>
           <View style={styles.achievementsGrid}>
@@ -765,13 +765,13 @@ export default function ProfileScreen() {
                 <GlassCard style={[styles.achievementGlass, styles.achievementLocked]}>
                   <View style={styles.achievementInner}>
                     <Icon name="target" size={28} color="#484F58" />
-                    <Text style={[styles.achievementLabel, { color: '#484F58' }]}>First Step</Text>
+                    <Text style={[styles.achievementLabel, { color: '#484F58' }]}>Premier pas</Text>
                   </View>
                 </GlassCard>
                 <GlassCard style={[styles.achievementGlass, styles.achievementLocked]}>
                   <View style={styles.achievementInner}>
                     <Icon name="flame" size={28} color="#484F58" />
-                    <Text style={[styles.achievementLabel, { color: '#484F58' }]}>7 Day Streak</Text>
+                    <Text style={[styles.achievementLabel, { color: '#484F58' }]}>Série de 7 jours</Text>
                   </View>
                 </GlassCard>
               </>
@@ -790,7 +790,7 @@ export default function ProfileScreen() {
 
         {/* Settings */}
         <Animated.View entering={FadeInUp.delay(400)} style={styles.settingsSection}>
-          <Text style={styles.sectionTitle}>Settings</Text>
+          <Text style={styles.sectionTitle}>Paramètres</Text>
 
           <GlassCard borderColor="#39FF14">
             <Pressable style={styles.settingItemInner} onPress={() => router.push('/settings' as any)}>
@@ -801,7 +801,7 @@ export default function ProfileScreen() {
                 <View>
                   <Text style={styles.settingLabel}>Paramètres</Text>
                   <Text style={[styles.settingLabel, { fontSize: 11, color: '#484F58', marginTop: 1 }]}>
-                    Username, son, notifications
+                    Nom d’utilisateur, son, notifications
                   </Text>
                 </View>
               </View>
@@ -815,7 +815,7 @@ export default function ProfileScreen() {
                 <View style={styles.settingIconBg}>
                   <Icon name="volume" size={18} color={soundEnabled ? '#39FF14' : '#8B949E'} />
                 </View>
-                <Text style={styles.settingLabel}>Sound Effects</Text>
+                <Text style={styles.settingLabel}>Effets sonores</Text>
               </View>
               <Switch
                 value={soundEnabled}
@@ -833,7 +833,7 @@ export default function ProfileScreen() {
                 <View style={[styles.settingIconBg, { backgroundColor: 'rgba(255, 215, 0, 0.1)' }]}>
                   <Icon name="trophy" size={18} color="#FFD700" />
                 </View>
-                <Text style={styles.settingLabel}>Leaderboard</Text>
+                <Text style={styles.settingLabel}>Classement</Text>
               </View>
               <Icon name="chevron-right" size={18} color="#FFD700" />
             </Pressable>
@@ -845,7 +845,7 @@ export default function ProfileScreen() {
                 <View style={[styles.settingIconBg, { backgroundColor: 'rgba(248, 81, 73, 0.1)' }]}>
                   <Icon name="alert" size={18} color="#F85149" />
                 </View>
-                <Text style={[styles.settingLabel, { color: '#F85149' }]}>Reset Progress</Text>
+                <Text style={[styles.settingLabel, { color: '#F85149' }]}>Réinitialiser la progression</Text>
               </View>
             </Pressable>
           </GlassCard>
@@ -856,7 +856,7 @@ export default function ProfileScreen() {
                 <View style={styles.settingIconBg}>
                   <Icon name="logout" size={18} color="#8B949E" />
                 </View>
-                <Text style={styles.settingLabel}>Logout</Text>
+                <Text style={styles.settingLabel}>Se déconnecter</Text>
               </View>
             </Pressable>
           </GlassCard>

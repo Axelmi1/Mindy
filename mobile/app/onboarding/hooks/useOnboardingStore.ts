@@ -1,19 +1,18 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import type { MindyMood } from '@/components/mindy/MindyMascot';
 
 export type StepId =
-  | 'welcome' | 'domain' | 'goal' | 'time'
-  | 'mindy_intro' | 'demo_intro'
-  | 'demo_q1' | 'demo_q2' | 'demo_q3'
-  | 'results' | 'signup' | 'notifications';
+  | 'hello' | 'level' | 'domain' | 'goal' | 'time'
+  | 'demo' | 'result' | 'signup' | 'plan';
 
 export const STEP_ORDER: StepId[] = [
-  'welcome', 'domain', 'goal', 'time',
-  'mindy_intro', 'demo_intro',
-  'demo_q1', 'demo_q2', 'demo_q3',
-  'results', 'signup', 'notifications',
+  'hello', 'level', 'domain', 'goal', 'time',
+  'demo', 'result', 'signup', 'plan',
 ];
+
+export type Level = 'beginner' | 'intermediate' | 'advanced';
 
 export type Domain = 'CRYPTO' | 'FINANCE' | 'BOTH';
 
@@ -21,6 +20,8 @@ interface DemoAnswer { questionId: string; correct: boolean }
 
 interface OnboardingState {
   currentStep: StepId;
+  level: Level | null;
+  mood: MindyMood;
 
   domain: Domain | null;
   goal: string | null;
@@ -31,6 +32,7 @@ interface OnboardingState {
 
   username: string;
   email: string | null;
+  password: string;
 
   notificationsEnabled: boolean;
   reminderHour: number | null;
@@ -41,15 +43,20 @@ interface OnboardingState {
   setDomain: (d: Domain) => void;
   setGoal: (g: string) => void;
   setDailyMinutes: (m: 5 | 10 | 15) => void;
+  setLevel: (l: Level) => void;
+  setMood: (m: MindyMood) => void;
   recordDemoAnswer: (questionId: string, correct: boolean) => void;
   setUsername: (u: string) => void;
   setEmail: (e: string | null) => void;
+  setPassword: (p: string) => void;
   setNotifications: (enabled: boolean, hour: number | null) => void;
   reset: () => void;
 }
 
 const initialState = {
-  currentStep: 'welcome' as StepId,
+  currentStep: 'hello' as StepId,
+  level: null,
+  mood: 'neutral' as MindyMood,
   domain: null,
   goal: null,
   dailyMinutes: null,
@@ -57,6 +64,7 @@ const initialState = {
   demoAnswers: [],
   username: '',
   email: null,
+  password: '',
   notificationsEnabled: false,
   reminderHour: null,
 };
@@ -79,6 +87,8 @@ export const useOnboardingStore = create<OnboardingState>()(
       setDomain: (domain) => set({ domain }),
       setGoal: (goal) => set({ goal }),
       setDailyMinutes: (dailyMinutes) => set({ dailyMinutes }),
+      setLevel: (level) => set({ level }),
+      setMood: (mood) => set({ mood }),
       recordDemoAnswer: (questionId, correct) =>
         set((s) => ({
           demoAnswers: [...s.demoAnswers, { questionId, correct }],
@@ -86,12 +96,18 @@ export const useOnboardingStore = create<OnboardingState>()(
         })),
       setUsername: (username) => set({ username }),
       setEmail: (email) => set({ email }),
+      setPassword: (password) => set({ password }),
       setNotifications: (enabled, hour) => set({ notificationsEnabled: enabled, reminderHour: hour }),
       reset: () => set({ ...initialState }),
     }),
     {
       name: '@mindy/onboarding_state',
       storage: createJSONStorage(() => AsyncStorage),
+      partialize: (state) => {
+        // Never persist the plaintext password to AsyncStorage.
+        const { password: _password, ...rest } = state;
+        return rest as OnboardingState;
+      },
     },
   ),
 );

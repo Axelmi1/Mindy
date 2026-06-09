@@ -161,7 +161,7 @@ export function VisualPickStepView({ step, onComplete }: VisualPickStepViewProps
             <View style={styles.resultRow}>
               <Icon name={isCorrect ? 'check' : 'x'} size={18} color={isCorrect ? '#39FF14' : '#F85149'} />
               <Text style={styles.resultText}>
-                {isCorrect ? 'Correct!' : 'Not quite'}
+                {isCorrect ? 'Correct !' : 'Pas tout à fait'}
               </Text>
             </View>
           </View>
@@ -174,7 +174,7 @@ export function VisualPickStepView({ step, onComplete }: VisualPickStepViewProps
         <View style={styles.hintContainer}>
           <Icon name="target" size={16} color="#8B949E" />
           <Text style={styles.hintText}>
-            Tap on the area you think is correct
+            Appuie sur la zone qui te semble correcte
           </Text>
         </View>
       )}

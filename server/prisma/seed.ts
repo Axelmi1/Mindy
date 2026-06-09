@@ -1,4 +1,5 @@
 import { PrismaClient, Domain, Difficulty } from '@prisma/client';
+import * as bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
 
@@ -403,6 +404,7 @@ Remember: In crypto, knowledge is your best defense. DYOR and never invest more 
 const testUser = {
   email: 'test@mindy.app',
   username: 'test_user',
+  password: bcrypt.hashSync(process.env.ADMIN_PASSWORD ?? 'test1234', 12),
   xp: 0,
   level: 1,
   streak: 0,

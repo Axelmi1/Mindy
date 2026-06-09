@@ -1,119 +1,103 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { View, Text, TextInput, StyleSheet } from 'react-native';
-import Animated, { FadeIn } from 'react-native-reanimated';
-import { Icon } from '@/components/ui/Icon';
-import { OnboardingScreen } from '../components/OnboardingScreen';
-import { PrimaryButton } from '../components/PrimaryButton';
+import { MindyTurn } from '../components/MindyTurn';
 import { useOnboardingStore } from '../hooks/useOnboardingStore';
+import { suggestUsername, isValidUsername } from '../lib/usernameSuggest';
 
-function isValidUsername(u: string) {
-  const t = u.trim();
-  return t.length >= 3 && t.length <= 20 && /^[a-zA-Z0-9_]+$/.test(t);
-}
-
-function isValidEmail(e: string) {
-  if (!e.trim()) return true; // optional
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e.trim());
-}
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export function SignupStep() {
-  const setUsername = useOnboardingStore((s) => s.setUsername);
-  const setEmail = useOnboardingStore((s) => s.setEmail);
   const next = useOnboardingStore((s) => s.next);
+  const username = useOnboardingStore((s) => s.username);
+  const setUsername = useOnboardingStore((s) => s.setUsername);
+  const email = useOnboardingStore((s) => s.email);
+  const setEmail = useOnboardingStore((s) => s.setEmail);
+  const password = useOnboardingStore((s) => s.password);
+  const setPassword = useOnboardingStore((s) => s.setPassword);
+  const setMood = useOnboardingStore((s) => s.setMood);
+  useEffect(() => { setMood('neutral'); }, [setMood]);
 
-  const [u, setU] = useState('');
-  const [e, setE] = useState('');
-  const [uErr, setUErr] = useState('');
-  const [eErr, setEErr] = useState('');
+  const suggested = useMemo(() => suggestUsername(Date.now()), []);
+  useEffect(() => {
+    if (!username) setUsername(suggested);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const submit = () => {
-    const tU = u.trim();
-    const tE = e.trim();
-    if (!isValidUsername(tU)) {
-      setUErr('3-20 chars, letters/numbers/underscore only');
-      return;
-    }
-    if (!isValidEmail(tE)) {
-      setEErr('Invalid email');
-      return;
-    }
-    setUErr(''); setEErr('');
-    setUsername(tU);
-    setEmail(tE || null);
+  const [emailText, setEmailText] = useState(email ?? '');
+  const [pwText, setPwText] = useState(password ?? '');
+
+  const usernameOk = isValidUsername(username);
+  const emailOk = EMAIL_RE.test(emailText.trim());
+  const pwOk = pwText.length >= 8;
+  const valid = usernameOk && emailOk && pwOk;
+
+  const handleNext = () => {
+    setEmail(emailText.trim());
+    setPassword(pwText);
     next();
   };
 
   return (
-    <OnboardingScreen
-      animationKey="signup"
+    <MindyTurn
+      turnKey="signup"
+      mood="neutral"
+      message="Crée ton compte — pseudo, email et mot de passe."
+      ctaLabel="Continuer"
+      ctaDisabled={!valid}
+      onCta={handleNext}
       keyboardAware
-      footer={
-        <PrimaryButton onPress={submit} disabled={!isValidUsername(u)}>
-          Continue
-        </PrimaryButton>
-      }
     >
-      <Animated.View entering={FadeIn.duration(400)}>
-        <View style={styles.header}>
-          <Icon name="user" size={48} color="#39FF14" />
-          <Text style={styles.title}>Choose a username</Text>
-          <Text style={styles.subtitle}>This is how you'll appear on the leaderboard.</Text>
-        </View>
+      <View style={styles.field}>
+        <Text style={styles.at}>@</Text>
+        <TextInput
+          value={username}
+          onChangeText={setUsername}
+          autoCapitalize="none"
+          autoCorrect={false}
+          placeholder="satoshi"
+          placeholderTextColor="#484F58"
+          style={[styles.input, usernameOk ? styles.inputOk : styles.inputBad]}
+        />
+      </View>
+      <Text style={styles.hint}>Lettres, chiffres, underscore — 3 à 20 caractères.</Text>
 
-        <View style={styles.inputWrap}>
-          <View style={[styles.input, uErr ? styles.inputError : u.length >= 3 && styles.inputValid]}>
-            <Text style={styles.prefix}>@</Text>
-            <TextInput
-              value={u}
-              onChangeText={(v) => { setU(v); setUErr(''); }}
-              placeholder="satoshi"
-              placeholderTextColor="#484F58"
-              autoCapitalize="none"
-              autoCorrect={false}
-              maxLength={20}
-              style={styles.textInput}
-            />
-            {isValidUsername(u) && <Icon name="check" size={18} color="#39FF14" />}
-          </View>
-          <Text style={uErr ? styles.errorText : styles.hint}>
-            {uErr || 'Letters, numbers, underscore — 3 to 20 chars'}
-          </Text>
-        </View>
+      <Text style={styles.label}>Email</Text>
+      <TextInput
+        value={emailText}
+        onChangeText={setEmailText}
+        autoCapitalize="none"
+        autoCorrect={false}
+        keyboardType="email-address"
+        placeholder="ton@email.com"
+        placeholderTextColor="#484F58"
+        style={[styles.input, emailText.length === 0 || emailOk ? styles.inputOk : styles.inputBad]}
+      />
+      <Text style={styles.hint}>Sert à te reconnecter sur un autre téléphone.</Text>
 
-        <View style={styles.inputWrap}>
-          <Text style={styles.label}>Email (optional)</Text>
-          <View style={[styles.input, eErr && styles.inputError]}>
-            <TextInput
-              value={e}
-              onChangeText={(v) => { setE(v); setEErr(''); }}
-              placeholder="your@email.com"
-              placeholderTextColor="#484F58"
-              keyboardType="email-address"
-              autoCapitalize="none"
-              autoCorrect={false}
-              style={styles.textInput}
-            />
-          </View>
-          <Text style={eErr ? styles.errorText : styles.hint}>
-            {eErr || 'To recover your account on another device'}
-          </Text>
-        </View>
-      </Animated.View>
-    </OnboardingScreen>
+      <Text style={styles.label}>Mot de passe</Text>
+      <TextInput
+        value={pwText}
+        onChangeText={setPwText}
+        autoCapitalize="none"
+        autoCorrect={false}
+        secureTextEntry
+        placeholder="8 caractères minimum"
+        placeholderTextColor="#484F58"
+        style={[styles.input, pwText.length === 0 || pwOk ? styles.inputOk : styles.inputBad]}
+      />
+      <Text style={styles.hint}>Au moins 8 caractères.</Text>
+    </MindyTurn>
   );
 }
 
 const styles = StyleSheet.create({
-  header: { alignItems: 'center', marginBottom: 24 },
-  title: { fontFamily: 'Inter', fontSize: 26, fontWeight: '700', color: '#E6EDF3', marginTop: 12, textAlign: 'center' },
-  subtitle: { fontFamily: 'Inter', fontSize: 14, color: '#8B949E', textAlign: 'center', marginTop: 6 },
-  inputWrap: { marginBottom: 18 },
-  label: { fontFamily: 'Inter', fontSize: 12, color: '#8B949E', marginBottom: 6 },
-  input: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#161B22', borderRadius: 14, borderWidth: 2, borderColor: '#30363D', paddingHorizontal: 16, paddingVertical: 14, gap: 8 },
-  inputValid: { borderColor: '#39FF14' },
-  inputError: { borderColor: '#F85149' },
-  prefix: { fontFamily: 'JetBrainsMono', fontSize: 18, color: '#39FF14', fontWeight: '700' },
-  textInput: { flex: 1, fontFamily: 'JetBrainsMono', fontSize: 16, color: '#E6EDF3', padding: 0 },
-  hint: { fontFamily: 'Inter', fontSize: 11, color: '#484F58', marginTop: 4, paddingHorizontal: 4 },
-  errorText: { fontFamily: 'Inter', fontSize: 12, color: '#F85149', marginTop: 4, paddingHorizontal: 4 },
+  field: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  at: { fontFamily: 'JetBrainsMono', fontSize: 22, color: '#39FF14' },
+  input: {
+    flex: 1, fontFamily: 'Inter', fontSize: 16, color: '#E6EDF3',
+    backgroundColor: '#161B22', borderRadius: 12, borderWidth: 2, padding: 14,
+  },
+  inputOk: { borderColor: '#30363D' },
+  inputBad: { borderColor: '#F85149' },
+  label: { fontFamily: 'Inter', fontSize: 14, color: '#8B949E', marginTop: 16, marginBottom: 6 },
+  hint: { fontFamily: 'Inter', fontSize: 12, color: '#8B949E', marginTop: 6 },
 });

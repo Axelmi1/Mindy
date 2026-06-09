@@ -107,7 +107,7 @@ export function ContinueCard({
       <View style={styles.content}>
         {/* Header */}
         <View style={styles.header}>
-          <Text style={styles.continueLabel}>CONTINUE</Text>
+          <Text style={styles.continueLabel}>CONTINUER</Text>
           <View style={[styles.domainBadge, { backgroundColor: domainColor + '20' }]}>
             <Text style={[styles.domainText, { color: domainColor }]}>
               {domain}
@@ -132,7 +132,7 @@ export function ContinueCard({
 
         {/* Loading text animation */}
         <Text style={styles.loadingText}>
-          LOADING KNOWLEDGE...
+          CHARGEMENT DU SAVOIR...
         </Text>
       </View>
     </AnimatedPressable>

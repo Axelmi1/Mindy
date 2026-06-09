@@ -1,106 +1,123 @@
+export type Difficulty = 'beginner' | 'intermediate' | 'advanced';
+
+type Base = { id: string; question: string; explanation: string; difficulty: Difficulty };
+
+/** Option à symbole (image_choice) : `color` colore le glyphe pour qu'il ressorte sur fond sombre. */
+type SymbolOption = { id: string; label: string; isCorrect: boolean; color?: string };
+type TextOption = { id: string; label: string; isCorrect: boolean };
+
 export type DemoQuestion =
-  | {
-      id: string;
-      type: 'image_choice';
-      question: string;
-      options: { id: string; label: string; isCorrect: boolean }[];
-      explanation: string;
-    }
-  | {
-      id: string;
-      type: 'true_false';
-      question: string;
-      correctAnswer: boolean;
-      explanation: string;
-    }
-  | {
-      id: string;
-      type: 'choice';
-      question: string;
-      options: { id: string; label: string; isCorrect: boolean }[];
-      explanation: string;
-    };
+  | (Base & { type: 'image_choice'; options: SymbolOption[] })
+  | (Base & { type: 'true_false'; correctAnswer: boolean })
+  | (Base & { type: 'choice'; options: TextOption[] });
 
 export type Domain = 'CRYPTO' | 'FINANCE' | 'BOTH';
 
 const CRYPTO: DemoQuestion[] = [
   {
-    id: 'crypto-1',
-    type: 'image_choice',
-    question: 'Which one is Bitcoin?',
+    id: 'crypto-b1', type: 'image_choice', difficulty: 'beginner',
+    question: 'Lequel est le Bitcoin ?',
     options: [
-      { id: 'btc', label: '₿', isCorrect: true },
-      { id: 'eth', label: 'Ξ', isCorrect: false },
-      { id: 'dollar', label: '$', isCorrect: false },
+      { id: 'btc', label: '₿', isCorrect: true, color: '#F7931A' },   // orange Bitcoin
+      { id: 'eth', label: 'Ξ', isCorrect: false, color: '#7B8CFF' },  // bleu Ethereum
+      { id: 'dollar', label: '$', isCorrect: false, color: '#5FD08A' }, // vert dollar
     ],
-    explanation: '₿ is the symbol for Bitcoin.',
+    explanation: '₿ est le symbole du Bitcoin.',
   },
   {
-    id: 'crypto-2',
-    type: 'true_false',
-    question: '"HODL" means to hold your crypto long-term',
+    id: 'crypto-b2', type: 'true_false', difficulty: 'beginner',
+    question: '« HODL » signifie garder sa crypto sur le long terme',
     correctAnswer: true,
-    explanation: 'HODL originated from a typo of "HOLD" and became crypto slang.',
+    explanation: 'HODL vient d’une faute de frappe de « HOLD » devenue un classique de la crypto.',
   },
   {
-    id: 'crypto-3',
-    type: 'choice',
-    question: 'What happens when you "buy the dip"?',
+    id: 'crypto-i1', type: 'choice', difficulty: 'intermediate',
+    question: 'Que veut dire « acheter le creux » (buy the dip) ?',
     options: [
-      { id: 'a', label: 'Buy when price drops', isCorrect: true },
-      { id: 'b', label: 'Sell everything', isCorrect: false },
-      { id: 'c', label: 'Buy a snack', isCorrect: false },
+      { id: 'a', label: 'Acheter quand le prix chute', isCorrect: true },
+      { id: 'b', label: 'Tout revendre', isCorrect: false },
+      { id: 'c', label: 'Acheter un snack', isCorrect: false },
     ],
-    explanation: '"Buy the dip" means purchasing when prices drop.',
+    explanation: '« Acheter le creux », c’est acheter quand les prix baissent.',
+  },
+  {
+    id: 'crypto-i2', type: 'true_false', difficulty: 'intermediate',
+    question: 'Une blockchain est un registre public et partagé',
+    correctAnswer: true,
+    explanation: 'Une blockchain enregistre les transactions sur un registre public et distribué.',
+  },
+  {
+    id: 'crypto-a1', type: 'choice', difficulty: 'advanced',
+    question: 'À quoi sert une « clé privée » ?',
+    options: [
+      { id: 'a', label: 'À signer et contrôler tes fonds', isCorrect: true },
+      { id: 'b', label: 'À te connecter aux plateformes seulement', isCorrect: false },
+      { id: 'c', label: 'À miner de nouvelles pièces', isCorrect: false },
+    ],
+    explanation: 'Ta clé privée signe les transactions — qui la détient contrôle les fonds.',
   },
 ];
 
 const FINANCE: DemoQuestion[] = [
   {
-    id: 'finance-1',
-    type: 'image_choice',
-    question: 'Which symbol is the Euro?',
+    id: 'finance-b1', type: 'image_choice', difficulty: 'beginner',
+    question: 'Quel symbole est l’Euro ?',
     options: [
-      { id: 'eur', label: '€', isCorrect: true },
-      { id: 'gbp', label: '£', isCorrect: false },
-      { id: 'yen', label: '¥', isCorrect: false },
+      { id: 'eur', label: '€', isCorrect: true, color: '#5B8DEF' },   // bleu Euro
+      { id: 'gbp', label: '£', isCorrect: false, color: '#C9A0FF' },  // violet Livre
+      { id: 'yen', label: '¥', isCorrect: false, color: '#FF9F6B' },  // orange Yen
     ],
-    explanation: '€ is the symbol of the Euro, used by 20+ countries.',
+    explanation: '€ est le symbole de l’Euro, utilisé par plus de 20 pays.',
   },
   {
-    id: 'finance-2',
-    type: 'true_false',
-    question: 'A "bull market" means prices are going down',
+    id: 'finance-b2', type: 'true_false', difficulty: 'beginner',
+    question: 'Un « marché haussier » (bull market) veut dire que les prix baissent',
     correctAnswer: false,
-    explanation: 'A bull market is when prices are rising — a bear market is falling.',
+    explanation: 'Un marché haussier, c’est quand les prix montent — un marché baissier, quand ils baissent.',
   },
   {
-    id: 'finance-3',
-    type: 'choice',
-    question: 'What is compound interest?',
+    id: 'finance-i1', type: 'choice', difficulty: 'intermediate',
+    question: 'Que sont les intérêts composés ?',
     options: [
-      { id: 'a', label: 'Interest on your interest', isCorrect: true },
-      { id: 'b', label: 'A bank tax', isCorrect: false },
-      { id: 'c', label: 'A type of loan', isCorrect: false },
+      { id: 'a', label: 'Des intérêts sur tes intérêts', isCorrect: true },
+      { id: 'b', label: 'Une taxe bancaire', isCorrect: false },
+      { id: 'c', label: 'Un type de prêt', isCorrect: false },
     ],
-    explanation: 'Compound interest earns you interest on your previous interest — the 8th wonder of the world.',
+    explanation: 'Les intérêts composés te rapportent des intérêts sur tes intérêts précédents.',
+  },
+  {
+    id: 'finance-i2', type: 'true_false', difficulty: 'intermediate',
+    question: 'Diversifier répartit ton risque sur plusieurs actifs',
+    correctAnswer: true,
+    explanation: 'La diversification réduit l’impact de la chute d’un seul actif.',
+  },
+  {
+    id: 'finance-a1', type: 'choice', difficulty: 'advanced',
+    question: 'Que fait l’inflation à de l’argent qui dort ?',
+    options: [
+      { id: 'a', label: 'Elle érode son pouvoir d’achat', isCorrect: true },
+      { id: 'b', label: 'Elle augmente sa valeur', isCorrect: false },
+      { id: 'c', label: 'Rien du tout', isCorrect: false },
+    ],
+    explanation: 'Avec l’inflation, chaque euro achète moins avec le temps : l’argent qui dort perd de la valeur.',
   },
 ];
 
 const BOTH: DemoQuestion[] = [
-  CRYPTO[0],
-  FINANCE[1],
+  CRYPTO[0],          // beginner
+  FINANCE[2],         // intermediate (intérêts composés)
   {
-    id: 'both-3',
-    type: 'choice',
-    question: 'Why diversify your investments?',
+    id: 'both-a1', type: 'choice', difficulty: 'advanced',
+    question: 'Pourquoi diversifier tes investissements ?',
     options: [
-      { id: 'a', label: 'To reduce risk', isCorrect: true },
-      { id: 'b', label: 'To look smart', isCorrect: false },
-      { id: 'c', label: "There's no reason", isCorrect: false },
+      { id: 'a', label: 'Pour réduire le risque', isCorrect: true },
+      { id: 'b', label: 'Pour avoir l’air malin', isCorrect: false },
+      { id: 'c', label: 'Il n’y a aucune raison', isCorrect: false },
     ],
-    explanation: 'Diversification spreads risk — if one asset tanks, others might hold up.',
+    explanation: 'Diversifier répartit le risque — si un actif s’effondre, les autres peuvent tenir.',
   },
+  CRYPTO[2],          // intermediate (acheter le creux)
+  FINANCE[1],         // beginner (marché haussier)
 ];
 
 export const demoQuestions: Record<Domain, DemoQuestion[]> = { CRYPTO, FINANCE, BOTH };

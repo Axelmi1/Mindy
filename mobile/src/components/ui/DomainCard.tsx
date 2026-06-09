@@ -92,7 +92,7 @@ export function DomainCard({
 
       {/* Lessons count */}
       <Text style={styles.lessonsCount}>
-        {lessonsCount} lessons
+        {lessonsCount} leçons
       </Text>
 
       {/* Arrow indicator */}

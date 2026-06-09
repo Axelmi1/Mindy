@@ -20,11 +20,11 @@ import { LeagueBadge } from '@/components/ui/LeagueBadge';
 // ─── League tiers (mirrors server scheduler) ────────────────────────────────
 
 const LEAGUE_TIERS = [
-  { rank: 0, name: 'Iron',     minXp: 0,    emoji: '⚙️' },
-  { rank: 1, name: 'Bronze',   minXp: 100,  emoji: '🥉' },
-  { rank: 2, name: 'Silver',   minXp: 500,  emoji: '🥈' },
-  { rank: 3, name: 'Gold',     minXp: 2000, emoji: '🥇' },
-  { rank: 4, name: 'Platinum', minXp: 5000, emoji: '💠' },
+  { rank: 0, name: 'Fer',     minXp: 0,    emoji: '⚙️' },
+  { rank: 1, name: 'Bronze',  minXp: 100,  emoji: '🥉' },
+  { rank: 2, name: 'Argent',  minXp: 500,  emoji: '🥈' },
+  { rank: 3, name: 'Or',      minXp: 2000, emoji: '🥇' },
+  { rank: 4, name: 'Platine', minXp: 5000, emoji: '💠' },
 ] as const;
 
 interface LeagueInfo {

@@ -167,11 +167,11 @@ function RetentionSection({ retention }: { retention: RetentionData }) {
 
   return (
     <>
-      <SectionHeader title="Retention investisseurs" icon="📊" />
+      <SectionHeader title="Rétention investisseurs" icon="📊" />
 
       {/* DAU / MAU stickiness */}
       <GlassCard style={{ marginBottom: 16 }}>
-        <Text style={styles.retentionTitle}>Stickiness (DAU/MAU)</Text>
+        <Text style={styles.retentionTitle}>Fidélité (DAU/MAU)</Text>
         <View style={styles.retentionKpiRow}>
           <View style={styles.retentionKpi}>
             <Text style={[styles.retentionKpiValue, { color: '#39FF14' }]}>{d.dau}</Text>
@@ -187,7 +187,7 @@ function RetentionSection({ retention }: { retention: RetentionData }) {
             <Text style={[styles.retentionKpiValue, { color: dauMauPct >= 20 ? '#39FF14' : '#FFD700' }]}>
               {dauMauPct}%
             </Text>
-            <Text style={styles.retentionKpiLabel}>Stickiness</Text>
+            <Text style={styles.retentionKpiLabel}>Fidélité</Text>
           </View>
         </View>
         <View style={styles.retentionBarBg}>
@@ -226,18 +226,18 @@ function RetentionSection({ retention }: { retention: RetentionData }) {
 
       {/* Additional metrics */}
       <GlassCard style={{ marginBottom: 16 }}>
-        <StatRow icon="📉" label="Churn rate (mensuel)" value={`${d.churnRate}%`}
+        <StatRow icon="📉" label="Taux de désabonnement (mensuel)" value={`${d.churnRate}%`}
           color={d.churnRate < 20 ? '#39FF14' : d.churnRate < 40 ? '#FFD700' : '#F85149'}
           sub={d.churnRate < 20 ? 'Excellent' : d.churnRate < 40 ? 'Acceptable' : 'Critique'} />
         <StatRow icon="📱" label="Sessions / DAU" value={d.avgSessionsPerUser} color="#58A6FF" />
         <StatRow icon="📚" label="Leçons / DAU" value={d.avgLessonsPerDau} color="#39FF14" />
-        <StatRow icon="🆕" label="Nouveaux users (7j)" value={d.newUsersLast7d} color="#C9D1D9" />
-        <StatRow icon="🆕" label="Nouveaux users (30j)" value={d.newUsersLast30d} color="#C9D1D9" />
+        <StatRow icon="🆕" label="Nouveaux utilisateurs (7j)" value={d.newUsersLast7d} color="#C9D1D9" />
+        <StatRow icon="🆕" label="Nouveaux utilisateurs (30j)" value={d.newUsersLast30d} color="#C9D1D9" />
       </GlassCard>
 
       {/* 30-day DAU trend */}
       <GlassCard style={{ marginBottom: 16 }}>
-        <Text style={styles.retentionTitle}>DAU trend (30 jours)</Text>
+        <Text style={styles.retentionTitle}>Tendance DAU (30 jours)</Text>
         <View style={styles.trendChart}>
           {d.dauTrend.map((point, i) => {
             const h = maxTrend > 0 ? Math.max(4, (point.dau / maxTrend) * 60) : 4;
@@ -312,7 +312,7 @@ function FunnelSection({ funnel }: { funnel: FunnelData }) {
           <Text style={funnelStyles.headerLabel}>Conversion globale</Text>
           <Text style={funnelStyles.headerValue}>{funnel.overallConversion}%</Text>
           <Text style={funnelStyles.headerSub}>
-            {funnel.totalSignups} signups → {funnel.steps[funnel.steps.length - 1]?.count ?? 0} Pro
+            {funnel.totalSignups} inscriptions → {funnel.steps[funnel.steps.length - 1]?.count ?? 0} Pro
           </Text>
         </View>
         <View style={funnelStyles.funnelIcon}>
@@ -332,7 +332,7 @@ function FunnelSection({ funnel }: { funnel: FunnelData }) {
               <Text style={funnelStyles.stepIcon}>{step.icon}</Text>
               <View>
                 <Text style={funnelStyles.stepLabel}>{step.label}</Text>
-                <Text style={funnelStyles.stepCount}>{step.count.toLocaleString()} users</Text>
+                <Text style={funnelStyles.stepCount}>{step.count.toLocaleString()} utilisateurs</Text>
               </View>
             </View>
 
@@ -350,7 +350,7 @@ function FunnelSection({ funnel }: { funnel: FunnelData }) {
             {i < funnel.steps.length - 1 && funnel.dropOffs[i] && (
               <View style={funnelStyles.dropOffRow}>
                 <Text style={funnelStyles.dropOffText}>
-                  ↓ −{funnel.dropOffs[i].dropOff.toLocaleString()} ({funnel.dropOffs[i].dropOffPct}% drop)
+                  ↓ −{funnel.dropOffs[i].dropOff.toLocaleString()} ({funnel.dropOffs[i].dropOffPct}% d'abandon)
                 </Text>
               </View>
             )}
@@ -503,7 +503,7 @@ export default function AdminScreen() {
           <Pressable onPress={() => router.back()} style={styles.backBtn}>
             <Icon name="arrow-left" size={20} color="#E6EDF3" />
           </Pressable>
-          <Text style={styles.headerTitle}>Admin Dashboard</Text>
+          <Text style={styles.headerTitle}>Tableau de bord Admin</Text>
           <View style={styles.adminBadge}>
             <Text style={styles.adminBadgeText}>ADMIN</Text>
           </View>
@@ -526,7 +526,7 @@ export default function AdminScreen() {
           <Pressable onPress={() => router.back()} style={styles.backBtn}>
             <Icon name="arrow-left" size={20} color="#E6EDF3" />
           </Pressable>
-          <Text style={styles.headerTitle}>Admin Dashboard</Text>
+          <Text style={styles.headerTitle}>Tableau de bord Admin</Text>
           <View style={styles.adminBadge}>
             <Text style={styles.adminBadgeText}>ADMIN</Text>
           </View>
@@ -557,7 +557,7 @@ export default function AdminScreen() {
           <Icon name="arrow-left" size={20} color="#E6EDF3" />
         </Pressable>
         <View>
-          <Text style={styles.headerTitle}>Admin Dashboard</Text>
+          <Text style={styles.headerTitle}>Tableau de bord Admin</Text>
           <Text style={styles.headerSub}>Actualisé à {generatedAt}</Text>
         </View>
         <LinearGradient colors={['#FF4444', '#CC0000']} style={styles.adminBadge}>
@@ -574,7 +574,7 @@ export default function AdminScreen() {
             onPress={() => setActiveTab(tab)}
           >
             <Text style={[styles.adminTabText, activeTab === tab && styles.adminTabTextActive]}>
-              {tab === 'dashboard' ? '📈 Stats' : tab === 'retention' ? '🔁 Rétention' : '🎯 Funnel'}
+              {tab === 'dashboard' ? '📈 Stats' : tab === 'retention' ? '🔁 Rétention' : '🎯 Entonnoir'}
             </Text>
           </Pressable>
         ))}
@@ -609,7 +609,7 @@ export default function AdminScreen() {
           >
             <View style={styles.kpiItem}>
               <Text style={styles.kpiValue}>{formatNum(users.total)}</Text>
-              <Text style={styles.kpiLabel}>Users</Text>
+              <Text style={styles.kpiLabel}>Utilisateurs</Text>
             </View>
             <View style={styles.kpiDivider} />
             <View style={styles.kpiItem}>
@@ -644,7 +644,7 @@ export default function AdminScreen() {
             <View style={styles.divider} />
             <StatRow icon="🔥" label="Streak moyen" value={`${users.avgStreak} j`} color="#FF6B35" />
             <View style={styles.divider} />
-            <StatRow icon="⭐" label="XP moyen / user" value={formatNum(users.avgXp)} color="#FFD700" />
+            <StatRow icon="⭐" label="XP moyen / utilisateur" value={formatNum(users.avgXp)} color="#FFD700" />
           </GlassCard>
         </Animated.View>
 
@@ -715,7 +715,7 @@ export default function AdminScreen() {
 
         {/* ─ TOP EVENTS BY TYPE ─ */}
         <Animated.View entering={FadeInUp.delay(400).duration(400)}>
-          <SectionHeader title="Top event types" icon="🎯" />
+          <SectionHeader title="Top types d'events" icon="🎯" />
           <GlassCard>
             {Object.entries(events.byType)
               .sort(([, a], [, b]) => b - a)

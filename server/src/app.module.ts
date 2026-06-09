@@ -17,6 +17,7 @@ import { FriendsModule } from './friends/friends.module';
 import { RecommendationsModule } from './recommendations/recommendations.module';
 import { ChallengesModule } from './challenges/challenges.module';
 import { AuthModule } from './auth/auth.module';
+import { JwtAuthGuard } from './auth/jwt-auth.guard';
 
 @Module({
   imports: [
@@ -59,6 +60,10 @@ import { AuthModule } from './auth/auth.module';
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
     },
   ],
 })

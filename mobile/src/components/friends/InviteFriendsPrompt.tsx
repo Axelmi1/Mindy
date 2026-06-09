@@ -31,8 +31,8 @@ export function InviteFriendsPrompt({ visible, referralCode, userId, onDismiss }
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     try {
       await Share.share({
-        message: `🧠 Just started learning on MINDY. Join me with code ${referralCode} → mindy://invite/${referralCode}`,
-        title: 'Join me on Mindy',
+        message: `🧠 Je viens de commencer à apprendre sur MINDY. Rejoins-moi avec le code ${referralCode} → mindy://invite/${referralCode}`,
+        title: 'Rejoins-moi sur Mindy',
       });
     } finally {
       await markSeen();
@@ -44,20 +44,20 @@ export function InviteFriendsPrompt({ visible, referralCode, userId, onDismiss }
       <View style={styles.backdrop}>
         <View style={styles.card}>
           <View style={styles.mascot}><MindyMascot mood="hype" size={100} /></View>
-          <Text style={styles.title}>First lesson done!</Text>
-          <Text style={styles.subtitle}>Bring a friend and both of you earn bonus XP.</Text>
+          <Text style={styles.title}>Première leçon terminée !</Text>
+          <Text style={styles.subtitle}>Invite un ami et gagnez tous les deux des XP bonus.</Text>
 
           <View style={styles.codeBox}>
-            <Text style={styles.codeLabel}>Your referral code</Text>
+            <Text style={styles.codeLabel}>Ton code de parrainage</Text>
             <Text style={styles.code}>{referralCode}</Text>
           </View>
 
           <Pressable style={styles.primary} onPress={share}>
             <Icon name="share" size={18} color="#0D1117" />
-            <Text style={styles.primaryText}>Invite friends</Text>
+            <Text style={styles.primaryText}>Inviter des amis</Text>
           </Pressable>
           <Pressable style={styles.ghost} onPress={markSeen}>
-            <Text style={styles.ghostText}>Maybe later</Text>
+            <Text style={styles.ghostText}>Plus tard</Text>
           </Pressable>
         </View>
       </View>

@@ -39,11 +39,11 @@ export function ExportProgressButton({ isPro, onUpgradePress }: ExportProgressBu
   const handleExport = async () => {
     if (!isPro) {
       Alert.alert(
-        '👑 Pro Feature',
-        'PDF export is available for Pro subscribers. Upgrade to unlock your full progress report.',
+        '👑 Fonctionnalité Pro',
+        'L\'export PDF est réservé aux abonnés Pro. Passe à Pro pour débloquer ton rapport de progression complet.',
         [
-          { text: 'Not now', style: 'cancel' },
-          { text: 'Upgrade to Pro', onPress: onUpgradePress, style: 'default' },
+          { text: 'Plus tard', style: 'cancel' },
+          { text: 'Passer à Pro', onPress: onUpgradePress, style: 'default' },
         ],
       );
       return;
@@ -77,7 +77,7 @@ export function ExportProgressButton({ isPro, onUpgradePress }: ExportProgressBu
       const result = await downloadResumable.downloadAsync();
 
       if (!result?.uri) {
-        throw new Error('Download failed: no URI returned');
+        throw new Error('Échec du téléchargement : aucune URI renvoyée');
       }
 
       setExportState('sharing');
@@ -87,11 +87,11 @@ export function ExportProgressButton({ isPro, onUpgradePress }: ExportProgressBu
       if (canShare) {
         await Sharing.shareAsync(result.uri, {
           mimeType: 'application/pdf',
-          dialogTitle: 'Your Mindy Progress Report',
+          dialogTitle: 'Ton rapport de progression Mindy',
           UTI: 'com.adobe.pdf',
         });
       } else {
-        Alert.alert('PDF Downloaded', `Saved to: ${result.uri}`);
+        Alert.alert('PDF téléchargé', `Enregistré dans : ${result.uri}`);
       }
 
       setExportState('done');
@@ -100,8 +100,8 @@ export function ExportProgressButton({ isPro, onUpgradePress }: ExportProgressBu
       console.error('[ExportProgressButton] Error:', err);
       setExportState('error');
       Alert.alert(
-        'Export Failed',
-        err?.message ?? 'Could not generate your progress report. Please try again.',
+        'Échec de l\'export',
+        err?.message ?? 'Impossible de générer ton rapport de progression. Réessaie.',
       );
       setTimeout(() => setExportState('idle'), 2000);
     }
@@ -125,8 +125,8 @@ export function ExportProgressButton({ isPro, onUpgradePress }: ExportProgressBu
           <ActivityIndicator size="small" color="#0D1117" />
           <Text style={styles.loadingText}>
             {exportState === 'downloading'
-              ? `Generating… ${Math.round(progress * 100)}%`
-              : 'Opening share sheet…'}
+              ? `Génération… ${Math.round(progress * 100)}%`
+              : 'Ouverture du partage…'}
           </Text>
         </View>
       ) : (
@@ -138,12 +138,12 @@ export function ExportProgressButton({ isPro, onUpgradePress }: ExportProgressBu
           />
           <Text style={styles.label}>
             {!isPro
-              ? 'Export Progress PDF  👑'
+              ? 'Exporter ma progression PDF  👑'
               : exportState === 'done'
-              ? 'PDF Ready!'
+              ? 'PDF prêt !'
               : exportState === 'error'
-              ? 'Export Failed — Retry'
-              : 'Export Progress PDF'}
+              ? 'Échec — Réessayer'
+              : 'Exporter ma progression PDF'}
           </Text>
         </View>
       )}

@@ -106,7 +106,7 @@ export default function SettingsScreen() {
         await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
         setTimeout(() => setUsernameSaved(false), 2000);
       } else {
-        setUsernameError((res as any).message || 'Username déjà pris');
+        setUsernameError((res as any).message || 'Pseudo déjà pris');
       }
     } catch {
       setUsernameError('Erreur réseau — réessaie');
@@ -237,12 +237,12 @@ export default function SettingsScreen() {
             <Text style={styles.sectionTitle}>👤 Profil</Text>
 
             <View style={styles.currentUsername}>
-              <Text style={styles.currentUsernameLabel}>Username actuel</Text>
+              <Text style={styles.currentUsernameLabel}>Pseudo actuel</Text>
               <Text style={styles.currentUsernameValue}>@{currentUsername}</Text>
             </View>
 
             <View style={styles.inputGroup}>
-              <Text style={styles.inputLabel}>Changer de username</Text>
+              <Text style={styles.inputLabel}>Changer de pseudo</Text>
               <View style={[
                 styles.inputRow,
                 newUsername.length >= 3 && !usernameError && styles.inputValid,
@@ -251,7 +251,7 @@ export default function SettingsScreen() {
                 <Text style={styles.atSign}>@</Text>
                 <TextInput
                   style={styles.textInput}
-                  placeholder="nouveau_username"
+                  placeholder="nouveau_pseudo"
                   placeholderTextColor="#484F58"
                   value={newUsername}
                   onChangeText={t => {
@@ -278,7 +278,7 @@ export default function SettingsScreen() {
                 disabled={newUsername.length < 3 || isSavingUsername}
               >
                 <Text style={styles.saveBtnText}>
-                  {isSavingUsername ? 'Saving...' : usernameSaved ? '✅ Saved!' : 'Sauvegarder'}
+                  {isSavingUsername ? 'Enregistrement…' : usernameSaved ? '✅ Enregistré !' : 'Enregistrer'}
                 </Text>
               </Pressable>
             </View>
@@ -382,7 +382,7 @@ export default function SettingsScreen() {
                 disabled={isSavingPrefs}
               >
                 <Text style={styles.saveBtnText}>
-                  {isSavingPrefs ? 'Saving...' : prefsSaved ? '✅ Préférences sauvegardées !' : 'Sauvegarder les préférences'}
+                  {isSavingPrefs ? 'Enregistrement…' : prefsSaved ? '✅ Préférences enregistrées !' : 'Enregistrer les préférences'}
                 </Text>
               </Pressable>
             </View>
@@ -466,14 +466,14 @@ export default function SettingsScreen() {
             <Pressable style={styles.linkRow} onPress={() => router.push('/leaderboard')}>
               <View style={styles.settingInfo}>
                 <Icon name="trophy" size={18} color="#FFD700" />
-                <Text style={styles.settingLabel}>Leaderboard</Text>
+                <Text style={styles.settingLabel}>Classement</Text>
               </View>
               <Icon name="chevron-right" size={16} color="#484F58" />
             </Pressable>
             <Pressable style={[styles.linkRow, { borderTopWidth: 1, borderTopColor: '#21262D' }]} onPress={() => router.push('/achievements')}>
               <View style={styles.settingInfo}>
                 <Icon name="star" size={18} color="#58A6FF" />
-                <Text style={styles.settingLabel}>Achievements</Text>
+                <Text style={styles.settingLabel}>Succès</Text>
               </View>
               <Icon name="chevron-right" size={16} color="#484F58" />
             </Pressable>
@@ -484,7 +484,7 @@ export default function SettingsScreen() {
               >
                 <View style={styles.settingInfo}>
                   <Text style={{ fontSize: 18 }}>🛠</Text>
-                  <Text style={[styles.settingLabel, { color: '#FF4444' }]}>Admin Dashboard</Text>
+                  <Text style={[styles.settingLabel, { color: '#FF4444' }]}>Tableau de bord Admin</Text>
                 </View>
                 <Icon name="chevron-right" size={16} color="#484F58" />
               </Pressable>
@@ -504,7 +504,7 @@ export default function SettingsScreen() {
             </Pressable>
           </Animated.View>
 
-          <Text style={styles.version}>MINDY v1.0.0 — Built with 🤖</Text>
+          <Text style={styles.version}>MINDY v1.0.0 — Conçu avec 🤖</Text>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>

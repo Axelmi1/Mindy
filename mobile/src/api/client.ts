@@ -5,6 +5,7 @@
  * Provides typed methods for each endpoint.
  */
 
+import { localizeFlat, localizeNested } from '../data/achievementsFr';
 import type {
   ApiResponse,
   User,
@@ -14,6 +15,9 @@ import type {
   UserProgressWithLesson,
   CreateProgressDto,
   CompleteStepDto,
+  RegisterDto,
+  LoginDto,
+  AuthResponse,
 } from '@mindy/shared';
 
 // ============================================================================
@@ -24,6 +28,15 @@ export const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://192.168.1
 
 // Debug: log the API URL on load
 console.log('[API] Base URL:', API_BASE_URL);
+
+// ── Auth token (in-memory, hydrated from AsyncStorage by useUser at startup) ─
+let authToken: string | null = null;
+export function setAuthToken(token: string | null): void { authToken = token; }
+export function getAuthToken(): string | null { return authToken; }
+
+let onUnauthorized: (() => void) | null = null;
+/** Registered by useUser: called when an authenticated request returns 401. */
+export function setUnauthorizedHandler(fn: (() => void) | null): void { onUnauthorized = fn; }
 
 // ============================================================================
 // Base Fetch Wrapper
@@ -40,11 +53,17 @@ async function fetchApi<T>(
     ...options,
     headers: {
       'Content-Type': 'application/json',
+      ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
       ...options?.headers,
     },
   });
 
   if (!response.ok) {
+    // Only treat 401 as session-expiry when we actually sent a token —
+    // a failed login attempt (no token yet) must NOT trigger a global logout.
+    if (response.status === 401 && authToken) {
+      onUnauthorized?.();
+    }
     const text = await response.text();
     console.log('[API] Error response:', response.status, text.substring(0, 200));
     try {
@@ -63,6 +82,21 @@ async function fetchApi<T>(
     throw e;
   }
 }
+
+// ============================================================================
+// Auth Endpoints
+// ============================================================================
+
+export const authApi = {
+  register: (body: RegisterDto) =>
+    fetchApi<AuthResponse>('/auth/register', { method: 'POST', body: JSON.stringify(body) }),
+  login: (email: string, password: string) =>
+    fetchApi<AuthResponse>('/auth/login', {
+      method: 'POST',
+      body: JSON.stringify({ email, password } as LoginDto),
+    }),
+  me: () => fetchApi<User>('/auth/me'),
+};
 
 // ============================================================================
 // User Endpoints
@@ -643,13 +677,25 @@ export const achievementsApi = {
   /**
    * Get all achievement definitions
    */
-  getAll: () => fetchApi<Achievement[]>('/achievements'),
+  getAll: async () => {
+    const res = await fetchApi<Achievement[]>('/achievements');
+    if (res.success && Array.isArray(res.data)) {
+      res.data = localizeFlat(res.data);
+    }
+    return res;
+  },
 
   /**
    * Get user's achievements (unlocked + locked with progress)
    */
-  getUserAchievements: (userId: string) =>
-    fetchApi<UserAchievementsResponse>(`/achievements/user/${userId}`),
+  getUserAchievements: async (userId: string) => {
+    const res = await fetchApi<UserAchievementsResponse>(`/achievements/user/${userId}`);
+    if (res.success && res.data) {
+      res.data.unlocked = localizeNested(res.data.unlocked);
+      res.data.locked = localizeFlat(res.data.locked);
+    }
+    return res;
+  },
 
   /**
    * Force check achievements (for testing)
@@ -967,6 +1013,7 @@ export const progressExportApi = {
 // ============================================================================
 
 export const api = {
+  auth: authApi,
   users: usersApi,
   lessons: lessonsApi,
   progress: progressApi,

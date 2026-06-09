@@ -159,10 +159,10 @@ export function ReorderStepView({ step, onComplete }: ReorderStepViewProps) {
 
       {/* Selected words area (answer zone) */}
       <View style={styles.answerZone}>
-        <Text style={styles.zoneLabel}>[YOUR_ANSWER]</Text>
+        <Text style={styles.zoneLabel}>[TA_RÉPONSE]</Text>
         <View style={styles.wordRow}>
           {selectedWords.length === 0 ? (
-            <Text style={styles.placeholder}>Tap words below to build your answer</Text>
+            <Text style={styles.placeholder}>Appuie sur les mots ci-dessous pour construire ta réponse</Text>
           ) : (
             selectedWords.map((word, index) => (
               <Animated.View
@@ -185,7 +185,7 @@ export function ReorderStepView({ step, onComplete }: ReorderStepViewProps) {
 
       {/* Available words pool */}
       <View style={styles.wordPool}>
-        <Text style={styles.zoneLabel}>[AVAILABLE_WORDS]</Text>
+        <Text style={styles.zoneLabel}>[MOTS_DISPONIBLES]</Text>
         <View style={styles.wordRow}>
           {availableWords.map((word) => (
             <Animated.View
@@ -219,12 +219,12 @@ export function ReorderStepView({ step, onComplete }: ReorderStepViewProps) {
           <View style={styles.resultRow}>
             <Icon name={isCorrect ? 'check' : 'x'} size={20} color={isCorrect ? '#39FF14' : '#F85149'} />
             <Text style={[styles.resultText, isCorrect ? styles.resultCorrect : styles.resultIncorrect]}>
-              {isCorrect ? 'Perfect!' : 'Not quite right'}
+              {isCorrect ? 'Parfait !' : 'Pas tout à fait'}
             </Text>
           </View>
           {!isCorrect && (
             <Text style={styles.correctAnswer}>
-              Correct: {step.correctOrder.map((i: number) => step.words[i]).join(' ')}
+              Réponse : {step.correctOrder.map((i: number) => step.words[i]).join(' ')}
             </Text>
           )}
         </Animated.View>
@@ -233,7 +233,7 @@ export function ReorderStepView({ step, onComplete }: ReorderStepViewProps) {
       {/* Reset button */}
       {gameState === 'playing' && selectedWords.length > 0 && (
         <Pressable style={styles.resetButton} onPress={handleReset}>
-          <Text style={styles.resetButtonText}>↺ Reset</Text>
+          <Text style={styles.resetButtonText}>↺ Réinitialiser</Text>
         </Pressable>
       )}
     </View>

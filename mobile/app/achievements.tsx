@@ -14,11 +14,11 @@ type FilterType = 'ALL' | 'UNLOCKED' | 'LOCKED';
 
 const CATEGORY_ORDER: AchievementCategory[] = ['LEARNING', 'STREAK', 'XP', 'SOCIAL', 'SPECIAL'];
 const CATEGORY_LABELS: Record<AchievementCategory, string> = {
-  LEARNING: 'Learning',
-  STREAK: 'Streaks',
-  XP: 'XP & Levels',
+  LEARNING: 'Apprentissage',
+  STREAK: 'Séries',
+  XP: 'XP & Niveaux',
   SOCIAL: 'Social',
-  SPECIAL: 'Special',
+  SPECIAL: 'Spécial',
 };
 
 /**
@@ -77,7 +77,7 @@ export default function AchievementsScreen() {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.centerContent}>
-          (<View style={{padding:20,gap:12}}>{[0,1,2,3,4].map(i=><SkeletonBox key={i} height={80} borderRadius={16}/>)}</View>)
+          <View style={{padding:20,gap:12}}>{[0,1,2,3,4].map(i=><SkeletonBox key={i} height={80} borderRadius={16}/>)}</View>
         </View>
       </SafeAreaView>
     );
@@ -91,9 +91,9 @@ export default function AchievementsScreen() {
           <Icon name="arrow-left" size={24} color="#E6EDF3" />
         </Pressable>
         <View style={styles.headerCenter}>
-          <Text style={styles.headerTitle}>Achievements</Text>
+          <Text style={styles.headerTitle}>Succès</Text>
           <Text style={styles.headerSubtitle}>
-            {unlockedCount}/{totalCount} unlocked
+            {unlockedCount}/{totalCount} débloqués
           </Text>
         </View>
         <View style={styles.headerRight} />
@@ -105,14 +105,14 @@ export default function AchievementsScreen() {
           style={[styles.filterTab, filter === 'ALL' && styles.filterTabActive]}
           onPress={() => setFilter('ALL')}
         >
-          <Text style={[styles.filterText, filter === 'ALL' && styles.filterTextActive]}>All</Text>
+          <Text style={[styles.filterText, filter === 'ALL' && styles.filterTextActive]}>Tous</Text>
         </Pressable>
         <Pressable
           style={[styles.filterTab, filter === 'UNLOCKED' && styles.filterTabActive]}
           onPress={() => setFilter('UNLOCKED')}
         >
           <Text style={[styles.filterText, filter === 'UNLOCKED' && styles.filterTextActive]}>
-            Unlocked ({unlockedCount})
+            Débloqués ({unlockedCount})
           </Text>
         </Pressable>
         <Pressable
@@ -120,7 +120,7 @@ export default function AchievementsScreen() {
           onPress={() => setFilter('LOCKED')}
         >
           <Text style={[styles.filterText, filter === 'LOCKED' && styles.filterTextActive]}>
-            Locked
+            Verrouillés
           </Text>
         </Pressable>
       </Animated.View>
@@ -133,7 +133,7 @@ export default function AchievementsScreen() {
       >
         {isLoading ? (
           <View style={styles.loadingContainer}>
-            (<View style={{padding:20,gap:12}}>{[0,1,2,3,4].map(i=><SkeletonBox key={i} height={80} borderRadius={16}/>)}</View>)
+            <View style={{padding:20,gap:12}}>{[0,1,2,3,4].map(i=><SkeletonBox key={i} height={80} borderRadius={16}/>)}</View>
           </View>
         ) : (
           CATEGORY_ORDER.map((category, categoryIndex) => {
@@ -167,9 +167,9 @@ export default function AchievementsScreen() {
         {!isLoading && filter === 'UNLOCKED' && unlockedCount === 0 && (
           <View style={styles.emptyState}>
             <Icon name="trophy" size={48} color="#484F58" />
-            <Text style={styles.emptyTitle}>No achievements yet</Text>
+            <Text style={styles.emptyTitle}>Aucun succès pour l'instant</Text>
             <Text style={styles.emptyText}>
-              Complete lessons and maintain your streak to unlock achievements!
+              Termine des leçons et garde ta série pour débloquer des succès !
             </Text>
           </View>
         )}
