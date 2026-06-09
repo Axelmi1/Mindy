@@ -4,10 +4,10 @@ import { useUser } from '@/hooks/useUser';
 import { Icon } from '@/components/ui/Icon';
 
 /**
- * Root index - sends logged-in users to the main tabs and new users to
- * onboarding. Previously redirected everyone to /onboarding unconditionally
- * (a TODO left over from testing), which forced returning users to redo the
- * whole flow on every cold start.
+ * Root index - sends logged-in users to the main tabs and logged-out users to
+ * /login. The login screen offers a "Commencer à apprendre" CTA that leads to
+ * onboarding, so new users reach onboarding through /login rather than being
+ * redirected there directly at cold start.
  */
 export default function RootIndex() {
   const { isLoading, isLoggedIn } = useUser();
@@ -24,7 +24,7 @@ export default function RootIndex() {
     );
   }
 
-  return <Redirect href={isLoggedIn ? '/(tabs)' : '/onboarding'} />;
+  return <Redirect href={isLoggedIn ? '/(tabs)' : '/login'} />;
 }
 
 const styles = StyleSheet.create({
