@@ -50,7 +50,7 @@ export class AuthService {
     return this.users.findById(userId);
   }
 
-  private issueToken(user: { id: string; username: string }) {
+  private issueToken<U extends { id: string; username: string }>(user: U) {
     const accessToken = this.jwt.sign({ sub: user.id, username: user.username });
     return { accessToken, user };
   }
