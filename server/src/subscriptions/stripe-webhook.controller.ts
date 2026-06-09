@@ -29,6 +29,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { SubscriptionPlan, SubStatus } from '@prisma/client';
 import { AnalyticsService } from '../analytics/analytics.service';
 import { EventType } from '@prisma/client';
+import { Public } from '../auth/public.decorator';
 
 @ApiTags('webhooks')
 @Controller('webhooks')
@@ -47,6 +48,7 @@ export class StripeWebhookController {
     });
   }
 
+  @Public()
   @Post('stripe')
   @HttpCode(HttpStatus.OK)
   @ApiExcludeEndpoint() // Hide from Swagger (raw body endpoint)
