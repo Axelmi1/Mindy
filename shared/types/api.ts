@@ -4,6 +4,7 @@
  */
 
 import type { Domain, Difficulty, LessonContent } from './lesson';
+import type { User } from './user';
 
 // ============================================================================
 // Generic API Response Wrapper
@@ -58,10 +59,33 @@ export interface UpdateLessonDto {
 export interface CreateUserDto {
   username: string;
   email?: string;
+  /** Pre-hashed (bcrypt) password set by the auth/register flow — never plaintext. */
+  password?: string;
   preferredDomain?: 'CRYPTO' | 'FINANCE' | 'BOTH';
   userGoal?: string;
   dailyMinutes?: 5 | 10 | 15;
   reminderHour?: number;
+}
+
+export interface RegisterDto {
+  email: string;
+  /** Plaintext password from the client; hashed (bcrypt) before storage. */
+  password: string;
+  username: string;
+  preferredDomain?: 'CRYPTO' | 'FINANCE' | 'BOTH';
+  userGoal?: string;
+  dailyMinutes?: 5 | 10 | 15;
+  reminderHour?: number;
+}
+
+export interface LoginDto {
+  email: string;
+  password: string;
+}
+
+export interface AuthResponse {
+  accessToken: string;
+  user: User;
 }
 
 export interface UpdateUserDto {

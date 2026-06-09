@@ -6,5 +6,5 @@
  */
 export type { StepType, InfoStep, QuizStep, SwipeStep, SwipeSequenceStep, SwipeCard, ReorderStep, VisualPickStep, Hotspot, MatchPairsStep, MatchPairItem, FillBlankStep, CalculatorStep, ScenarioStep, ScenarioChoice, PricePredictionStep, SpeedRoundStep, SpeedRoundPair, BudgetAllocatorStep, BudgetCategory, NewsImpactStep, FlashcardStep, WordScrambleStep, DragSortStep, DragSortItem, SpotTheScamStep, ScamCard, ConnectDotsStep, ConnectDotsPair, TimelineBuilderStep, TimelineEvent, Candle, LessonStep, LessonContent, Domain, Difficulty, Lesson, } from './lesson';
 export type { User, UserStats, UserProgress, UserProgressWithLesson, } from './user';
-export type { ApiResponse, ApiError, GetLessonsQuery, CreateLessonDto, UpdateLessonDto, CreateUserDto, UpdateUserDto, CreateProgressDto, UpdateProgressDto, CompleteStepDto, } from './api';
+export type { ApiResponse, ApiError, GetLessonsQuery, CreateLessonDto, UpdateLessonDto, CreateUserDto, UpdateUserDto, RegisterDto, LoginDto, AuthResponse, CreateProgressDto, UpdateProgressDto, CompleteStepDto, } from './api';
 //# sourceMappingURL=index.d.ts.map
