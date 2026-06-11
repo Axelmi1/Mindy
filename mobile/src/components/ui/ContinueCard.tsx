@@ -8,7 +8,7 @@ import Animated, {
   withSequence,
   withTiming,
 } from 'react-native-reanimated';
-import { DOMAINS } from '@/data/domains';
+import { domainColor as getDomainColor, domainLabel as getDomainLabel } from '@/data/domains';
 import type { Domain } from '@mindy/shared';
 
 // ============================================================================
@@ -82,7 +82,7 @@ export function ContinueCard({
   const progressBar = '█'.repeat(filledBlocks) + '░'.repeat(emptyBlocks);
 
   // Domain colors
-  const domainColor = DOMAINS[domain].color;
+  const domainColor = getDomainColor(domain);
 
   return (
     <AnimatedPressable
@@ -112,7 +112,7 @@ export function ContinueCard({
           <Text style={styles.continueLabel}>CONTINUER</Text>
           <View style={[styles.domainBadge, { backgroundColor: domainColor + '20' }]}>
             <Text style={[styles.domainText, { color: domainColor }]}>
-              {DOMAINS[domain].label}
+              {getDomainLabel(domain)}
             </Text>
           </View>
         </View>

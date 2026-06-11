@@ -19,3 +19,20 @@ export const DOMAINS: Record<Domain, DomainMeta> = {
 
 /** Ordre d'affichage des domaines dans l'onboarding et le catalogue. */
 export const DOMAIN_ORDER: Domain[] = ['CRYPTO', 'FINANCE', 'TRADING', 'REAL_ESTATE', 'ENTREPRENEURSHIP', 'TAXES'];
+
+const FALLBACK_COLOR = '#8B949E';
+
+/** Couleur du domaine (gris neutre si inconnu). Accepte un string brut (ex: data API). */
+export function domainColor(d: string): string {
+  return DOMAINS[d as Domain]?.color ?? FALLBACK_COLOR;
+}
+
+/** Libellé lisible du domaine (renvoie la valeur brute si inconnue). */
+export function domainLabel(d: string): string {
+  return DOMAINS[d as Domain]?.label ?? d;
+}
+
+/** Icône (emoji) du domaine ('•' si inconnu). */
+export function domainEmoji(d: string): string {
+  return DOMAINS[d as Domain]?.icon ?? '•';
+}

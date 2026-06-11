@@ -6,7 +6,7 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 import { Icon } from './Icon';
-import { DOMAINS } from '@/data/domains';
+import { domainColor as getDomainColor, domainLabel as getDomainLabel } from '@/data/domains';
 import type { Domain } from '@mindy/shared';
 
 interface LessonCardProps {
@@ -48,7 +48,7 @@ export function LessonCard({
     scale.value = withSpring(1, { damping: 15 });
   };
 
-  const domainColor = DOMAINS[domain].color;
+  const domainColor = getDomainColor(domain);
   const progress = stepsCount > 0 ? Math.round((completedSteps / stepsCount) * 100) : 0;
 
   return (
@@ -65,7 +65,7 @@ export function LessonCard({
         {/* Header row */}
         <View style={styles.headerRow}>
           <View style={[styles.domainBadge, { backgroundColor: domainColor + '20' }]}>
-            <Text style={[styles.domainText, { color: domainColor }]}>{DOMAINS[domain].label}</Text>
+            <Text style={[styles.domainText, { color: domainColor }]}>{getDomainLabel(domain)}</Text>
           </View>
           {isCompleted && (
             <View style={styles.completedBadge}>
