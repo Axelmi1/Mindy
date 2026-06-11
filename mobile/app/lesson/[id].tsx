@@ -48,6 +48,7 @@ import {
   ConnectDotsStepView,
   TimelineBuilderStepView,
 } from '@/components/steps';
+import { domainColor } from '@/data/domains';
 
 type ScreenState = 'loading' | 'ready' | 'playing' | 'feedback' | 'completed' | 'error';
 
@@ -534,10 +535,7 @@ export default function LessonScreen() {
             <Text style={styles.lessonTitle}>{lesson.title}</Text>
             <View style={styles.lessonMeta}>
               <View style={[styles.badge, {
-                backgroundColor:
-                  lesson.domain === 'CRYPTO' ? '#39FF14'
-                  : lesson.domain === 'TRADING' ? '#FF8C00'
-                  : '#58A6FF'
+                backgroundColor: domainColor(lesson.domain)
               }]}>
                 <Text style={styles.badgeText}>{lesson.domain}</Text>
               </View>

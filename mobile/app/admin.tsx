@@ -25,6 +25,7 @@ import { analyticsApi } from '@/api/client';
 import { API_BASE_URL } from '@/api/client';
 import { Icon } from '@/components/ui/Icon';
 import { SkeletonBox } from '@/components/ui/SkeletonBox';
+import { domainColor, domainEmoji, domainLabel } from '@/data/domains';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -116,11 +117,11 @@ function SectionHeader({ title, icon }: { title: string; icon: string }) {
 }
 
 function DomainPill({ domain }: { domain: string }) {
-  const color = domain === 'CRYPTO' ? '#F7931A' : domain === 'FINANCE' ? '#39FF14' : '#00BFFF';
+  const color = domainColor(domain);
   return (
     <View style={[styles.domainPill, { borderColor: color + '40', backgroundColor: color + '15' }]}>
       <Text style={[styles.domainPillText, { color }]}>
-        {domain === 'CRYPTO' ? '₿' : domain === 'FINANCE' ? '📈' : '⚡'} {domain}
+        {domainEmoji(domain)} {domainLabel(domain)}
       </Text>
     </View>
   );

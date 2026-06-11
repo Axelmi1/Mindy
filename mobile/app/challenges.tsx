@@ -18,12 +18,7 @@ import * as Haptics from 'expo-haptics';
 import { challengesApi, LessonChallenge } from '@/api/client';
 import { useUser } from '@/hooks/useUser';
 import { Icon } from '@/components/ui/Icon';
-
-const DOMAIN_COLORS: Record<string, string> = {
-  CRYPTO: '#F7931A',
-  FINANCE: '#39FF14',
-  TRADING: '#00CFFF',
-};
+import { domainColor } from '@/data/domains';
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; emoji: string }> = {
   PENDING:   { label: 'En attente',  color: '#FFD700',  emoji: '⏳' },
@@ -49,7 +44,7 @@ function ChallengeCard({
   const [isLoading, setIsLoading] = useState(false);
   const [isRematchLoading, setIsRematchLoading] = useState(false);
   const status = STATUS_CONFIG[challenge.status] ?? STATUS_CONFIG.PENDING;
-  const domainColor = DOMAIN_COLORS[challenge.lesson?.domain ?? ''] ?? '#39FF14';
+  const domainColorValue = domainColor(challenge.lesson?.domain ?? '');
 
   const opponent = mode === 'received' ? challenge.challenger : challenge.challenged;
 
@@ -98,12 +93,12 @@ function ChallengeCard({
     <Animated.View entering={FadeInDown.delay(index * 60).springify()}>
       <View style={styles.card}>
         {/* Domain accent */}
-        <View style={[styles.cardAccent, { backgroundColor: domainColor }]} />
+        <View style={[styles.cardAccent, { backgroundColor: domainColorValue }]} />
 
         {/* Header */}
         <View style={styles.cardHeader}>
           <View style={styles.opponentInfo}>
-            <View style={[styles.avatar, { borderColor: domainColor }]}>
+            <View style={[styles.avatar, { borderColor: domainColorValue }]}>
               <Text style={styles.avatarLetter}>
                 {opponent?.username?.[0]?.toUpperCase() ?? '?'}
               </Text>
@@ -123,8 +118,8 @@ function ChallengeCard({
 
         {/* Lesson info */}
         <View style={styles.lessonInfo}>
-          <View style={[styles.domainTag, { backgroundColor: domainColor + '22', borderColor: domainColor }]}>
-            <Text style={[styles.domainText, { color: domainColor }]}>
+          <View style={[styles.domainTag, { backgroundColor: domainColorValue + '22', borderColor: domainColorValue }]}>
+            <Text style={[styles.domainText, { color: domainColorValue }]}>
               {challenge.lesson?.domain ?? '—'}
             </Text>
           </View>
