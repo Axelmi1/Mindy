@@ -127,6 +127,9 @@ export class WeeklyRecapService {
       CRYPTO: 0,
       FINANCE: 0,
       TRADING: 0,
+      REAL_ESTATE: 0,
+      ENTREPRENEURSHIP: 0,
+      TAXES: 0,
     };
     for (const ev of thisWeekEvents) {
       const domain = this.extractDomain(ev.eventData);
@@ -293,7 +296,7 @@ export class WeeklyRecapService {
       lessonsThisWeek: 0,
       activeDays: 0,
       bestDay: null,
-      domainBreakdown: { CRYPTO: 0, FINANCE: 0, TRADING: 0 },
+      domainBreakdown: { CRYPTO: 0, FINANCE: 0, TRADING: 0, REAL_ESTATE: 0, ENTREPRENEURSHIP: 0, TAXES: 0 },
       dailyActivity,
       xpLastWeek: 0,
       lessonsLastWeek: 0,

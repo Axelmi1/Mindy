@@ -25,7 +25,7 @@ export interface User {
  * Per-domain lesson completion breakdown
  */
 export interface DomainStats {
-    domain: 'CRYPTO' | 'FINANCE' | 'TRADING';
+    domain: 'CRYPTO' | 'FINANCE' | 'TRADING' | 'REAL_ESTATE' | 'ENTREPRENEURSHIP' | 'TAXES';
     completed: number;
     total: number;
     label: string;

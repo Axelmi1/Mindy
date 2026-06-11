@@ -223,6 +223,9 @@ enum Domain {
   CRYPTO
   FINANCE
   TRADING
+  REAL_ESTATE
+  ENTREPRENEURSHIP
+  TAXES
 }
 
 enum Difficulty {
