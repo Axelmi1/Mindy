@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { MindyMood } from '@/components/mindy/MindyMascot';
+import type { Domain as LessonDomain } from '@mindy/shared';
 
 export type StepId =
   | 'hello' | 'level' | 'domain' | 'goal' | 'time'
@@ -14,7 +15,7 @@ export const STEP_ORDER: StepId[] = [
 
 export type Level = 'beginner' | 'intermediate' | 'advanced';
 
-export type Domain = 'CRYPTO' | 'FINANCE' | 'BOTH';
+export type Domain = LessonDomain | 'BOTH';
 
 interface DemoAnswer { questionId: string; correct: boolean }
 

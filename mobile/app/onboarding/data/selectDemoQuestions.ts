@@ -1,5 +1,5 @@
-import { demoQuestions, DemoQuestion, Domain, Difficulty } from './demoQuestions';
-import { Level } from '../hooks/useOnboardingStore';
+import { demoQuestions, DemoQuestion, Difficulty } from './demoQuestions';
+import { Level, Domain } from '../hooks/useOnboardingStore';
 
 const ORDER: Difficulty[] = ['beginner', 'intermediate', 'advanced'];
 
@@ -14,7 +14,11 @@ export function levelToDifficulty(level: Level | null): Difficulty {
  * correspondent au niveau, puis en complétant avec les autres difficultés.
  */
 export function selectDemoQuestions(domain: Domain | null, level: Level | null): DemoQuestion[] {
-  const pool = demoQuestions[domain ?? 'CRYPTO'] ?? demoQuestions.CRYPTO;
+  const pool =
+    demoQuestions[domain ?? 'CRYPTO'] ??
+    demoQuestions.FINANCE ??
+    demoQuestions.CRYPTO ??
+    [];
   const target = levelToDifficulty(level);
 
   // Ordre de préférence : niveau cible, puis les autres difficultés.

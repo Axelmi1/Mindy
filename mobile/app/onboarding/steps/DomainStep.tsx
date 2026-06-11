@@ -2,11 +2,16 @@ import React, { useEffect } from 'react';
 import { MindyTurn } from '../components/MindyTurn';
 import { AnswerCards } from '../components/AnswerCards';
 import { useOnboardingStore, Domain } from '../hooks/useOnboardingStore';
+import { DOMAINS, DOMAIN_ORDER } from '@/data/domains';
 
 const OPTIONS = [
-  { id: 'CRYPTO', label: 'Crypto', sublabel: 'Bitcoin, blockchain, DeFi', icon: '⛓️' },
-  { id: 'FINANCE', label: 'Finance', sublabel: 'Investir, budget, bourse', icon: '💰' },
-  { id: 'BOTH', label: 'Les deux', sublabel: 'Pourquoi choisir ?', icon: '✨' },
+  ...DOMAIN_ORDER.map((d) => ({
+    id: d,
+    label: DOMAINS[d].label,
+    sublabel: DOMAINS[d].sublabel,
+    icon: DOMAINS[d].icon,
+  })),
+  { id: 'BOTH' as Domain, label: 'Un peu de tout', sublabel: 'Pourquoi choisir ?', icon: '✨' },
 ];
 
 export function DomainStep() {
