@@ -1,8 +1,9 @@
-import React, { useEffect, useState, useCallback, useRef } from 'react';
+import React, { useEffect, useState, useCallback, useRef, useMemo } from 'react';
 import {
   View,
   Text,
   ScrollView,
+  TouchableOpacity,
   Pressable,
   StyleSheet,
   TextInput,
@@ -19,8 +20,6 @@ import Animated, {
   FadeInDown,
   FadeIn,
   ZoomIn,
-  FadeInUp,
-  FadeOut,
   useSharedValue,
   useAnimatedStyle,
   withTiming,
@@ -29,7 +28,8 @@ import Animated, {
   runOnJS,
 } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
-import type { Lesson, UserProgressWithLesson } from '@mindy/shared';
+import type { Lesson, UserProgressWithLesson, Domain } from '@mindy/shared';
+import { DOMAINS, DOMAIN_ORDER, domainColor, domainEmoji, domainLabel } from '@/data/domains';
 import { lessonsApi, progressApi } from '@/api/client';
 import { useUser } from '@/hooks/useUser';
 import { Icon } from '@/components/ui/Icon';
@@ -41,7 +41,6 @@ if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental
   UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
-type Domain = 'CRYPTO' | 'FINANCE' | 'TRADING';
 type DifficultyFilter = 'ALL' | 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED';
 type ViewMode = 'path' | 'list';
 
@@ -116,17 +115,17 @@ function MasterQuizUnlockToast({
 
   if (!visible) return null;
 
-  const domainLabel = domain === 'CRYPTO' ? '₿ Crypto' : domain === 'FINANCE' ? '💰 Finance' : '📊 Trading';
-  const domainColor = domain === 'CRYPTO' ? '#F7931A' : domain === 'FINANCE' ? '#39FF14' : '#58A6FF';
+  const toastDomainLabel = `${domainEmoji(domain)} ${domainLabel(domain)}`;
+  const toastDomainColor = domainColor(domain);
 
   return (
     <Animated.View style={[toastStyles.container, animStyle]}>
-      <View style={[toastStyles.inner, { borderColor: domainColor + '60' }]}>
+      <View style={[toastStyles.inner, { borderColor: toastDomainColor + '60' }]}>
         <Text style={toastStyles.trophyEmoji}>🏆</Text>
         <View style={toastStyles.textBlock}>
           <Text style={[toastStyles.title, { color: '#FFD700' }]}>Quiz final débloqué !</Text>
           <Text style={toastStyles.subtitle}>
-            Tu as terminé toutes les leçons {domainLabel} — le test ultime t'attend !
+            Tu as terminé toutes les leçons {toastDomainLabel} — le test ultime t'attend !
           </Text>
         </View>
         <Pressable onPress={onDismiss} style={toastStyles.closeBtn}>
@@ -402,67 +401,6 @@ function LessonPath({
 // ─────────────────────────────────────────────────────────────────────────────
 // MAIN SCREEN
 // ─────────────────────────────────────────────────────────────────────────────
-// ─── AI Reco Card ─────────────────────────────────────────────────────────────
-function AiRecoCard({ lessonId, title, domain, reason, xpReward, isWeak }: {
-  lessonId: string; title: string; domain: string;
-  reason: string; xpReward: number; isWeak: boolean;
-}) {
-  const domainColor =
-    domain === 'CRYPTO' ? '#39FF14' : domain === 'TRADING' ? '#FF8C00' : '#58A6FF';
-  const domainIcon =
-    domain === 'CRYPTO' ? '₿' : domain === 'TRADING' ? '📊' : '💰';
-
-  return (
-    <Pressable
-      style={[aiRecoStyles.card, isWeak && aiRecoStyles.cardWeak]}
-      onPress={() => router.push(`/lesson/${lessonId}`)}
-    >
-      <View style={aiRecoStyles.left}>
-        <View style={[aiRecoStyles.domainBadge, { backgroundColor: domainColor + '20' }]}>
-          <Text style={[aiRecoStyles.domainBadgeText, { color: domainColor }]}>
-            {domainIcon} {domain}
-          </Text>
-        </View>
-        <Text style={aiRecoStyles.title} numberOfLines={2}>{title}</Text>
-        <Text style={aiRecoStyles.reason} numberOfLines={1}>🤖 {reason}</Text>
-      </View>
-      <View style={aiRecoStyles.right}>
-        <Text style={aiRecoStyles.xp}>+{xpReward}</Text>
-        <Text style={aiRecoStyles.xpLabel}>XP</Text>
-        {isWeak && <Text style={aiRecoStyles.weakBadge}>⚠️ point faible</Text>}
-      </View>
-    </Pressable>
-  );
-}
-
-const aiRecoStyles = StyleSheet.create({
-  card: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#161B22',
-    borderRadius: 12,
-    padding: 12,
-    marginRight: 12,
-    width: 220,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.08)',
-    gap: 8,
-  },
-  cardWeak: { borderColor: '#FFD70040' },
-  left: { flex: 1, gap: 6 },
-  domainBadge: { borderRadius: 6, paddingHorizontal: 6, paddingVertical: 2, alignSelf: 'flex-start' },
-  domainBadgeText: { fontSize: 11, fontWeight: '700' },
-  title: { color: '#E6EDF3', fontSize: 13, fontWeight: '700', lineHeight: 18 },
-  reason: { color: '#8B949E', fontSize: 11 },
-  right: { alignItems: 'center', gap: 2, minWidth: 40 },
-  xp: { color: '#39FF14', fontSize: 16, fontWeight: '800' },
-  xpLabel: { color: '#8B949E', fontSize: 11 },
-  weakBadge: { fontSize: 10, marginTop: 2 },
-});
-
-// ─────────────────────────────────────────────────────────────────────────────
-// MAIN SCREEN
-// ─────────────────────────────────────────────────────────────────────────────
 /** AsyncStorage keys for master quiz unlock toast "seen" state */
 const MASTER_QUIZ_SEEN_KEY = (domain: string) =>
   `@mindy/master_quiz_unlock_seen_${domain.toLowerCase()}`;
@@ -575,20 +513,23 @@ export default function LearnScreen() {
     return filtered;
   }, [difficultyFilter, searchQuery]);
 
-  const cryptoNodes = getDomainNodes('CRYPTO');
-  const financeNodes = getDomainNodes('FINANCE');
-  const tradingNodes = getDomainNodes('TRADING');
+  const activeNodes = useMemo(() => getDomainNodes(selectedDomain), [getDomainNodes, selectedDomain]);
+
+  const lessonCountByDomain = useMemo(() => {
+    const counts = {} as Record<Domain, number>;
+    for (const d of DOMAIN_ORDER) counts[d] = 0;
+    for (const l of lessons) {
+      if (counts[l.domain as Domain] !== undefined) counts[l.domain as Domain]++;
+    }
+    return counts;
+  }, [lessons]);
 
   // ── Master Quiz unlock toast ───────────────────────────────────────────────
   // Check if the selected domain's master quiz just became available for the first time
   useEffect(() => {
     if (isLoading || !userId) return;
 
-    const nodesForDomain = selectedDomain === 'CRYPTO' ? cryptoNodes
-      : selectedDomain === 'TRADING' ? tradingNodes
-      : financeNodes;
-
-    const hasMasterQuizAvailable = nodesForDomain.some(
+    const hasMasterQuizAvailable = activeNodes.some(
       n => n.lesson.isMasterQuiz && n.status === 'available',
     );
 
@@ -603,19 +544,12 @@ export default function LearnScreen() {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
       }
     });
-  }, [isLoading, userId, selectedDomain, cryptoNodes, financeNodes, tradingNodes]);
+  }, [isLoading, userId, selectedDomain, activeNodes]);
 
-  const rawNodes =
-    selectedDomain === 'CRYPTO' ? cryptoNodes
-    : selectedDomain === 'TRADING' ? tradingNodes
-    : financeNodes;
-  const filteredNodes = getFilteredNodes(rawNodes);
+  const filteredNodes = getFilteredNodes(activeNodes);
 
-  const completedCount = rawNodes.filter(n => n.status === 'completed').length;
-  const accentColor =
-    selectedDomain === 'CRYPTO' ? '#39FF14'
-    : selectedDomain === 'TRADING' ? '#FF8C00'
-    : '#58A6FF';
+  const completedCount = activeNodes.filter(n => n.status === 'completed').length;
+  const accentColor = domainColor(selectedDomain);
 
   const handleDomainChange = async (domain: Domain) => {
     if (domain === selectedDomain) return;
@@ -672,7 +606,7 @@ export default function LearnScreen() {
         <View>
           <Text style={styles.headerTitle}>Apprendre</Text>
           <Text style={styles.headerSub}>
-            {completedCount}/{rawNodes.length} complétées
+            {completedCount}/{activeNodes.length} complétées
           </Text>
         </View>
         <Pressable
@@ -717,41 +651,34 @@ export default function LearnScreen() {
       )}
 
       {/* Domain Tabs */}
-      <View style={styles.tabs}>
-        <Pressable
-          style={[styles.tab, selectedDomain === 'CRYPTO' && styles.tabActiveCrypto]}
-          onPress={() => handleDomainChange('CRYPTO')}
-        >
-          <Text style={[styles.tabText, selectedDomain === 'CRYPTO' && styles.tabTextActiveCrypto]}>
-            ₿ Crypto
-          </Text>
-          <Text style={[styles.tabCount, selectedDomain === 'CRYPTO' && { color: '#39FF14' }]}>
-            {cryptoNodes.length}
-          </Text>
-        </Pressable>
-        <Pressable
-          style={[styles.tab, selectedDomain === 'TRADING' && styles.tabActiveTrading]}
-          onPress={() => handleDomainChange('TRADING')}
-        >
-          <Text style={[styles.tabText, selectedDomain === 'TRADING' && styles.tabTextActiveTrading]}>
-            📊 Trading
-          </Text>
-          <Text style={[styles.tabCount, selectedDomain === 'TRADING' && { color: '#FF8C00' }]}>
-            {tradingNodes.length}
-          </Text>
-        </Pressable>
-        <Pressable
-          style={[styles.tab, selectedDomain === 'FINANCE' && styles.tabActiveFinance]}
-          onPress={() => handleDomainChange('FINANCE')}
-        >
-          <Text style={[styles.tabText, selectedDomain === 'FINANCE' && styles.tabTextActiveFinance]}>
-            💰 Finance
-          </Text>
-          <Text style={[styles.tabCount, selectedDomain === 'FINANCE' && { color: '#58A6FF' }]}>
-            {financeNodes.length}
-          </Text>
-        </Pressable>
-      </View>
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.tabsRow}
+        style={styles.tabsScroll}
+      >
+        {DOMAIN_ORDER.map((d) => {
+          const active = selectedDomain === d;
+          const color = domainColor(d);
+          return (
+            <TouchableOpacity
+              key={d}
+              onPress={() => handleDomainChange(d)}
+              activeOpacity={0.8}
+              accessibilityRole="button"
+              accessibilityLabel={DOMAINS[d].label}
+              style={[styles.tab, active && { borderColor: color, backgroundColor: color + '20' }]}
+            >
+              <Text style={[styles.tabText, active && { color }]}>
+                {domainEmoji(d)} {DOMAINS[d].label}
+              </Text>
+              <Text style={[styles.tabCount, active && { color }]}>
+                {lessonCountByDomain[d] ?? 0}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
+      </ScrollView>
 
       {/* Admin Mode Banner */}
       {isAdminMode && (
@@ -769,11 +696,19 @@ export default function LearnScreen() {
 
       {/* PATH VIEW */}
       {viewMode === 'path' && (
-        <LessonPath
-          nodes={filteredNodes}
-          accentColor={accentColor}
-          onPress={handleLessonPress}
-        />
+        activeNodes.length === 0 ? (
+          <View style={styles.domainEmpty}>
+            <Text style={styles.domainEmptyIcon}>🚧</Text>
+            <Text style={styles.domainEmptyTitle}>Bientôt disponible</Text>
+            <Text style={styles.domainEmptySub}>Les premières leçons de ce domaine arrivent.</Text>
+          </View>
+        ) : (
+          <LessonPath
+            nodes={filteredNodes}
+            accentColor={accentColor}
+            onPress={handleLessonPress}
+          />
+        )
       )}
 
       {/* LIST VIEW */}
@@ -939,18 +874,14 @@ const styles = StyleSheet.create({
     borderRadius: 20, borderWidth: 1, backgroundColor: 'rgba(255,255,255,0.04)',
   },
   viewToggleText: { fontSize: 12, fontWeight: '700', fontFamily: 'JetBrainsMono' },
-  tabs: {
-    flexDirection: 'row', marginHorizontal: 20, marginBottom: 16,
-    backgroundColor: '#161B22', borderRadius: 12, padding: 4,
+  tabsScroll: { marginBottom: 16 },
+  tabsRow: { gap: 8, paddingHorizontal: 16 },
+  tab: {
+    paddingVertical: 11, paddingHorizontal: 14, alignItems: 'center', borderRadius: 10,
+    flexDirection: 'row', justifyContent: 'center', gap: 8,
+    backgroundColor: '#161B22', borderWidth: 1.5, borderColor: 'transparent',
   },
-  tab: { flex: 1, paddingVertical: 11, alignItems: 'center', borderRadius: 10, flexDirection: 'row', justifyContent: 'center', gap: 8 },
-  tabActiveCrypto: { backgroundColor: 'rgba(57,255,20,0.12)' },
-  tabActiveFinance: { backgroundColor: 'rgba(88,166,255,0.12)' },
   tabText: { fontSize: 13, fontWeight: '600', color: '#8B949E', fontFamily: 'Inter' },
-  tabTextActiveCrypto: { color: '#39FF14' },
-  tabTextActiveFinance: { color: '#58A6FF' },
-  tabTextActiveTrading: { color: '#FF8C00' },
-  tabActiveTrading: { backgroundColor: 'rgba(255,140,0,0.12)' },
   tabCount: {
     fontSize: 11, fontWeight: '700', fontFamily: 'JetBrainsMono', color: '#484F58',
     backgroundColor: '#21262D', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 8,
@@ -1098,21 +1029,11 @@ const styles = StyleSheet.create({
   },
   practiceBtnText: { fontSize: 11, fontWeight: '700', fontFamily: 'JetBrainsMono' },
 
-  // AI Recommendations
-  aiSection: {
-    marginHorizontal: 20,
-    marginBottom: 16,
-    backgroundColor: 'rgba(57,255,20,0.04)',
-    borderRadius: 14,
-    borderWidth: 1,
-    borderColor: 'rgba(57,255,20,0.12)',
-    padding: 14,
-    gap: 10,
-  },
-  aiHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  aiTitle: { color: '#E6EDF3', fontSize: 14, fontWeight: '700' },
-  aiSub: { color: '#8B949E', fontSize: 12 },
-  aiMessage: { color: '#8B949E', fontSize: 12, fontStyle: 'italic', marginTop: 4 },
+  // ── Domain Empty State ──────────────────────────────────────────────────
+  domainEmpty: { alignItems: 'center', paddingVertical: 64, paddingHorizontal: 32 },
+  domainEmptyIcon: { fontSize: 40, marginBottom: 12 },
+  domainEmptyTitle: { fontFamily: 'Inter', fontSize: 18, fontWeight: '700', color: '#E6EDF3', marginBottom: 6 },
+  domainEmptySub: { fontFamily: 'Inter', fontSize: 14, color: '#8B949E', textAlign: 'center' },
 
   // ── Combo Banner ────────────────────────────────────────────────────────
   comboBanner: {
