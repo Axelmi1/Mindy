@@ -8,6 +8,8 @@ import Animated, {
   withSequence,
   withTiming,
 } from 'react-native-reanimated';
+import { DOMAINS } from '@/data/domains';
+import type { Domain } from '@mindy/shared';
 
 // ============================================================================
 // Types
@@ -19,7 +21,7 @@ interface ContinueCardProps {
   /** Progress percentage (0-100) */
   progress: number;
   /** Domain category */
-  domain: 'CRYPTO' | 'FINANCE';
+  domain: Domain;
   /** Press handler */
   onPress: () => void;
 }
@@ -80,7 +82,7 @@ export function ContinueCard({
   const progressBar = '█'.repeat(filledBlocks) + '░'.repeat(emptyBlocks);
 
   // Domain colors
-  const domainColor = domain === 'CRYPTO' ? '#39FF14' : '#58A6FF';
+  const domainColor = DOMAINS[domain].color;
 
   return (
     <AnimatedPressable
@@ -110,7 +112,7 @@ export function ContinueCard({
           <Text style={styles.continueLabel}>CONTINUER</Text>
           <View style={[styles.domainBadge, { backgroundColor: domainColor + '20' }]}>
             <Text style={[styles.domainText, { color: domainColor }]}>
-              {domain}
+              {DOMAINS[domain].label}
             </Text>
           </View>
         </View>

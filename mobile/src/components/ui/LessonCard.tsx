@@ -6,11 +6,13 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 import { Icon } from './Icon';
+import { DOMAINS } from '@/data/domains';
+import type { Domain } from '@mindy/shared';
 
 interface LessonCardProps {
   id: string;
   title: string;
-  domain: 'CRYPTO' | 'FINANCE';
+  domain: Domain;
   xpReward: number;
   stepsCount: number;
   completedSteps?: number;
@@ -46,7 +48,7 @@ export function LessonCard({
     scale.value = withSpring(1, { damping: 15 });
   };
 
-  const domainColor = domain === 'CRYPTO' ? '#39FF14' : '#58A6FF';
+  const domainColor = DOMAINS[domain].color;
   const progress = stepsCount > 0 ? Math.round((completedSteps / stepsCount) * 100) : 0;
 
   return (
@@ -63,7 +65,7 @@ export function LessonCard({
         {/* Header row */}
         <View style={styles.headerRow}>
           <View style={[styles.domainBadge, { backgroundColor: domainColor + '20' }]}>
-            <Text style={[styles.domainText, { color: domainColor }]}>{domain}</Text>
+            <Text style={[styles.domainText, { color: domainColor }]}>{DOMAINS[domain].label}</Text>
           </View>
           {isCompleted && (
             <View style={styles.completedBadge}>

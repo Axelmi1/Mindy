@@ -6,7 +6,8 @@ import { useFocusEffect } from '@react-navigation/native';
 import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
 import Animated, { FadeInDown, FadeInRight } from 'react-native-reanimated';
-import type { Lesson, UserProgressWithLesson, UserStats } from '@mindy/shared';
+import type { Lesson, UserProgressWithLesson, UserStats, Domain } from '@mindy/shared';
+import { DOMAINS } from '@/data/domains';
 import { lessonsApi, progressApi, usersApi, dailyChallengeApi, challengesApi, DailyChallenge, LessonChallenge } from '@/api/client';
 import { useUser } from '@/hooks/useUser';
 import { useAchievements } from '@/hooks/useAchievements';
@@ -25,7 +26,7 @@ interface CurrentLesson {
   id: string;
   title: string;
   progress: number;
-  domain: 'CRYPTO' | 'FINANCE' | 'TRADING';
+  domain: Domain;
   totalSteps: number;
   completedSteps: number;
 }
@@ -415,12 +416,7 @@ export default function HomeScreen() {
               </View>
             </View>
             {pendingChallenges.map((ch, idx) => {
-              const domainColor =
-                ch.lesson?.domain === 'CRYPTO'
-                  ? '#F7931A'
-                  : ch.lesson?.domain === 'FINANCE'
-                  ? '#39FF14'
-                  : '#58A6FF';
+              const domainColor = DOMAINS[(ch.lesson?.domain ?? '') as Domain]?.color ?? '#8B949E';
               return (
                 <Animated.View
                   key={ch.id}
@@ -452,7 +448,7 @@ export default function HomeScreen() {
                     {ch.lesson && (
                       <View style={[styles.challengeDomain, { borderColor: domainColor + '60' }]}>
                         <Text style={[styles.challengeDomainText, { color: domainColor }]}>
-                          {ch.lesson.domain}
+                          {DOMAINS[(ch.lesson.domain) as Domain]?.label ?? ch.lesson.domain}
                         </Text>
                       </View>
                     )}
@@ -519,7 +515,7 @@ export default function HomeScreen() {
               <View style={styles.continueHeader}>
                 <Text style={styles.continueLabel}>CONTINUER</Text>
                 <View style={styles.domainBadge}>
-                  <Text style={styles.domainText}>{currentLesson.domain}</Text>
+                  <Text style={styles.domainText}>{DOMAINS[currentLesson.domain]?.label ?? currentLesson.domain}</Text>
                 </View>
               </View>
               <Text style={styles.continueTitle}>{currentLesson.title}</Text>
@@ -552,10 +548,7 @@ export default function HomeScreen() {
             <View style={styles.domainBreakdown}>
               {userStats.domainStats.map((ds) => {
                 const pct = ds.total > 0 ? Math.round((ds.completed / ds.total) * 100) : 0;
-                const domainColor =
-                  ds.domain === 'CRYPTO' ? '#F7931A'
-                  : ds.domain === 'FINANCE' ? '#39FF14'
-                  : '#00CFFF'; // TRADING
+                const domainColor = DOMAINS[ds.domain as Domain]?.color ?? '#8B949E';
                 return (
                   <View key={ds.domain} style={styles.domainRow}>
                     <View style={styles.domainRowLeft}>

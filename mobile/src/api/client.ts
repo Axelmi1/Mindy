@@ -18,6 +18,7 @@ import type {
   RegisterDto,
   LoginDto,
   AuthResponse,
+  Domain,
 } from '@mindy/shared';
 
 // ============================================================================
@@ -230,7 +231,7 @@ export const lessonsApi = {
   /**
    * Get lessons by domain
    */
-  getByDomain: (domain: 'CRYPTO' | 'FINANCE', userId?: string) => {
+  getByDomain: (domain: Domain, userId?: string) => {
     const query = userId ? `?userId=${userId}` : '';
     return fetchApi<Lesson[]>(`/lessons/domain/${domain}${query}`);
   },
