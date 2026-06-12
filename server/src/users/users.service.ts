@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException, BadRequestException, ConflictException } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { Prisma, EventType } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { AnalyticsService } from '../analytics/analytics.service';
@@ -370,7 +370,7 @@ export class UsersService {
             'CHALLENGE_COMPLETED',
             'XP_EARNED',
             'COMBO_BONUS',
-          ] as any,
+          ] satisfies EventType[],
         },
       },
       orderBy: { timestamp: 'desc' },
