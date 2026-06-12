@@ -462,11 +462,14 @@ export class UsersService {
    * Get completed + total lesson counts per domain
    */
   private async getDomainStats(userId: string) {
-    const domains = ['CRYPTO', 'FINANCE', 'TRADING'] as const;
+    const domains = ['CRYPTO', 'FINANCE', 'TRADING', 'REAL_ESTATE', 'ENTREPRENEURSHIP', 'TAXES'] as const;
     const domainMeta: Record<string, { label: string; emoji: string }> = {
       CRYPTO: { label: 'Crypto', emoji: '₿' },
       FINANCE: { label: 'Finance', emoji: '📈' },
       TRADING: { label: 'Trading', emoji: '📊' },
+      REAL_ESTATE: { label: 'Immobilier', emoji: '🏠' },
+      ENTREPRENEURSHIP: { label: 'Entrepreneuriat', emoji: '🚀' },
+      TAXES: { label: 'Impôts', emoji: '🧾' },
     };
 
     const results = await Promise.all(

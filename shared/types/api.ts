@@ -61,7 +61,7 @@ export interface CreateUserDto {
   email?: string;
   /** Pre-hashed (bcrypt) password set by the auth/register flow — never plaintext. */
   password?: string;
-  preferredDomain?: 'CRYPTO' | 'FINANCE' | 'BOTH';
+  preferredDomain?: 'CRYPTO' | 'FINANCE' | 'TRADING' | 'REAL_ESTATE' | 'ENTREPRENEURSHIP' | 'TAXES' | 'BOTH';
   userGoal?: string;
   dailyMinutes?: 5 | 10 | 15;
   reminderHour?: number;
@@ -72,7 +72,7 @@ export interface RegisterDto {
   /** Plaintext password from the client; hashed (bcrypt) before storage. */
   password: string;
   username: string;
-  preferredDomain?: 'CRYPTO' | 'FINANCE' | 'BOTH';
+  preferredDomain?: 'CRYPTO' | 'FINANCE' | 'TRADING' | 'REAL_ESTATE' | 'ENTREPRENEURSHIP' | 'TAXES' | 'BOTH';
   userGoal?: string;
   dailyMinutes?: 5 | 10 | 15;
   reminderHour?: number;

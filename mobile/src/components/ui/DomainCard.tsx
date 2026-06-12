@@ -29,6 +29,10 @@ interface DomainCardProps {
 const domainIcons: Record<string, IconName> = {
   CRYPTO: 'bitcoin',
   FINANCE: 'dollar',
+  TRADING: 'trending-up',
+  REAL_ESTATE: 'home',
+  ENTREPRENEURSHIP: 'rocket',
+  TAXES: 'pie-chart',
 };
 
 // ============================================================================

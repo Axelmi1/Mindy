@@ -20,6 +20,7 @@ import { LeagueBadge } from '@/components/ui/LeagueBadge';
 import { getLeague, xpToNextLeague } from '@/utils/league';
 import { PaywallModal } from '@/components/ui/PaywallModal';
 import { ExportProgressButton } from '@/components/ui/ExportProgressButton';
+import { domainColor } from '@/data/domains';
 
 // Glass Card Component
 function GlassCard({ children, style, borderColor }: {
@@ -625,12 +626,7 @@ export default function ProfileScreen() {
               <View style={styles.domainList}>
                 {userStats.domainStats.map((ds) => {
                   const pct = ds.total > 0 ? Math.min((ds.completed / ds.total) * 100, 100) : 0;
-                  const color =
-                    ds.domain === 'CRYPTO'
-                      ? '#F7931A'
-                      : ds.domain === 'FINANCE'
-                      ? '#39FF14'
-                      : '#58A6FF';
+                  const color = domainColor(ds.domain);
                   return (
                     <View key={ds.domain} style={styles.domainRow}>
                       <View style={styles.domainRowHeader}>

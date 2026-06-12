@@ -33,6 +33,7 @@ import { MindyMessage } from '@/components/MindyMessage';
 import { Icon } from '@/components/ui/Icon';
 import { Confetti, XpCounter, StreakFire } from '@/components/animations';
 import { SkeletonBox } from '@/components/ui/SkeletonBox';
+import { domainColor as getDomainColor, domainEmoji } from '@/data/domains';
 
 const { width: SW } = Dimensions.get('window');
 
@@ -138,8 +139,7 @@ export default function DailyChallengeScreen() {
     } catch {}
   }, [userId, challenge]);
 
-  const domainColor = (d?: string) =>
-    d === 'CRYPTO' ? '#39FF14' : d === 'FINANCE' ? '#58A6FF' : '#FF8C00';
+  const domainColor = (d?: string) => getDomainColor(d ?? '');
 
   // ─── LOADING ───────────────────────────────────────────────────────────────
   if (screenState === 'loading') {
@@ -353,7 +353,7 @@ export default function DailyChallengeScreen() {
             </View>
 
             <MindyMessage
-              message={`Défi du jour. Une seule chance. ${challenge.lesson?.domain === 'CRYPTO' ? '₿' : '📈'} Vas-y.`}
+              message={`Défi du jour. Une seule chance. ${domainEmoji(challenge.lesson?.domain ?? '')} Vas-y.`}
               mood="hype"
             />
           </Animated.View>

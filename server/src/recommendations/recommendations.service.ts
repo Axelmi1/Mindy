@@ -57,6 +57,9 @@ export class RecommendationsService {
       CRYPTO: { total: 0, completed: 0 },
       FINANCE: { total: 0, completed: 0 },
       TRADING: { total: 0, completed: 0 },
+      REAL_ESTATE: { total: 0, completed: 0 },
+      ENTREPRENEURSHIP: { total: 0, completed: 0 },
+      TAXES: { total: 0, completed: 0 },
     };
 
     const completedLessonIds = new Set<string>();
@@ -84,12 +87,12 @@ export class RecommendationsService {
     }
 
     // Count by domain
-    const domainTotals: Record<Domain, number> = { CRYPTO: 0, FINANCE: 0, TRADING: 0 };
+    const domainTotals: Record<Domain, number> = { CRYPTO: 0, FINANCE: 0, TRADING: 0, REAL_ESTATE: 0, ENTREPRENEURSHIP: 0, TAXES: 0 };
     for (const l of allLessons) {
       domainTotals[l.domain]++;
     }
 
-    const completedByDomain: Record<Domain, number> = { CRYPTO: 0, FINANCE: 0, TRADING: 0 };
+    const completedByDomain: Record<Domain, number> = { CRYPTO: 0, FINANCE: 0, TRADING: 0, REAL_ESTATE: 0, ENTREPRENEURSHIP: 0, TAXES: 0 };
     for (const p of user.progress) {
       if (p.isCompleted) completedByDomain[p.lesson.domain]++;
     }

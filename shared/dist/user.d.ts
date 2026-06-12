@@ -2,6 +2,7 @@
  * MINDY User Types
  * Shared between server and mobile for type safety
  */
+import type { Domain } from './lesson';
 /**
  * User profile data
  */
@@ -25,7 +26,7 @@ export interface User {
  * Per-domain lesson completion breakdown
  */
 export interface DomainStats {
-    domain: 'CRYPTO' | 'FINANCE' | 'TRADING';
+    domain: Domain;
     completed: number;
     total: number;
     label: string;

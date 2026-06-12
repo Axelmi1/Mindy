@@ -22,15 +22,19 @@ import { usersApi } from '@/api/client';
 import { Icon } from '@/components/ui/Icon';
 import { SkeletonBox } from '@/components/ui/SkeletonBox';
 import { GOAL_OPTIONS, GoalValue } from '@/hooks/useDailyGoal';
+import { DOMAINS, DOMAIN_ORDER } from '@/data/domains';
 
 // ─── Domain + Goal constants ────────────────────────────────────────────────
 
 const DOMAIN_OPTIONS = [
-  { value: 'CRYPTO',  label: 'Crypto',   emoji: '₿',  color: '#F7931A' },
-  { value: 'FINANCE', label: 'Finance',  emoji: '📈', color: '#39FF14' },
-  { value: 'TRADING', label: 'Trading',  emoji: '📊', color: '#58A6FF' },
-  { value: 'BOTH',    label: 'Tout',     emoji: '🌐', color: '#A371F7' },
-] as const;
+  ...DOMAIN_ORDER.map((d) => ({
+    value: d,
+    label: DOMAINS[d].label,
+    emoji: DOMAINS[d].icon,
+    color: DOMAINS[d].color,
+  })),
+  { value: 'BOTH', label: 'Un peu de tout', emoji: '✨', color: '#8B949E' },
+];
 
 const USER_GOAL_OPTIONS = [
   { value: 'invest',     label: 'Investir',          emoji: '💰' },
@@ -39,7 +43,7 @@ const USER_GOAL_OPTIONS = [
   { value: 'curiosity',  label: 'Par curiosité',      emoji: '🔍' },
 ] as const;
 
-type DomainValue = 'CRYPTO' | 'FINANCE' | 'TRADING' | 'BOTH';
+type DomainValue = 'CRYPTO' | 'FINANCE' | 'TRADING' | 'REAL_ESTATE' | 'ENTREPRENEURSHIP' | 'TAXES' | 'BOTH';
 type UserGoalValue = 'invest' | 'understand' | 'career' | 'curiosity';
 
 // ─── Component ──────────────────────────────────────────────────────────────
@@ -302,7 +306,7 @@ export default function SettingsScreen() {
                         active && { borderColor: opt.color, backgroundColor: opt.color + '18' },
                       ]}
                       onPress={() => {
-                        setSelectedDomain(active ? null : opt.value);
+                        setSelectedDomain(active ? null : opt.value as DomainValue);
                         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                       }}
                     >

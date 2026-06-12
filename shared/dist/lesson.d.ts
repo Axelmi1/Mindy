@@ -287,7 +287,7 @@ export type LessonStep = InfoStep | QuizStep | SwipeStep | SwipeSequenceStep | R
 export interface LessonContent {
     steps: LessonStep[];
 }
-export type Domain = 'CRYPTO' | 'FINANCE' | 'TRADING';
+export type Domain = 'CRYPTO' | 'FINANCE' | 'TRADING' | 'REAL_ESTATE' | 'ENTREPRENEURSHIP' | 'TAXES';
 export type Difficulty = 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED';
 export interface Lesson {
     id: string;

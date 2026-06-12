@@ -97,6 +97,9 @@ export class ProgressExportService {
       CRYPTO: { completed: 0, xp: 0 },
       FINANCE: { completed: 0, xp: 0 },
       TRADING: { completed: 0, xp: 0 },
+      REAL_ESTATE: { completed: 0, xp: 0 },
+      ENTREPRENEURSHIP: { completed: 0, xp: 0 },
+      TAXES: { completed: 0, xp: 0 },
     };
 
     const difficultyStats: Record<string, number> = {
@@ -280,12 +283,18 @@ export class ProgressExportService {
         CRYPTO: COLORS.crypto,
         FINANCE: COLORS.finance,
         TRADING: COLORS.trading,
+        REAL_ESTATE: '#A371F7',
+        ENTREPRENEURSHIP: '#FF7B72',
+        TAXES: '#E3B341',
       };
 
       const domainEmoji: Record<string, string> = {
         CRYPTO: '₿',
         FINANCE: '💰',
         TRADING: '📈',
+        REAL_ESTATE: '🏠',
+        ENTREPRENEURSHIP: '🚀',
+        TAXES: '🧾',
       };
 
       const domainBarY = doc.y;

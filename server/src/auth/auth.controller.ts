@@ -14,7 +14,7 @@ const RegisterSchema = z.object({
   email: z.string().email(),
   password: z.string().min(8),
   username: z.string().min(3).max(20).regex(/^[a-zA-Z0-9_]+$/),
-  preferredDomain: z.enum(['CRYPTO', 'FINANCE', 'BOTH']).optional(),
+  preferredDomain: z.enum(['CRYPTO', 'FINANCE', 'TRADING', 'REAL_ESTATE', 'ENTREPRENEURSHIP', 'TAXES', 'BOTH']).optional(),
   userGoal: z.string().optional(),
   dailyMinutes: z.union([z.literal(5), z.literal(10), z.literal(15)]).optional(),
   reminderHour: z.number().int().min(0).max(23).optional(),

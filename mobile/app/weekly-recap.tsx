@@ -34,21 +34,12 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { weeklyRecapApi, type WeeklyRecap, type DayActivity } from '@/api/client';
 import { useUser } from '@/hooks/useUser';
 import { Icon } from '@/components/ui/Icon';
+import { domainColor, domainEmoji } from '@/data/domains';
 
 const { width: W } = Dimensions.get('window');
 const MARGIN = 20;
 const CONTENT_W = W - MARGIN * 2;
 
-const DOMAIN_COLORS: Record<string, string> = {
-  CRYPTO: '#F7931A',
-  FINANCE: '#3B82F6',
-  TRADING: '#A855F7',
-};
-const DOMAIN_EMOJI: Record<string, string> = {
-  CRYPTO: '₿',
-  FINANCE: '💰',
-  TRADING: '📈',
-};
 
 // ────────────────────────────────────────────────────────────────────────────
 
@@ -271,9 +262,9 @@ export default function WeeklyRecapScreen() {
           <View style={styles.domainRow}>
             {Object.entries(recap.domainBreakdown).map(([domain, count]) => (
               <View key={domain} style={styles.domainChip}>
-                <Text style={styles.domainEmoji}>{DOMAIN_EMOJI[domain]}</Text>
+                <Text style={styles.domainEmoji}>{domainEmoji(domain)}</Text>
                 <View>
-                  <Text style={[styles.domainName, { color: DOMAIN_COLORS[domain] }]}>
+                  <Text style={[styles.domainName, { color: domainColor(domain) }]}>
                     {domain.charAt(0) + domain.slice(1).toLowerCase()}
                   </Text>
                   <Text style={styles.domainCount}>

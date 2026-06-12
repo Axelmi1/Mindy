@@ -34,6 +34,7 @@ import { LeagueBadge } from '@/components/ui/LeagueBadge';
 import { SkeletonBox } from '@/components/ui/SkeletonBox';
 import { lessonsApi, challengesApi } from '@/api/client';
 import type { Lesson } from '@mindy/shared';
+import { domainColor, domainEmoji } from '@/data/domains';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -50,16 +51,6 @@ const C = {
 };
 
 type Domain = 'CRYPTO' | 'FINANCE' | 'TRADING';
-const DOMAIN_COLORS: Record<Domain, string> = {
-  CRYPTO: '#F7931A',
-  FINANCE: '#39FF14',
-  TRADING: '#00FFFF',
-};
-const DOMAIN_EMOJIS: Record<Domain, string> = {
-  CRYPTO: '₿',
-  FINANCE: '💹',
-  TRADING: '📈',
-};
 
 // ─── Lesson Picker Modal ──────────────────────────────────────────────────────
 
@@ -142,14 +133,14 @@ function LessonPickerModal({
               key={d}
               style={[
                 pickerStyles.domainTab,
-                selectedDomain === d && { backgroundColor: `${DOMAIN_COLORS[d]}22`, borderColor: DOMAIN_COLORS[d] },
+                selectedDomain === d && { backgroundColor: `${domainColor(d)}22`, borderColor: domainColor(d) },
               ]}
               onPress={() => setSelectedDomain(d)}
             >
-              <Text style={pickerStyles.domainEmoji}>{DOMAIN_EMOJIS[d]}</Text>
+              <Text style={pickerStyles.domainEmoji}>{domainEmoji(d)}</Text>
               <Text style={[
                 pickerStyles.domainLabel,
-                selectedDomain === d && { color: DOMAIN_COLORS[d] },
+                selectedDomain === d && { color: domainColor(d) },
               ]}>
                 {d}
               </Text>

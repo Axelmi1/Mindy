@@ -7,6 +7,7 @@ import * as Haptics from 'expo-haptics';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useUser } from '@/hooks/useUser';
 import { Icon } from '@/components/ui/Icon';
+import { useOnboardingStore } from './onboarding/hooks/useOnboardingStore';
 
 const ADMIN_EMAIL = process.env.EXPO_PUBLIC_ADMIN_EMAIL || 'test@mindy.app';
 const ADMIN_PASSWORD = process.env.EXPO_PUBLIC_ADMIN_PASSWORD || 'test1234';
@@ -23,6 +24,9 @@ export default function LoginScreen() {
 
   const handleStartLearning = async () => {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    // Always start a brand-new onboarding run — wipe any stale persisted state
+    // (e.g. left by an older app version) so we never resume past the Signup step.
+    useOnboardingStore.getState().reset();
     router.replace('/onboarding');
   };
 

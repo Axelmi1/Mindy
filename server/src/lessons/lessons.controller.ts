@@ -42,7 +42,7 @@ export class LessonsController {
    * Get all lessons with optional filters
    */
   @ApiOperation({ summary: 'List lessons with optional domain/difficulty filters' })
-  @ApiQuery({ name: 'domain', required: false, enum: ['CRYPTO', 'FINANCE', 'TRADING'], description: 'Filter by domain' })
+  @ApiQuery({ name: 'domain', required: false, enum: ['CRYPTO', 'FINANCE', 'TRADING', 'REAL_ESTATE', 'ENTREPRENEURSHIP', 'TAXES'], description: 'Filter by domain' })
   @ApiQuery({ name: 'difficulty', required: false, enum: ['BEGINNER', 'INTERMEDIATE', 'ADVANCED'], description: 'Filter by difficulty' })
   @ApiQuery({ name: 'limit', required: false, example: 20 })
   @ApiQuery({ name: 'offset', required: false, example: 0 })
@@ -89,7 +89,7 @@ export class LessonsController {
    * Get lessons by domain with optional user progress
    */
   @ApiOperation({ summary: 'Get lessons by domain', description: 'Pass ?userId= to embed the user\'s completion status on each lesson.' })
-  @ApiParam({ name: 'domain', enum: ['CRYPTO', 'FINANCE', 'TRADING'] })
+  @ApiParam({ name: 'domain', enum: ['CRYPTO', 'FINANCE', 'TRADING', 'REAL_ESTATE', 'ENTREPRENEURSHIP', 'TAXES'] })
   @ApiQuery({ name: 'userId', required: false })
   @Get('domain/:domain')
   async findByDomain(
