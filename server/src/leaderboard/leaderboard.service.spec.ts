@@ -43,6 +43,11 @@ const mockPrisma = {
     count: jest.fn(),
     upsert: jest.fn(),
   },
+  user: {
+    findMany: jest.fn(),
+    findUnique: jest.fn(),
+    count: jest.fn(),
+  },
 };
 
 // ── Test suite ────────────────────────────────────────────────────────────────
@@ -52,6 +57,11 @@ describe('LeaderboardService', () => {
 
   beforeEach(async () => {
     jest.clearAllMocks();
+    // Repli all-time : par défaut aucun user (les tests "semaine vide" restent vides),
+    // un test dédié override findMany pour vérifier le repli peuplé.
+    mockPrisma.user.findMany.mockResolvedValue([]);
+    mockPrisma.user.findUnique.mockResolvedValue(null);
+    mockPrisma.user.count.mockResolvedValue(0);
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -66,9 +76,10 @@ describe('LeaderboardService', () => {
   // ── getWeeklyLeaderboard ─────────────────────────────────────────────────
 
   describe('getWeeklyLeaderboard', () => {
-    it('returns empty leaderboard when no entries exist', async () => {
+    it('returns empty leaderboard when no weekly entries and no users', async () => {
       mockPrisma.weeklyXp.findMany.mockResolvedValue([]);
       mockPrisma.weeklyXp.findUnique.mockResolvedValue(null);
+      // user.findMany défaut [] (repli all-time vide)
 
       const result = await service.getWeeklyLeaderboard('user_1');
 
@@ -76,6 +87,26 @@ describe('LeaderboardService', () => {
       expect(result.userPosition).toBeNull();
       expect(result.weekStart).toBeInstanceOf(Date);
       expect(result.weekEnd).toBeInstanceOf(Date);
+    });
+
+    it('falls back to the all-time (total XP) leaderboard when no weekly entries', async () => {
+      mockPrisma.weeklyXp.findMany.mockResolvedValue([]); // semaine vide → repli
+      mockPrisma.user.findMany.mockResolvedValue([
+        { id: 'u1', username: 'alice', xp: 5000 },
+        { id: 'u2', username: 'bob', xp: 3000 },
+        { id: 'u3', username: 'carl', xp: 1000 },
+      ]);
+
+      const result = await service.getWeeklyLeaderboard('u2');
+
+      expect(result.leaderboard).toHaveLength(3);
+      expect(result.leaderboard[0]).toMatchObject({ rank: 1, username: 'alice', xpEarned: 5000, totalXp: 5000 });
+      expect(result.leaderboard[1]).toMatchObject({ rank: 2, username: 'bob' });
+      // l'utilisateur courant est marqué et exposé en userPosition
+      expect(result.leaderboard[1].isCurrentUser).toBe(true);
+      expect(result.userPosition?.userId).toBe('u2');
+      // weekly fallback → pas de delta de rang
+      expect(result.leaderboard[0].rankDelta).toBeNull();
     });
 
     it('returns leaderboard with correct rank ordering', async () => {

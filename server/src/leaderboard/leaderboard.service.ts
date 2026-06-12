@@ -47,6 +47,12 @@ export class LeaderboardService {
       take: limit,
     });
 
+    // Repli : si personne n'a gagné d'XP cette semaine, on affiche le classement
+    // général (XP total) pour ne jamais présenter un classement vide.
+    if (topEntries.length === 0) {
+      return this.getAllTimeLeaderboard(userId, limit, weekStart, weekEnd);
+    }
+
     // Get last week's XP for all top users to compute delta
     const lastWeekStart = new Date(weekStart);
     lastWeekStart.setDate(lastWeekStart.getDate() - 7);
@@ -152,6 +158,62 @@ export class LeaderboardService {
       weekStart,
       weekEnd,
     };
+  }
+
+  /**
+   * Classement général (XP total) — repli quand la semaine courante n'a aucune
+   * activité, pour ne jamais afficher un classement vide.
+   */
+  private async getAllTimeLeaderboard(
+    userId: string,
+    limit: number,
+    weekStart: Date,
+    weekEnd: Date,
+  ): Promise<{
+    leaderboard: LeaderboardEntry[];
+    userPosition: LeaderboardEntry | null;
+    weekStart: Date;
+    weekEnd: Date;
+  }> {
+    const topUsers = await this.prisma.user.findMany({
+      where: { deletedAt: null },
+      orderBy: { xp: 'desc' },
+      take: limit,
+      select: { id: true, username: true, xp: true },
+    });
+
+    const toEntry = (
+      u: { id: string; username: string; xp: number },
+      rank: number,
+    ): LeaderboardEntry => ({
+      rank,
+      userId: u.id,
+      username: u.username,
+      xpEarned: u.xp,
+      xpDelta: 0,
+      lastWeekXp: 0,
+      totalXp: u.xp,
+      isCurrentUser: u.id === userId,
+      rankDelta: null,
+    });
+
+    const leaderboard = topUsers.map((u, i) => toEntry(u, i + 1));
+
+    let userPosition = leaderboard.find((e) => e.isCurrentUser) ?? null;
+    if (!userPosition) {
+      const me = await this.prisma.user.findUnique({
+        where: { id: userId },
+        select: { id: true, username: true, xp: true },
+      });
+      if (me) {
+        const above = await this.prisma.user.count({
+          where: { deletedAt: null, xp: { gt: me.xp } },
+        });
+        userPosition = toEntry(me, above + 1);
+      }
+    }
+
+    return { leaderboard, userPosition, weekStart, weekEnd };
   }
 
   /**
