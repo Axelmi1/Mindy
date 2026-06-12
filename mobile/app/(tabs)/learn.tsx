@@ -669,9 +669,12 @@ export default function LearnScreen() {
               accessibilityLabel={DOMAINS[d].label}
               style={[styles.tab, active && { borderColor: color, backgroundColor: color + '20' }]}
             >
-              <Text style={[styles.tabText, active && { color }]}>
-                {domainEmoji(d)} {DOMAINS[d].label}
-              </Text>
+              <View style={styles.tabLabel}>
+                <Text style={styles.tabEmoji}>{domainEmoji(d)}</Text>
+                <Text style={[styles.tabText, active && { color }]} numberOfLines={1}>
+                  {DOMAINS[d].label}
+                </Text>
+              </View>
               <Text style={[styles.tabCount, active && { color }]}>
                 {lessonCountByDomain[d] ?? 0}
               </Text>
@@ -881,6 +884,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row', justifyContent: 'center', gap: 8,
     backgroundColor: '#161B22', borderWidth: 1.5, borderColor: 'transparent',
   },
+  tabLabel: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  tabEmoji: { fontSize: 15 },
   tabText: { fontSize: 13, lineHeight: 18, fontWeight: '600', color: '#8B949E', fontFamily: 'Inter' },
   tabCount: {
     fontSize: 11, fontWeight: '700', fontFamily: 'JetBrainsMono', color: '#484F58',
