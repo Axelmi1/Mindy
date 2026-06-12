@@ -877,7 +877,7 @@ const styles = StyleSheet.create({
     borderRadius: 20, borderWidth: 1, backgroundColor: 'rgba(255,255,255,0.04)',
   },
   viewToggleText: { fontSize: 12, fontWeight: '700', fontFamily: 'JetBrainsMono' },
-  tabsScroll: { flexGrow: 0, marginBottom: 16 },
+  tabsScroll: { flexGrow: 0, flexShrink: 0, marginBottom: 16 },
   tabsRow: { gap: 8, paddingHorizontal: 16, alignItems: 'center' },
   tab: {
     paddingVertical: 10, paddingHorizontal: 14, alignItems: 'center', borderRadius: 10,
