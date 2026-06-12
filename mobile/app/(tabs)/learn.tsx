@@ -880,7 +880,7 @@ const styles = StyleSheet.create({
   tabsScroll: { flexGrow: 0, marginBottom: 16 },
   tabsRow: { gap: 8, paddingHorizontal: 16, alignItems: 'center' },
   tab: {
-    paddingVertical: 16, paddingHorizontal: 14, minHeight: 52, alignItems: 'center', borderRadius: 10,
+    paddingVertical: 10, paddingHorizontal: 14, alignItems: 'center', borderRadius: 10,
     flexDirection: 'row', justifyContent: 'center', gap: 8,
     backgroundColor: '#161B22', borderWidth: 1.5, borderColor: 'transparent',
   },
