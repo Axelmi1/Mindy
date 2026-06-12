@@ -880,13 +880,13 @@ const styles = StyleSheet.create({
   tabsScroll: { flexGrow: 0, marginBottom: 16 },
   tabsRow: { gap: 8, paddingHorizontal: 16, alignItems: 'center' },
   tab: {
-    paddingVertical: 12, paddingHorizontal: 14, alignItems: 'center', borderRadius: 10,
+    paddingVertical: 16, paddingHorizontal: 14, minHeight: 52, alignItems: 'center', borderRadius: 10,
     flexDirection: 'row', justifyContent: 'center', gap: 8,
     backgroundColor: '#161B22', borderWidth: 1.5, borderColor: 'transparent',
   },
   tabLabel: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  tabEmoji: { fontSize: 15 },
-  tabText: { fontSize: 13, lineHeight: 18, fontWeight: '600', color: '#8B949E', fontFamily: 'Inter' },
+  tabEmoji: { fontSize: 15, lineHeight: 22 },
+  tabText: { fontSize: 13, lineHeight: 22, fontWeight: '600', color: '#8B949E', fontFamily: 'Inter' },
   tabCount: {
     fontSize: 11, fontWeight: '700', fontFamily: 'JetBrainsMono', color: '#484F58',
     backgroundColor: '#21262D', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 8,
