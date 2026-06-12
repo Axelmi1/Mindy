@@ -255,6 +255,7 @@ enum EventType {
   CHALLENGE_SENT
   CHALLENGE_ACCEPTED
   CHALLENGE_COMPLETED
+  XP_EARNED
 }
 
 enum NotificationType {
