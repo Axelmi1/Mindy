@@ -9,7 +9,7 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-const MASTER_QUIZZES = [
+export const MASTER_QUIZZES = [
   // ─────────────────────────────────────────────────────────────────────────
   // CRYPTO MASTER TEST
   // ─────────────────────────────────────────────────────────────────────────
@@ -67,10 +67,10 @@ const MASTER_QUIZZES = [
         },
         {
           type: 'fill_blank',
-          sentence: "Un smart contract est un programme qui s'exécute _____ sur la blockchain.",
-          correctAnswer: "automatiquement",
-          hint: "Sans intermédiaire humain",
-          explanation: "Les smart contracts s'exécutent automatiquement quand les conditions prédéfinies sont remplies, sans nécessiter d'intermédiaire.",
+          sentence: "Un smart contract est un programme qui s'exécute ___ sur la blockchain.",
+          answer: 'automatiquement',
+          choices: ['automatiquement', 'manuellement', 'aléatoirement'],
+          mindyMessage: "Les smart contracts s'exécutent automatiquement quand les conditions prédéfinies sont remplies, sans nécessiter d'intermédiaire.",
         },
         {
           type: 'quiz',
@@ -122,17 +122,31 @@ const MASTER_QUIZZES = [
         },
         {
           type: 'scenario',
-          title: 'Décision d\'investisseur',
-          scenario: "Tu détiens 1 ETH acheté à 2000$. Le prix monte à 3500$. Un analyste prédit un crash à 1000$ dans 3 mois. Tu as besoin des fonds dans 6 mois.",
-          question: "Quelle est la stratégie la plus prudente ?",
-          options: [
-            "Vendre tout immédiatement pour sécuriser le gain",
-            "Vendre 50% pour sécuriser une partie du gain, garder 50%",
-            "Garder tout — les cryptos montent toujours à long terme",
-            "Acheter plus à levier pour maximiser le gain potentiel",
+          situation:
+            "Tu détiens 1 ETH acheté à 2 000 $. Le prix monte à 3 500 $. Un analyste prédit un crash à 1 000 $ dans 3 mois — et tu as besoin des fonds dans 6 mois. Quelle est la stratégie la plus prudente ?",
+          choices: [
+            {
+              text: 'Vendre tout immédiatement pour sécuriser le gain',
+              isGood: false,
+              explanation: "Prudent mais binaire : une vente partielle offre le même filet de sécurité sans renoncer à toute la hausse potentielle.",
+            },
+            {
+              text: 'Vendre 50 % pour sécuriser une partie du gain, garder 50 %',
+              isGood: true,
+              explanation: 'La vente partielle sécurise une partie du gain tout en restant exposé à la hausse — adapté à ton besoin de liquidités à 6 mois.',
+            },
+            {
+              text: 'Garder tout — les cryptos montent toujours à long terme',
+              isGood: false,
+              explanation: "Rien ne « monte toujours ». Avec un besoin de fonds à 6 mois, tu ne peux pas te permettre d'encaisser un crash.",
+            },
+            {
+              text: 'Acheter plus avec du levier pour maximiser le gain',
+              isGood: false,
+              explanation: "Le levier amplifie aussi les pertes : avec une échéance courte, c'est la stratégie la plus dangereuse.",
+            },
           ],
-          correctIndex: 1,
-          explanation: "La vente partielle (50%) est une stratégie prudente : tu sécurises une partie du gain tout en restant exposé à la hausse potentielle. Avec un besoin de liquidités à 6 mois, prendre du levier serait imprudent.",
+          mindyMessage: "Sécuriser une partie de ses gains n'est jamais une honte. 🎯",
         },
       ],
     },
@@ -205,14 +219,12 @@ const MASTER_QUIZZES = [
         },
         {
           type: 'calculator',
-          title: 'Intérêts composés',
-          question: "Tu investis 5 000€ à 8% par an pendant 10 ans avec intérêts composés. Quel est ton capital final ? (Utilise la formule : C × (1 + r)^n)",
-          initialValue: 5000,
-          targetValue: 10794,
+          question: "Tu investis 5 000 € à 8 % par an pendant 10 ans avec intérêts composés. Quel est ton capital final ? (Formule : C × (1 + r)^n)",
+          variables: ['Capital initial : 5 000 €', 'Taux annuel : 8 %', 'Durée : 10 ans'],
+          answer: 10795,
           tolerance: 200,
           unit: '€',
-          hint: "5000 × (1.08)^10 ≈ ?",
-          explanation: "5000 × (1.08)^10 ≈ 10 795€. Les intérêts composés font boule de neige : tu gagnes des intérêts sur tes intérêts. C'est le secret de la richesse à long terme.",
+          mindyMessage: "5 000 × (1,08)^10 ≈ 10 795 €. Les intérêts composés font boule de neige : tu gagnes des intérêts sur tes intérêts. 💰",
         },
         {
           type: 'quiz',
@@ -264,17 +276,31 @@ const MASTER_QUIZZES = [
         },
         {
           type: 'scenario',
-          title: 'Décision de portefeuille',
-          scenario: "Tu as 10 000€ à investir, 30 ans devant toi, et une tolérance au risque modérée. Ton objectif : maximiser la croissance long terme.",
-          question: "Quelle allocation de portefeuille est la plus adaptée ?",
-          options: [
-            "100% en livret A (taux garanti, sans risque)",
-            "70% actions mondiales diversifiées / 20% obligations / 10% alternatives",
-            "100% en actions d'une seule entreprise tech prometteuse",
-            "50% or / 50% immobilier",
+          situation:
+            "Tu as 10 000 € à investir, 30 ans devant toi, et une tolérance au risque modérée. Ton objectif : maximiser la croissance à long terme. Quelle allocation choisis-tu ?",
+          choices: [
+            {
+              text: '100 % en livret A (taux garanti, sans risque)',
+              isGood: false,
+              explanation: "Sans risque… sauf l'inflation : sur 30 ans, c'est la quasi-certitude de perdre du pouvoir d'achat.",
+            },
+            {
+              text: '70 % actions mondiales / 20 % obligations / 10 % alternatives',
+              isGood: true,
+              explanation: 'Allocation classique pour un profil modéré : elle capte la croissance long terme des actions tout en amortissant la volatilité.',
+            },
+            {
+              text: "100 % sur une seule action tech prometteuse",
+              isGood: false,
+              explanation: 'Concentration extrême : une seule entreprise peut tout perdre. La diversification est ta meilleure protection.',
+            },
+            {
+              text: '50 % or / 50 % immobilier',
+              isGood: false,
+              explanation: "Peu diversifié et rendement attendu inférieur à un portefeuille actions/obligations sur 30 ans.",
+            },
           ],
-          correctIndex: 1,
-          explanation: "Sur 30 ans, une allocation 70/20/10 (actions/obligations/alternatives) est classique pour un profil modéré. Elle capte la croissance long terme des marchés actions tout en amortissant la volatilité.",
+          mindyMessage: 'Le temps + la diversification : le duo gagnant du long terme. 📈',
         },
       ],
     },
@@ -407,17 +433,31 @@ const MASTER_QUIZZES = [
         },
         {
           type: 'scenario',
-          title: 'Setup de trade',
-          scenario: "Tu identifies un breakout haussier sur BTC/USD à 42 000$. Le niveau de résistance cassé était à 41 500$. Ta stratégie de gestion du risque : risquer max 2% de ton capital de 10 000€.",
-          question: "Où places-tu ton stop-loss et quel est le montant max que tu risques ?",
-          options: [
-            "Stop à 41 000$ — risque 200€ (2% de 10 000€)",
-            "Stop à 40 000$ — risque 500€ (5% de 10 000€)",
-            "Pas de stop-loss — les cryptos montent toujours",
-            "Stop à 42 000$ — risque 0€ (breakeven stop)",
+          situation:
+            "Breakout haussier sur BTC/USD à 42 000 $ après cassure de la résistance à 41 500 $. Ton capital : 10 000 €, risque max par trade : 2 %. Où places-tu ton stop-loss ?",
+          choices: [
+            {
+              text: 'Stop à 41 000 $ — risque 200 € (2 % du capital)',
+              isGood: true,
+              explanation: 'Stop sous le niveau cassé (41 500 $) et risque limité à 2 % : la règle qui garantit ta survie même après 10 pertes consécutives.',
+            },
+            {
+              text: 'Stop à 40 000 $ — risque 500 € (5 % du capital)',
+              isGood: false,
+              explanation: 'À 5 % de risque par trade, 10 pertes de suite emportent la moitié du capital. Trop large.',
+            },
+            {
+              text: 'Pas de stop-loss — les cryptos remontent toujours',
+              isGood: false,
+              explanation: "« Ça remonte toujours » est la phrase qui vide les comptes de trading. Sans stop, une seule erreur peut tout coûter.",
+            },
+            {
+              text: 'Stop à 42 000 $ — risque 0 € (breakeven)',
+              isGood: false,
+              explanation: "Un stop au prix d'entrée te sort au moindre retracement normal du breakout : tu ne laisses aucune chance au trade.",
+            },
           ],
-          correctIndex: 0,
-          explanation: "Le stop-loss optimal est sous le niveau cassé (41 500$) à 41 000$, et tu risques max 2% = 200€. La règle des 2% est fondamentale : elle garantit ta survie même avec 10 pertes consécutives.",
+          mindyMessage: 'La gestion du risque, c\'est 80 % du métier. 🛡️',
         },
       ],
     },
@@ -456,9 +496,12 @@ async function main() {
   console.log('  • TRADING Master Test — 200 XP');
 }
 
-main()
-  .catch((e) => {
-    console.error(e);
-    process.exit(1);
-  })
-  .finally(() => prisma.$disconnect());
+// Ne s'exécute qu'en CLI (ts-node) — l'import du module (tests) ne seede rien.
+if (require.main === module) {
+  main()
+    .catch((e) => {
+      console.error(e);
+      process.exit(1);
+    })
+    .finally(() => prisma.$disconnect());
+}
