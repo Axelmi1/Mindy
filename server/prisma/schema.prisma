@@ -35,6 +35,7 @@ model User {
   magicLinks              MagicLinkToken[]
   analyticsEvents         AnalyticsEvent[]
   dailyChallenges         DailyChallenge[]
+  dailyQuestClaims        DailyQuestClaim[]
   notificationLogs        NotificationLog[]
   notificationPreferences NotificationPreferences?
   pushTokens              PushToken[]
@@ -80,6 +81,18 @@ model UserProgress {
 
   @@unique([userId, lessonId])
   @@map("user_progress")
+}
+
+model DailyQuestClaim {
+  id        String   @id @default(cuid())
+  userId    String
+  date      DateTime @db.Date
+  questKey  String
+  claimedAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date, questKey])
+  @@map("daily_quest_claims")
 }
 
 model DailyChallenge {

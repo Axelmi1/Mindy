@@ -19,6 +19,7 @@ import { ProgressBar } from '@/components/ui/ProgressBar';
 import { SkeletonBox } from '@/components/ui/SkeletonBox';
 import { StreakCalendar } from '@/components/ui/StreakCalendar';
 import { DailyGoalCard } from '@/components/ui/DailyGoalCard';
+import { DailyQuestsCard } from '@/components/ui/DailyQuestsCard';
 import { LeagueBadge } from '@/components/ui/LeagueBadge';
 import { GoalCelebrationModal } from '@/components/ui/GoalCelebrationModal';
 
@@ -403,6 +404,13 @@ export default function HomeScreen() {
           <Animated.View entering={FadeInDown.delay(300)} style={styles.dailyCompleted}>
             <Icon name="check" size={18} color="#39FF14" />
             <Text style={styles.dailyCompletedText}>Défi du jour terminé !</Text>
+          </Animated.View>
+        )}
+
+        {/* 🗺️ Daily Quests */}
+        {userId && (
+          <Animated.View entering={FadeInDown.delay(310)}>
+            <DailyQuestsCard userId={userId} onXpClaimed={() => loadData()} />
           </Animated.View>
         )}
 

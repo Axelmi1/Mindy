@@ -156,6 +156,12 @@ export class UsersService {
       },
     });
 
+    // Track every XP gain (feeds the activity feed and the daily quests)
+    await this.analyticsService.track(id, 'XP_EARNED', {
+      amount: xpAmount,
+      totalXp: newXp,
+    });
+
     // Send level up notification and track analytics
     if (leveledUp) {
       await this.notificationsService.sendLevelUpNotification(id, newLevel);

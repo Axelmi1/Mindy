@@ -997,6 +997,44 @@ export const challengesApi = {
 };
 
 // ============================================================================
+// Daily Quests API
+// ============================================================================
+
+export interface DailyQuest {
+  key: string;
+  title: string;
+  emoji: string;
+  target: number;
+  xpReward: number;
+  progress: number;
+  isCompleted: boolean;
+  claimed: boolean;
+}
+
+export interface QuestClaimResult {
+  quest: DailyQuest;
+  xpAwarded: number;
+  totalXp: number;
+  level: number;
+}
+
+export const questsApi = {
+  /**
+   * Get today's daily quests with progress and claim state.
+   */
+  getToday: (userId: string) => fetchApi<DailyQuest[]>(`/quests/${userId}`),
+
+  /**
+   * Claim the XP reward of a completed quest.
+   */
+  claim: (userId: string, questKey: string) =>
+    fetchApi<QuestClaimResult>(`/quests/${userId}/claim`, {
+      method: 'POST',
+      body: JSON.stringify({ questKey }),
+    }),
+};
+
+// ============================================================================
 // Progress Export API
 // ============================================================================
 
@@ -1030,6 +1068,7 @@ export const api = {
   progressExport: progressExportApi,
   weeklyRecap: weeklyRecapApi,
   challenges: challengesApi,
+  quests: questsApi,
 };
 
 export default api;

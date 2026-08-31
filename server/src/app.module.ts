@@ -16,6 +16,7 @@ import { SubscriptionsModule } from './subscriptions/subscriptions.module';
 import { FriendsModule } from './friends/friends.module';
 import { RecommendationsModule } from './recommendations/recommendations.module';
 import { ChallengesModule } from './challenges/challenges.module';
+import { QuestsModule } from './quests/quests.module';
 import { AuthModule } from './auth/auth.module';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
 
@@ -53,6 +54,7 @@ import { JwtAuthGuard } from './auth/jwt-auth.guard';
     FriendsModule,
     RecommendationsModule,
     ChallengesModule,
+    QuestsModule,
     AuthModule,
   ],
   providers: [
