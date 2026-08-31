@@ -31,6 +31,8 @@ jobs:
         with:
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
+          # yarn (défaut) casse l'installation d'eas-cli sur les runners récents
+          packager: npm
 
       - name: Build shared package
         working-directory: shared
