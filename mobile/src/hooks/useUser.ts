@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { authApi, setAuthToken, setUnauthorizedHandler } from '@/api/client';
+import { authApi, setAuthToken, setUnauthorizedHandler, API_BASE_URL } from '@/api/client';
 
 const TOKEN_KEY = '@mindy/auth_token';
 const USER_ID_KEY = '@mindy/user_id';
@@ -8,7 +8,7 @@ const USERNAME_KEY = '@mindy/username';
 const ADMIN_KEY = '@mindy/admin_mode';
 const ONBOARDING_KEY = '@mindy/onboarding_state';
 const REQUEST_TIMEOUT_MS = 15000;
-const API_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000/api';
+const API_URL = API_BASE_URL;
 
 async function fetchWithTimeout(
   input: string,

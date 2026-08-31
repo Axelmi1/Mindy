@@ -19,11 +19,17 @@ export const ACHIEVEMENTS_FR: Record<string, { name: string; description: string
   crypto_master: { name: 'Maître de la crypto', description: 'Termine les 10 leçons Crypto' },
   finance_guru: { name: 'Gourou de la finance', description: 'Termine les 9 leçons Finance' },
   trading_pro: { name: 'Pro du trading', description: 'Termine les 10 leçons Trading' },
+  real_estate_master: { name: "Magnat de l'immobilier", description: 'Termine les 10 leçons Immobilier' },
+  taxes_master: { name: 'Sorcier des impôts', description: 'Termine les 10 leçons Impôts' },
+  entrepreneurship_master: { name: 'Esprit de fondateur', description: 'Termine les 10 leçons Entrepreneuriat' },
 
   // LEARNING — quiz finaux (légendaires)
   crypto_master_quiz: { name: '🏆 Légende crypto', description: 'Réussis le Quiz final Crypto — prouve ta maîtrise' },
   finance_master_quiz: { name: '🏆 Légende finance', description: 'Réussis le Quiz final Finance — prouve ta maîtrise' },
   trading_master_quiz: { name: '🏆 Légende trading', description: 'Réussis le Quiz final Trading — prouve ta maîtrise' },
+  real_estate_master_quiz: { name: '🏆 Légende immobilier', description: "Réussis le Quiz final Immobilier — prouve ta maîtrise" },
+  taxes_master_quiz: { name: '🏆 Légende impôts', description: 'Réussis le Quiz final Impôts — prouve ta maîtrise' },
+  entrepreneurship_master_quiz: { name: '🏆 Légende startup', description: 'Réussis le Quiz final Entrepreneuriat — prouve ta maîtrise' },
 
   // LEARNING — défis du jour
   first_challenge: { name: 'Défi accepté', description: 'Termine ton premier défi du jour' },

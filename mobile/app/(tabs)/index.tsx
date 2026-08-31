@@ -19,6 +19,7 @@ import { ProgressBar } from '@/components/ui/ProgressBar';
 import { SkeletonBox } from '@/components/ui/SkeletonBox';
 import { StreakCalendar } from '@/components/ui/StreakCalendar';
 import { DailyGoalCard } from '@/components/ui/DailyGoalCard';
+import { DailyQuestsCard } from '@/components/ui/DailyQuestsCard';
 import { LeagueBadge } from '@/components/ui/LeagueBadge';
 import { GoalCelebrationModal } from '@/components/ui/GoalCelebrationModal';
 
@@ -262,7 +263,7 @@ export default function HomeScreen() {
           </View>
 
           {/* Streak Card */}
-          <Pressable style={styles.statCard} onPress={() => router.push('/leaderboard')}>
+          <Pressable style={styles.statCard} onPress={() => router.push('/(tabs)/leaderboard')}>
             {Platform.OS === 'ios' ? (
               <BlurView intensity={20} tint="dark" style={StyleSheet.absoluteFill} />
             ) : (
@@ -304,7 +305,7 @@ export default function HomeScreen() {
           <Animated.View entering={FadeInDown.delay(240)}>
             <Pressable
               style={styles.rankPill}
-              onPress={() => router.push('/leaderboard')}
+              onPress={() => router.push('/(tabs)/leaderboard')}
             >
               <Text style={styles.rankPillIcon}>🏆</Text>
               <Text style={styles.rankPillText}>
@@ -403,6 +404,13 @@ export default function HomeScreen() {
           <Animated.View entering={FadeInDown.delay(300)} style={styles.dailyCompleted}>
             <Icon name="check" size={18} color="#39FF14" />
             <Text style={styles.dailyCompletedText}>Défi du jour terminé !</Text>
+          </Animated.View>
+        )}
+
+        {/* 🗺️ Daily Quests */}
+        {userId && (
+          <Animated.View entering={FadeInDown.delay(310)}>
+            <DailyQuestsCard userId={userId} onXpClaimed={() => loadData()} />
           </Animated.View>
         )}
 
@@ -602,7 +610,7 @@ export default function HomeScreen() {
 
         {/* Quick Actions */}
         <Animated.View entering={FadeInDown.delay(600)} style={styles.quickActions}>
-          <Pressable style={styles.quickAction} onPress={() => router.push('/leaderboard')}>
+          <Pressable style={styles.quickAction} onPress={() => router.push('/(tabs)/leaderboard')}>
             {Platform.OS === 'ios' ? (
               <BlurView intensity={15} tint="dark" style={StyleSheet.absoluteFill} />
             ) : (

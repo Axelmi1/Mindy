@@ -264,6 +264,8 @@ const DragSortItemSchema = z.object({
   label: z.string().min(1),
   emoji: z.string().min(1),
   value: z.string().optional(),
+  /** Items with the same group can be in any order relative to each other */
+  group: z.string().optional(),
 });
 
 const DragSortStepSchema = z.object({
@@ -388,6 +390,7 @@ export const CreateLessonSchema = z.object({
   content: LessonContentSchema,
   xpReward: z.number().int().min(0).default(50),
   orderIndex: z.number().int().min(0).default(0),
+  isMasterQuiz: z.boolean().optional(),
 });
 
 /**
@@ -400,6 +403,7 @@ export const UpdateLessonSchema = z.object({
   content: LessonContentSchema.optional(),
   xpReward: z.number().int().min(0).optional(),
   orderIndex: z.number().int().min(0).optional(),
+  isMasterQuiz: z.boolean().optional(),
 });
 
 // ============================================================================

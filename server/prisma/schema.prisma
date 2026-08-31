@@ -35,6 +35,7 @@ model User {
   magicLinks              MagicLinkToken[]
   analyticsEvents         AnalyticsEvent[]
   dailyChallenges         DailyChallenge[]
+  dailyQuestClaims        DailyQuestClaim[]
   notificationLogs        NotificationLog[]
   notificationPreferences NotificationPreferences?
   pushTokens              PushToken[]
@@ -80,6 +81,18 @@ model UserProgress {
 
   @@unique([userId, lessonId])
   @@map("user_progress")
+}
+
+model DailyQuestClaim {
+  id        String   @id @default(cuid())
+  userId    String
+  date      DateTime @db.Date
+  questKey  String
+  claimedAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date, questKey])
+  @@map("daily_quest_claims")
 }
 
 model DailyChallenge {
@@ -298,6 +311,12 @@ enum RequirementType {
   CRYPTO_MASTER_QUIZ_COMPLETED
   FINANCE_MASTER_QUIZ_COMPLETED
   TRADING_MASTER_QUIZ_COMPLETED
+  REAL_ESTATE_LESSONS_COMPLETED
+  TAXES_LESSONS_COMPLETED
+  ENTREPRENEURSHIP_LESSONS_COMPLETED
+  REAL_ESTATE_MASTER_QUIZ_COMPLETED
+  TAXES_MASTER_QUIZ_COMPLETED
+  ENTREPRENEURSHIP_MASTER_QUIZ_COMPLETED
 }
 
 enum AchievementRarity {

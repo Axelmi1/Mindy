@@ -355,4 +355,73 @@ describe('AchievementCheckerService', () => {
       expect(result).not.toContain('crypto_legend');
     });
   });
+
+  // ── New domains (Real Estate / Taxes / Entrepreneurship) ───────────────────
+
+  describe('new domain achievements', () => {
+    const newDomainAchievements = [
+      { id: 'ach-20', key: 'real_estate_master', requirementType: 'REAL_ESTATE_LESSONS_COMPLETED', requirementValue: 10 },
+      { id: 'ach-21', key: 'taxes_master', requirementType: 'TAXES_LESSONS_COMPLETED', requirementValue: 10 },
+      { id: 'ach-22', key: 'entrepreneurship_master_quiz', requirementType: 'ENTREPRENEURSHIP_MASTER_QUIZ_COMPLETED', requirementValue: 1 },
+      { id: 'ach-23', key: 'domain_explorer', requirementType: 'DOMAIN_COMPLETED', requirementValue: 2 },
+    ];
+
+    function setupNewDomainMocks(lessons: Array<{ domain: string; isMasterQuiz: boolean }>) {
+      mockPrisma.user.findUnique.mockResolvedValue(mockUser);
+      mockPrisma.userAchievement.findMany.mockResolvedValue([]);
+      mockPrisma.achievement.findMany.mockResolvedValue(newDomainAchievements);
+      mockPrisma.userProgress.count.mockResolvedValue(lessons.length);
+      mockPrisma.dailyChallenge.count.mockResolvedValue(0);
+      mockPrisma.referral.count.mockResolvedValue(0);
+      mockPrisma.lesson.findMany.mockResolvedValue(lessons);
+      mockAchievementsService.unlockAchievement.mockResolvedValue({ alreadyUnlocked: false });
+    }
+
+    it('unlocks real_estate_master after the 10 Real Estate lessons', async () => {
+      setupNewDomainMocks(Array(10).fill({ domain: 'REAL_ESTATE', isMasterQuiz: false }));
+
+      const result = await service.checkAndUnlock('user-1', 'lesson_completed');
+
+      expect(result).toContain('real_estate_master');
+      expect(result).not.toContain('taxes_master');
+    });
+
+    it('unlocks entrepreneurship_master_quiz on its master quiz completion', async () => {
+      setupNewDomainMocks([{ domain: 'ENTREPRENEURSHIP', isMasterQuiz: true }]);
+
+      const result = await service.checkAndUnlock(
+        'user-1',
+        'master_quiz_completed',
+        { domain: 'ENTREPRENEURSHIP' },
+      );
+
+      expect(result).toContain('entrepreneurship_master_quiz');
+    });
+
+    it('does NOT unlock entrepreneurship_master_quiz on a TAXES master quiz trigger', async () => {
+      setupNewDomainMocks([
+        { domain: 'ENTREPRENEURSHIP', isMasterQuiz: true },
+        { domain: 'TAXES', isMasterQuiz: true },
+      ]);
+
+      const result = await service.checkAndUnlock(
+        'user-1',
+        'master_quiz_completed',
+        { domain: 'TAXES' },
+      );
+
+      expect(result).not.toContain('entrepreneurship_master_quiz');
+    });
+
+    it('counts the new domains for DOMAIN_COMPLETED', async () => {
+      setupNewDomainMocks([
+        ...Array(5).fill({ domain: 'REAL_ESTATE', isMasterQuiz: false }),
+        ...Array(5).fill({ domain: 'TAXES', isMasterQuiz: false }),
+      ]);
+
+      const result = await service.checkAndUnlock('user-1', 'lesson_completed');
+
+      expect(result).toContain('domain_explorer');
+    });
+  });
 });

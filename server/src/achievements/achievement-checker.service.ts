@@ -111,17 +111,8 @@ export class AchievementCheckerService {
       }
     }
 
-    const cryptoLessonsCompleted = regularCounts['CRYPTO'] || 0;
-    const financeLessonsCompleted = regularCounts['FINANCE'] || 0;
-    const tradingLessonsCompleted = regularCounts['TRADING'] || 0;
-
-    const cryptoMasterQuizCompleted = masterQuizCounts['CRYPTO'] || 0;
-    const financeMasterQuizCompleted = masterQuizCounts['FINANCE'] || 0;
-    const tradingMasterQuizCompleted = masterQuizCounts['TRADING'] || 0;
-
-    // A domain is "completed" if ≥5 lessons done
-    const domainsCompleted = [cryptoLessonsCompleted, financeLessonsCompleted, tradingLessonsCompleted]
-      .filter((c) => c >= 5).length;
+    // A domain is "completed" if ≥5 lessons done (works for every Domain value)
+    const domainsCompleted = Object.values(regularCounts).filter((c) => c >= 5).length;
 
     return {
       xp: user?.xp ?? 0,
@@ -130,12 +121,8 @@ export class AchievementCheckerService {
       lessonsCompleted,
       dailyChallengesCompleted,
       domainsCompleted,
-      cryptoLessonsCompleted,
-      financeLessonsCompleted,
-      tradingLessonsCompleted,
-      cryptoMasterQuizCompleted,
-      financeMasterQuizCompleted,
-      tradingMasterQuizCompleted,
+      regularCounts,
+      masterQuizCounts,
       referralsCount,
     };
   }
@@ -149,83 +136,73 @@ export class AchievementCheckerService {
     trigger: AchievementTrigger,
     context: TriggerContext,
   ): boolean {
+    const type = achievement.requirementType;
+    // Domain-specific requirement types follow a naming convention so every
+    // Domain value (CRYPTO … TAXES, REAL_ESTATE, ENTREPRENEURSHIP) is covered.
+    const domainLessons = /^(.+)_LESSONS_COMPLETED$/.exec(type);
+    const masterQuiz = /^(.+)_MASTER_QUIZ_COMPLETED$/.exec(type);
+
     // Only check relevant achievements based on trigger
-    const triggerRelevance: Record<AchievementTrigger, string[]> = {
-      lesson_completed: [
-        'LESSONS_COMPLETED',
-        'DOMAIN_COMPLETED',
-        'CRYPTO_LESSONS_COMPLETED',
-        'FINANCE_LESSONS_COMPLETED',
-        'TRADING_LESSONS_COMPLETED',
-      ],
-      master_quiz_completed: [
-        'CRYPTO_MASTER_QUIZ_COMPLETED',
-        'FINANCE_MASTER_QUIZ_COMPLETED',
-        'TRADING_MASTER_QUIZ_COMPLETED',
-      ],
-      xp_gained: ['XP_EARNED', 'LEVEL_REACHED'],
-      streak_updated: ['STREAK_DAYS'],
-      daily_challenge: ['DAILY_CHALLENGES'],
-      referral: ['REFERRALS_MADE'],
-    };
-
-    const relevantTypes = triggerRelevance[trigger];
-    if (!relevantTypes.includes(achievement.requirementType)) {
-      return false;
+    let relevant = false;
+    switch (trigger) {
+      case 'lesson_completed':
+        relevant = type === 'LESSONS_COMPLETED' || type === 'DOMAIN_COMPLETED' || !!domainLessons;
+        break;
+      case 'master_quiz_completed':
+        relevant = !!masterQuiz;
+        break;
+      case 'xp_gained':
+        relevant = type === 'XP_EARNED' || type === 'LEVEL_REACHED';
+        break;
+      case 'streak_updated':
+        relevant = type === 'STREAK_DAYS';
+        break;
+      case 'daily_challenge':
+        relevant = type === 'DAILY_CHALLENGES';
+        break;
+      case 'referral':
+        relevant = type === 'REFERRALS_MADE';
+        break;
     }
+    if (!relevant) return false;
 
-    // For master quiz achievements, check domain-specific condition
-    if (trigger === 'master_quiz_completed' && context.domain) {
-      const domainUpper = context.domain.toUpperCase();
-      if (achievement.requirementType === 'CRYPTO_MASTER_QUIZ_COMPLETED' && domainUpper !== 'CRYPTO') return false;
-      if (achievement.requirementType === 'FINANCE_MASTER_QUIZ_COMPLETED' && domainUpper !== 'FINANCE') return false;
-      if (achievement.requirementType === 'TRADING_MASTER_QUIZ_COMPLETED' && domainUpper !== 'TRADING') return false;
+    // For master quiz achievements, only the completed quiz's domain counts
+    if (masterQuiz && context.domain && masterQuiz[1] !== context.domain.toUpperCase()) {
+      return false;
     }
 
     let current = 0;
 
-    switch (achievement.requirementType) {
-      case 'LESSONS_COMPLETED':
-        current = stats.lessonsCompleted;
-        break;
-      case 'STREAK_DAYS':
-        current = stats.streak;
-        break;
-      case 'XP_EARNED':
-        current = stats.xp;
-        break;
-      case 'DAILY_CHALLENGES':
-        current = stats.dailyChallengesCompleted;
-        break;
-      case 'DOMAIN_COMPLETED':
-        current = stats.domainsCompleted;
-        break;
-      case 'CRYPTO_LESSONS_COMPLETED':
-        current = stats.cryptoLessonsCompleted;
-        break;
-      case 'FINANCE_LESSONS_COMPLETED':
-        current = stats.financeLessonsCompleted;
-        break;
-      case 'TRADING_LESSONS_COMPLETED':
-        current = stats.tradingLessonsCompleted;
-        break;
-      case 'CRYPTO_MASTER_QUIZ_COMPLETED':
-        current = stats.cryptoMasterQuizCompleted;
-        break;
-      case 'FINANCE_MASTER_QUIZ_COMPLETED':
-        current = stats.financeMasterQuizCompleted;
-        break;
-      case 'TRADING_MASTER_QUIZ_COMPLETED':
-        current = stats.tradingMasterQuizCompleted;
-        break;
-      case 'LEVEL_REACHED':
-        current = stats.level;
-        break;
-      case 'REFERRALS_MADE':
-        current = stats.referralsCount;
-        break;
-      default:
-        return false;
+    if (domainLessons) {
+      current = stats.regularCounts[domainLessons[1]] || 0;
+    } else if (masterQuiz) {
+      current = stats.masterQuizCounts[masterQuiz[1]] || 0;
+    } else {
+      switch (type) {
+        case 'LESSONS_COMPLETED':
+          current = stats.lessonsCompleted;
+          break;
+        case 'STREAK_DAYS':
+          current = stats.streak;
+          break;
+        case 'XP_EARNED':
+          current = stats.xp;
+          break;
+        case 'DAILY_CHALLENGES':
+          current = stats.dailyChallengesCompleted;
+          break;
+        case 'DOMAIN_COMPLETED':
+          current = stats.domainsCompleted;
+          break;
+        case 'LEVEL_REACHED':
+          current = stats.level;
+          break;
+        case 'REFERRALS_MADE':
+          current = stats.referralsCount;
+          break;
+        default:
+          return false;
+      }
     }
 
     return current >= achievement.requirementValue;

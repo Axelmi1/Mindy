@@ -49,6 +49,7 @@ import {
   TimelineBuilderStepView,
 } from '@/components/steps';
 import { domainColor } from '@/data/domains';
+import { normalizeLegacySteps } from '@/utils/legacySteps';
 
 type ScreenState = 'loading' | 'ready' | 'playing' | 'feedback' | 'completed' | 'error';
 
@@ -168,6 +169,8 @@ export default function LessonScreen() {
         if (!lessonRes.success || !lessonRes.data) {
           throw new Error('Leçon introuvable');
         }
+        // Blindage : convertit les étapes au format legacy (anciens Master Tests)
+        lessonRes.data.content.steps = normalizeLegacySteps(lessonRes.data.content.steps);
         setLesson(lessonRes.data);
 
         // Store current user level for level up detection

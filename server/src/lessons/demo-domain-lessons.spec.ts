@@ -2,13 +2,27 @@ import { CreateLessonSchema, validateLessonContent } from './lesson-content.sche
 import { DEMO_DOMAIN_LESSONS } from './demo-domain-lessons.data';
 
 describe('DEMO_DOMAIN_LESSONS', () => {
-  it('contient 30 leçons (10 par nouveau domaine)', () => {
-    expect(DEMO_DOMAIN_LESSONS).toHaveLength(30);
+  it('contient 33 leçons (10 + 1 Master Quiz par nouveau domaine)', () => {
+    expect(DEMO_DOMAIN_LESSONS).toHaveLength(33);
     const byDomain = DEMO_DOMAIN_LESSONS.reduce<Record<string, number>>((acc, l) => {
       acc[l.domain] = (acc[l.domain] ?? 0) + 1;
       return acc;
     }, {});
-    expect(byDomain).toEqual({ REAL_ESTATE: 10, ENTREPRENEURSHIP: 10, TAXES: 10 });
+    expect(byDomain).toEqual({ REAL_ESTATE: 11, ENTREPRENEURSHIP: 11, TAXES: 11 });
+  });
+
+  it('a exactement un Master Quiz par nouveau domaine (200 XP, orderIndex 900)', () => {
+    const masters = DEMO_DOMAIN_LESSONS.filter((l) => l.isMasterQuiz);
+    expect(masters.map((l) => l.domain).sort()).toEqual([
+      'ENTREPRENEURSHIP',
+      'REAL_ESTATE',
+      'TAXES',
+    ]);
+    for (const quiz of masters) {
+      expect(quiz.xpReward).toBe(200);
+      expect(quiz.orderIndex).toBe(900);
+      expect(quiz.difficulty).toBe('ADVANCED');
+    }
   });
 
   it('a des ids uniques', () => {
