@@ -20,7 +20,7 @@ import {
   createDownloadResumable,
 } from 'expo-file-system/legacy';
 import * as Sharing from 'expo-sharing';
-import { progressExportApi } from '@/api/client';
+import { progressExportApi, getAuthToken } from '@/api/client';
 import { useUser } from '@/hooks/useUser';
 import { Icon } from '@/components/ui/Icon';
 
@@ -59,11 +59,12 @@ export function ExportProgressButton({ isPro, onUpgradePress }: ExportProgressBu
       const filename = `mindy-progress-${Date.now()}.pdf`;
       const localUri = `${documentDirectory ?? ''}${filename}`;
 
-      // Download with progress tracking
+      const token = getAuthToken();
+      // Download with progress tracking (endpoint requires auth)
       const downloadResumable = createDownloadResumable(
         url,
         localUri,
-        {},
+        { headers: token ? { Authorization: `Bearer ${token}` } : undefined },
         (downloadProgress) => {
           const pct =
             downloadProgress.totalBytesExpectedToWrite > 0

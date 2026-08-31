@@ -11,12 +11,13 @@ import {
   HttpCode,
   HttpStatus,
   Res,
+  Req,
+  ForbiddenException,
 } from '@nestjs/common';
 import type { Response } from 'express';
 import { ProgressService } from './progress.service';
 import { ProgressExportService } from './progress-export.service';
 import { WeeklyRecapService } from './weekly-recap.service';
-import { Public } from '../auth/public.decorator';
 import type {
   ApiResponse,
   UserProgress,
@@ -269,16 +270,19 @@ export class ProgressController {
    * GET /api/progress/:userId/export/pdf
    * Export user progress as a PDF report (Pro feature).
    */
-  @Public()
   @Get(':userId/export/pdf')
   @ApiOperation({ summary: 'Export progress report as PDF (Pro only)' })
   @ApiParam({ name: 'userId', description: 'User ID' })
   @SwaggerApiResponse({ status: 200, description: 'PDF file download' })
-  @SwaggerApiResponse({ status: 403, description: 'Requires Pro subscription' })
+  @SwaggerApiResponse({ status: 403, description: 'Requires Pro subscription or not your report' })
   async exportPdf(
     @Param('userId') userId: string,
+    @Req() req: { user?: { userId: string } },
     @Res() res: Response,
   ) {
+    if (req.user?.userId !== userId) {
+      throw new ForbiddenException('You can only export your own progress');
+    }
     const pdfBuffer = await this.exportService.generateProgressPdf(userId);
     const filename = `mindy-progress-${userId}-${Date.now()}.pdf`;
 
