@@ -824,7 +824,7 @@ export default function ProfileScreen() {
           </GlassCard>
 
           <GlassCard borderColor="#FFD700">
-            <Pressable style={styles.settingItemInner} onPress={() => router.push('/leaderboard')}>
+            <Pressable style={styles.settingItemInner} onPress={() => router.push('/(tabs)/leaderboard')}>
               <View style={styles.settingInfo}>
                 <View style={[styles.settingIconBg, { backgroundColor: 'rgba(255, 215, 0, 0.1)' }]}>
                   <Icon name="trophy" size={18} color="#FFD700" />

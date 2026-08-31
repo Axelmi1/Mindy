@@ -467,7 +467,7 @@ export default function SettingsScreen() {
           {/* ── Section: App ────────────────────────────────────────────── */}
           <Animated.View entering={FadeInUp.delay(200)} style={styles.section}>
             <Text style={styles.sectionTitle}>⚙️ Application</Text>
-            <Pressable style={styles.linkRow} onPress={() => router.push('/leaderboard')}>
+            <Pressable style={styles.linkRow} onPress={() => router.push('/(tabs)/leaderboard')}>
               <View style={styles.settingInfo}>
                 <Icon name="trophy" size={18} color="#FFD700" />
                 <Text style={styles.settingLabel}>Classement</Text>

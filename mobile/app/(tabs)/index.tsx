@@ -262,7 +262,7 @@ export default function HomeScreen() {
           </View>
 
           {/* Streak Card */}
-          <Pressable style={styles.statCard} onPress={() => router.push('/leaderboard')}>
+          <Pressable style={styles.statCard} onPress={() => router.push('/(tabs)/leaderboard')}>
             {Platform.OS === 'ios' ? (
               <BlurView intensity={20} tint="dark" style={StyleSheet.absoluteFill} />
             ) : (
@@ -304,7 +304,7 @@ export default function HomeScreen() {
           <Animated.View entering={FadeInDown.delay(240)}>
             <Pressable
               style={styles.rankPill}
-              onPress={() => router.push('/leaderboard')}
+              onPress={() => router.push('/(tabs)/leaderboard')}
             >
               <Text style={styles.rankPillIcon}>🏆</Text>
               <Text style={styles.rankPillText}>
@@ -602,7 +602,7 @@ export default function HomeScreen() {
 
         {/* Quick Actions */}
         <Animated.View entering={FadeInDown.delay(600)} style={styles.quickActions}>
-          <Pressable style={styles.quickAction} onPress={() => router.push('/leaderboard')}>
+          <Pressable style={styles.quickAction} onPress={() => router.push('/(tabs)/leaderboard')}>
             {Platform.OS === 'ios' ? (
               <BlurView intensity={15} tint="dark" style={StyleSheet.absoluteFill} />
             ) : (
