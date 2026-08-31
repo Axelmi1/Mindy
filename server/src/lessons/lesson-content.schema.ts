@@ -390,6 +390,7 @@ export const CreateLessonSchema = z.object({
   content: LessonContentSchema,
   xpReward: z.number().int().min(0).default(50),
   orderIndex: z.number().int().min(0).default(0),
+  isMasterQuiz: z.boolean().optional(),
 });
 
 /**
@@ -402,6 +403,7 @@ export const UpdateLessonSchema = z.object({
   content: LessonContentSchema.optional(),
   xpReward: z.number().int().min(0).optional(),
   orderIndex: z.number().int().min(0).optional(),
+  isMasterQuiz: z.boolean().optional(),
 });
 
 // ============================================================================
