@@ -264,6 +264,8 @@ const DragSortItemSchema = z.object({
   label: z.string().min(1),
   emoji: z.string().min(1),
   value: z.string().optional(),
+  /** Items with the same group can be in any order relative to each other */
+  group: z.string().optional(),
 });
 
 const DragSortStepSchema = z.object({
