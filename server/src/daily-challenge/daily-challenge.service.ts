@@ -160,9 +160,13 @@ export class DailyChallengeService {
 
     const recentLessonIds = recentChallenges.map((c) => c.lessonId);
 
+    // Le défi du jour ne pioche ni la leçon vitrine DEMO ni les Master Quiz
+    const eligible = { domain: { not: 'DEMO' as const }, isMasterQuiz: false };
+
     // Try to find a lesson not in recent challenges
     let lesson = await this.prisma.lesson.findFirst({
       where: {
+        ...eligible,
         id: { notIn: recentLessonIds.length > 0 ? recentLessonIds : undefined },
       },
       orderBy: { orderIndex: 'asc' },
@@ -171,6 +175,7 @@ export class DailyChallengeService {
     // Fallback to any lesson if all have been used
     if (!lesson) {
       lesson = await this.prisma.lesson.findFirst({
+        where: eligible,
         orderBy: { orderIndex: 'asc' },
       });
     }

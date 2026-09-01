@@ -243,6 +243,7 @@ enum Domain {
   REAL_ESTATE
   ENTREPRENEURSHIP
   TAXES
+  DEMO
 }
 
 enum Difficulty {

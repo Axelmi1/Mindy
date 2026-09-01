@@ -15,10 +15,14 @@ export const DOMAINS: Record<Domain, DomainMeta> = {
   REAL_ESTATE:      { label: 'Immobilier',      sublabel: 'Acheter, louer, investir',    color: '#A371F7', icon: '🏠' },
   ENTREPRENEURSHIP: { label: 'Entrepreneuriat', sublabel: 'Lancer & gérer un business',  color: '#FF7B72', icon: '🚀' },
   TAXES:            { label: 'Impôts',           sublabel: 'Fiscalité, déclarations',     color: '#E3B341', icon: '🧾' },
+  DEMO:             { label: 'Démo',             sublabel: 'Toutes les mécaniques',       color: '#39FF14', icon: '🎬' },
 };
 
-/** Ordre d'affichage des domaines dans l'onboarding et le catalogue. */
+/** Ordre d'affichage des domaines dans l'onboarding et les réglages (sans DEMO). */
 export const DOMAIN_ORDER: Domain[] = ['CRYPTO', 'FINANCE', 'TRADING', 'REAL_ESTATE', 'ENTREPRENEURSHIP', 'TAXES'];
+
+/** Ordre des onglets du catalogue Apprendre — inclut la section Démo (soutenance). */
+export const LEARN_DOMAIN_ORDER: Domain[] = [...DOMAIN_ORDER, 'DEMO'];
 
 const FALLBACK_COLOR = '#8B949E';
 

@@ -2,13 +2,20 @@ import { CreateLessonSchema, validateLessonContent } from './lesson-content.sche
 import { DEMO_DOMAIN_LESSONS } from './demo-domain-lessons.data';
 
 describe('DEMO_DOMAIN_LESSONS', () => {
-  it('contient 33 leçons (10 + 1 Master Quiz par nouveau domaine)', () => {
-    expect(DEMO_DOMAIN_LESSONS).toHaveLength(33);
+  it('contient 34 leçons (10 + 1 Master Quiz par nouveau domaine, + la vitrine DEMO)', () => {
+    expect(DEMO_DOMAIN_LESSONS).toHaveLength(34);
     const byDomain = DEMO_DOMAIN_LESSONS.reduce<Record<string, number>>((acc, l) => {
       acc[l.domain] = (acc[l.domain] ?? 0) + 1;
       return acc;
     }, {});
-    expect(byDomain).toEqual({ REAL_ESTATE: 11, ENTREPRENEURSHIP: 11, TAXES: 11 });
+    expect(byDomain).toEqual({ REAL_ESTATE: 11, ENTREPRENEURSHIP: 11, TAXES: 11, DEMO: 1 });
+  });
+
+  it('la leçon vitrine DEMO couvre les 20 types d\'étapes', () => {
+    const showcase = DEMO_DOMAIN_LESSONS.find((l) => l.domain === 'DEMO')!;
+    const types = new Set(showcase.content.steps.map((s) => s.type));
+    expect(types.size).toBe(20);
+    expect(showcase.difficulty).toBe('BEGINNER');
   });
 
   it('a exactement un Master Quiz par nouveau domaine (200 XP, orderIndex 900)', () => {

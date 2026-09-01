@@ -385,7 +385,7 @@ export const LessonContentSchema = z.object({
  */
 export const CreateLessonSchema = z.object({
   title: z.string().min(1, 'Title is required').max(200),
-  domain: z.enum(['CRYPTO', 'FINANCE', 'TRADING', 'REAL_ESTATE', 'ENTREPRENEURSHIP', 'TAXES']),
+  domain: z.enum(['CRYPTO', 'FINANCE', 'TRADING', 'REAL_ESTATE', 'ENTREPRENEURSHIP', 'TAXES', 'DEMO']),
   difficulty: z.enum(['BEGINNER', 'INTERMEDIATE', 'ADVANCED']),
   content: LessonContentSchema,
   xpReward: z.number().int().min(0).default(50),
@@ -398,7 +398,7 @@ export const CreateLessonSchema = z.object({
  */
 export const UpdateLessonSchema = z.object({
   title: z.string().min(1).max(200).optional(),
-  domain: z.enum(['CRYPTO', 'FINANCE', 'TRADING', 'REAL_ESTATE', 'ENTREPRENEURSHIP', 'TAXES']).optional(),
+  domain: z.enum(['CRYPTO', 'FINANCE', 'TRADING', 'REAL_ESTATE', 'ENTREPRENEURSHIP', 'TAXES', 'DEMO']).optional(),
   difficulty: z.enum(['BEGINNER', 'INTERMEDIATE', 'ADVANCED']).optional(),
   content: LessonContentSchema.optional(),
   xpReward: z.number().int().min(0).optional(),

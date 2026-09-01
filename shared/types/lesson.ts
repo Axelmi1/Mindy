@@ -350,7 +350,7 @@ export interface LessonContent {
 // Enums
 // ============================================================================
 
-export type Domain = 'CRYPTO' | 'FINANCE' | 'TRADING' | 'REAL_ESTATE' | 'ENTREPRENEURSHIP' | 'TAXES';
+export type Domain = 'CRYPTO' | 'FINANCE' | 'TRADING' | 'REAL_ESTATE' | 'ENTREPRENEURSHIP' | 'TAXES' | 'DEMO';
 export type Difficulty = 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED';
 
 // ============================================================================

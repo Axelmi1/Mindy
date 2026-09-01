@@ -29,7 +29,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import type { Lesson, UserProgressWithLesson, Domain } from '@mindy/shared';
-import { DOMAINS, DOMAIN_ORDER, domainColor, domainEmoji, domainLabel } from '@/data/domains';
+import { DOMAINS, LEARN_DOMAIN_ORDER as DOMAIN_ORDER, domainColor, domainEmoji, domainLabel } from '@/data/domains';
 import { lessonsApi, progressApi } from '@/api/client';
 import { useUser } from '@/hooks/useUser';
 import { Icon } from '@/components/ui/Icon';

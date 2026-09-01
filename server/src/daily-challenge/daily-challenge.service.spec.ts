@@ -115,10 +115,15 @@ describe('DailyChallengeService', () => {
 
       await service.getTodayChallenge('user-1');
 
-      // Verify the first findFirst call excluded recent lessons
+      // Verify the first findFirst call excluded recent lessons,
+      // the DEMO showcase domain and master quizzes
       expect(mockPrisma.lesson.findFirst).toHaveBeenCalledWith(
         expect.objectContaining({
-          where: { id: { notIn: ['lesson-old-1', 'lesson-old-2'] } },
+          where: {
+            id: { notIn: ['lesson-old-1', 'lesson-old-2'] },
+            domain: { not: 'DEMO' },
+            isMasterQuiz: false,
+          },
         }),
       );
     });
