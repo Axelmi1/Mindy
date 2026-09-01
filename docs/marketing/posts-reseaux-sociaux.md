@@ -1,21 +1,23 @@
 # Mindy — Kit posts réseaux sociaux (soutenance & lancement)
 
 > DA : dark `#0D1117` + néon `#39FF14`, ton coach motivant, parallèle Duolingo assumé.
+> **Mascotte : le cerveau néon 🧠 (pas de logo — le nom « MINDY » s'écrit en texte monospace).**
+> **Positionnement : le Duolingo des compétences business (la crypto/finance ne sont que des verticales).**
 > 6 visuels générés (voir dossier partagé) — chaque post ci-dessous correspond à un visuel.
 
 ---
 
-## Visuel 1 — « LE DUOLINGO DE L'ARGENT » (positionnement, 1:1)
+## Visuel 1 — « LE DUOLINGO DU BUSINESS » (positionnement, 1:1)
 
 **X / Twitter**
-> On construit le Duolingo de l'argent. 🟢
-> Crypto + finance perso, 10 min/jour, en français.
+> On construit le Duolingo du business. 🟢
+> Crypto, finance, immobilier, impôts, entrepreneuriat — 10 min/jour, en français.
 > Streaks, ligues, défis entre potes, quêtes du jour.
 > La bêta est ouverte → lien en bio.
 
 **LinkedIn (version équipe/école)**
-> 📱 Mindy, c'est notre pari : appliquer les mécaniques qui rendent Duolingo addictif… à l'éducation financière.
-> Micro-leçons de 5-15 min, XP, séries, ligues hebdomadaires, défis 1v1 — sur la crypto, la bourse, l'immobilier, les impôts et l'entrepreneuriat.
+> 📱 Mindy, c'est notre pari : appliquer les mécaniques qui rendent Duolingo addictif… aux compétences business.
+> Micro-leçons de 5-15 min, XP, séries, ligues hebdomadaires, défis 1v1 — sur la crypto, la finance, le trading, l'immobilier, les impôts et l'entrepreneuriat.
 > Stack : NestJS · React Native · PostgreSQL · Stripe. Déployé en continu, testable dès aujourd'hui via Expo Go.
 > #EdTech #Fintech #Startup
 
@@ -39,11 +41,11 @@
 ## Visuel 3 — « GARDE TA SÉRIE » (rétention/gamification, 1:1)
 
 **Instagram (feed)**
-> La vraie richesse, c'est la régularité. 🔥
+> Le vrai skill, c'est la régularité. 🔥
 > Chaque jour sur Mindy : ta série grandit, tes quêtes tombent, ta ligue t'attend.
 > Rate un jour ? Le streak freeze te sauve. Rate deux jours ? Tu peux racheter ta série.
 > On a tout prévu pour que tu ne lâches jamais. 😏
-> #habitudes #financespersonnelles #gamification
+> #habitudes #business #gamification
 
 ---
 
@@ -53,7 +55,7 @@
 - **Slide 2 — Erreur #1 : investir sans comprendre.** « Un pote m'a dit d'acheter » n'est pas une stratégie. Mindy t'apprend les bases en 5 min/jour.
 - **Slide 3 — Erreur #2 : croire aux gains garantis.** Rendement « garanti » = arnaque. Notre mini-jeu « chasse à l'arnaque » t'entraîne à les repérer.
 - **Slide 4 — Erreur #3 : tout miser sur un seul actif.** Diversifier, c'est survivre. Apprends pourquoi dans le domaine Finance.
-- **Slide 5 — CTA :** Commence gratuitement. 🟢 Le Duolingo de la crypto & des finances.
+- **Slide 5 — CTA :** Commence gratuitement. 🟢 Le Duolingo du business.
 
 ---
 
@@ -70,7 +72,7 @@
 ## Visuel 6 — « 10 min par jour » (produit/store, 9:16)
 
 **Story Instagram / X**
-> 10 min par jour. Deviens bon avec ton argent. 🧠
+> 10 min par jour. Maîtrise le business. 🧠
 > Quêtes du jour, séries, ligues, 6 domaines : crypto, finance, trading, immobilier, impôts, entrepreneuriat.
 > Bêta ouverte — scanne le QR pour tester dans Expo Go (lien en bio).
 

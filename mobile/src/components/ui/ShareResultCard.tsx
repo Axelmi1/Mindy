@@ -87,7 +87,7 @@ export function ShareResultButton({ lessonTitle, xp, accuracy, streak, username 
             </View>
 
             <View style={styles.cardFooter}>
-              <Text style={styles.tagline}>Le Duolingo de la crypto & des finances 🧠⚡</Text>
+              <Text style={styles.tagline}>Le Duolingo du business 🧠⚡</Text>
             </View>
           </View>
         </ViewShot>
