@@ -9,6 +9,7 @@ const baseState = {
   dailyMinutes: 5 as const,
   reminderHour: 9,
   notificationsEnabled: false,
+  demoScore: 2,
 };
 
 function makeDeps(over: Partial<FinalizeDeps> = {}): FinalizeDeps {
@@ -99,5 +100,53 @@ describe('runFinalize', () => {
   it('refuse de continuer sans email (nouveau compte)', async () => {
     const deps = makeDeps();
     await expect(runFinalize({ ...baseState, email: null }, deps)).rejects.toThrow(/email/i);
+  });
+
+  // ── XP démo (l'onboarding promet demoScore × 10 XP au ResultStep) ─────────
+
+  it("crédite l'XP démo (demoScore × 10) juste après l'inscription", async () => {
+    const deps = makeDeps();
+    await runFinalize(baseState, deps); // demoScore = 2 → 20 XP
+    const call = (deps.fetchImpl as jest.Mock).mock.calls
+      .find((c) => c[0] === 'http://api.test/api/users/u1/xp');
+    expect(call).toBeTruthy();
+    expect(JSON.parse(call[1].body)).toEqual({ amount: 20 });
+    expect(call[1].headers.Authorization).toBe('Bearer jwt.tok');
+  });
+
+  it("ne crédite pas d'XP quand demoScore = 0", async () => {
+    const deps = makeDeps();
+    await runFinalize({ ...baseState, demoScore: 0 }, deps);
+    const call = (deps.fetchImpl as jest.Mock).mock.calls
+      .find((c) => String(c[0]).endsWith('/xp'));
+    expect(call).toBeFalsy();
+  });
+
+  it("ne re-crédite pas l'XP quand une session existe déjà (retry après échec)", async () => {
+    const deps = makeDeps({ getExistingToken: async () => 'existing-token' });
+    await runFinalize(baseState, deps);
+    const call = (deps.fetchImpl as jest.Mock).mock.calls
+      .find((c) => String(c[0]).endsWith('/xp'));
+    expect(call).toBeFalsy();
+  });
+
+  it("un échec du crédit XP ne bloque pas l'onboarding", async () => {
+    const navigateToApp = jest.fn();
+    const deps = makeDeps({
+      navigateToApp,
+      fetchImpl: jest.fn(async (url: string) => {
+        if (url.endsWith('/auth/register')) {
+          return {
+            ok: true,
+            status: 201,
+            json: async () => ({ success: true, data: { accessToken: 'jwt.tok', user: { id: 'u1', username: 'satoshi' } } }),
+          } as any;
+        }
+        if (url.endsWith('/xp')) throw new Error('network down');
+        return { ok: true, status: 200, json: async () => ({ success: true }) } as any;
+      }),
+    });
+    await expect(runFinalize(baseState, deps)).resolves.toBeUndefined();
+    expect(navigateToApp).toHaveBeenCalled();
   });
 });

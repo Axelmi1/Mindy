@@ -3,6 +3,7 @@ import { MindyTurn } from '../components/MindyTurn';
 import { XpReveal } from '../components/XpReveal';
 import { Confetti } from '@/components/animations/Confetti';
 import { useOnboardingStore } from '../hooks/useOnboardingStore';
+import { DEMO_XP_PER_CORRECT } from '../hooks/finalizeOnboarding';
 
 export function ResultStep() {
   const next = useOnboardingStore((s) => s.next);
@@ -10,7 +11,7 @@ export function ResultStep() {
   const setMood = useOnboardingStore((s) => s.setMood);
   useEffect(() => { setMood('hype'); }, [setMood]);
 
-  const xp = demoScore * 10;
+  const xp = demoScore * DEMO_XP_PER_CORRECT;
   const msg =
     demoScore >= 2 ? `Joli, ${demoScore}/3 ! Tu viens de gagner tes premiers XP 🎉`
     : demoScore === 1 ? `${demoScore}/3 — c'est un début, on va vite progresser 💪`

@@ -2,6 +2,9 @@ import { useOnboardingStore } from './useOnboardingStore';
 
 const REQUEST_TIMEOUT_MS = 60000; // large : couvre le cold-start Render (~42s)
 
+/** XP par bonne réponse aux questions démo — doit rester aligné avec XpReveal (ResultStep). */
+export const DEMO_XP_PER_CORRECT = 10;
+
 export type FinalizeState = {
   username: string;
   email: string | null;
@@ -11,6 +14,8 @@ export type FinalizeState = {
   dailyMinutes: 5 | 10 | 15 | null;
   reminderHour: number | null;
   notificationsEnabled: boolean;
+  /** Bonnes réponses aux questions démo (0-3) — créditées en XP à l'inscription. */
+  demoScore: number;
 };
 
 /** Signature minimale de fetch dont on a besoin (toujours appelé avec une URL string). */
@@ -95,6 +100,26 @@ export async function runFinalize(state: FinalizeState, deps: FinalizeDeps): Pro
     userId = data.user.id as string;
     username = data.user.username;
     await deps.persistAuth(token as string, userId, username);
+
+    // Créditer l'XP promise par le ResultStep (demoScore × 10), uniquement à la
+    // PREMIÈRE inscription : au retry (token déjà présent) on ne repasse pas ici,
+    // donc pas de double crédit. Non-bloquant : perdre 10-30 XP vaut mieux que
+    // bloquer la création du compte.
+    const demoXp = state.demoScore * DEMO_XP_PER_CORRECT;
+    if (demoXp > 0) {
+      try {
+        await fetchWithTimeout(fetchImpl, `${apiUrl}/users/${userId}/xp`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ amount: demoXp }),
+        });
+      } catch (err) {
+        console.warn('[finalize] crédit XP démo échoué (non-bloquant):', err);
+      }
+    }
   }
 
   // 2) Push token — endpoint + platform + permission + header auth (non bloquant).
@@ -144,6 +169,7 @@ export async function finalizeOnboarding(): Promise<void> {
       domain: s.domain, goal: s.goal,
       dailyMinutes: s.dailyMinutes, reminderHour: s.reminderHour,
       notificationsEnabled: s.notificationsEnabled,
+      demoScore: s.demoScore,
     },
     {
       apiUrl,
