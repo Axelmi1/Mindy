@@ -415,6 +415,12 @@ export const leaderboardApi = {
     fetchApi<WeeklyLeaderboard>(`/leaderboard/weekly?userId=${userId}`),
 
   /**
+   * Weekly leaderboard restricted to the user's friends (+ themselves)
+   */
+  getFriendsLeaderboard: (userId: string) =>
+    fetchApi<WeeklyLeaderboard>(`/leaderboard/friends?userId=${userId}`),
+
+  /**
    * Get user's weekly stats
    */
   getUserStats: (userId: string) =>

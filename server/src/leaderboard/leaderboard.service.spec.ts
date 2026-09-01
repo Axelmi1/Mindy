@@ -48,6 +48,9 @@ const mockPrisma = {
     findUnique: jest.fn(),
     count: jest.fn(),
   },
+  friendRequest: {
+    findMany: jest.fn(),
+  },
 };
 
 // ── Test suite ────────────────────────────────────────────────────────────────
@@ -410,6 +413,86 @@ describe('LeaderboardService', () => {
 
       const call = mockPrisma.weeklyXp.upsert.mock.calls[0][0];
       expect(call.create.xpEarned).toBe(999999);
+    });
+  });
+
+  // ── getFriendsLeaderboard ──────────────────────────────────────────────────
+
+  describe('getFriendsLeaderboard', () => {
+    function setupFriends() {
+      // u1 (moi) est ami avec u2 (envoyée) et u3 (reçue)
+      mockPrisma.friendRequest.findMany.mockResolvedValue([
+        { senderId: 'u1', receiverId: 'u2' },
+        { senderId: 'u3', receiverId: 'u1' },
+      ]);
+      mockPrisma.user.findMany.mockResolvedValue([
+        { id: 'u1', username: 'moi', xp: 500 },
+        { id: 'u2', username: 'ami2', xp: 900 },
+        { id: 'u3', username: 'ami3', xp: 100 },
+      ]);
+      // 1er appel = semaine courante, 2e = semaine dernière
+      mockPrisma.weeklyXp.findMany
+        .mockResolvedValueOnce([
+          { userId: 'u2', xpEarned: 120 },
+          { userId: 'u1', xpEarned: 80 },
+        ])
+        .mockResolvedValueOnce([{ userId: 'u1', xpEarned: 100 }]);
+    }
+
+    it('classe amis + soi par XP hebdo, amis à 0 XP inclus', async () => {
+      setupFriends();
+
+      const result = await service.getFriendsLeaderboard('u1');
+
+      expect(result.leaderboard.map((e) => e.userId)).toEqual(['u2', 'u1', 'u3']);
+      expect(result.leaderboard[2].xpEarned).toBe(0); // u3 sans entrée hebdo
+      expect(result.leaderboard).toHaveLength(3);
+    });
+
+    it('marque isCurrentUser et renvoie userPosition', async () => {
+      setupFriends();
+
+      const result = await service.getFriendsLeaderboard('u1');
+
+      expect(result.userPosition?.userId).toBe('u1');
+      expect(result.userPosition?.rank).toBe(2);
+      expect(result.leaderboard.filter((e) => e.isCurrentUser)).toHaveLength(1);
+    });
+
+    it('calcule xpDelta vs semaine dernière', async () => {
+      setupFriends();
+
+      const result = await service.getFriendsLeaderboard('u1');
+      const me = result.leaderboard.find((e) => e.userId === 'u1')!;
+
+      expect(me.lastWeekXp).toBe(100);
+      expect(me.xpDelta).toBe(-20); // 80 cette semaine vs 100
+    });
+
+    it('sans amis : renvoie uniquement soi-même (jamais vide)', async () => {
+      mockPrisma.friendRequest.findMany.mockResolvedValue([]);
+      mockPrisma.user.findMany.mockResolvedValue([{ id: 'u1', username: 'moi', xp: 500 }]);
+      mockPrisma.weeklyXp.findMany.mockResolvedValue([]);
+
+      const result = await service.getFriendsLeaderboard('u1');
+
+      expect(result.leaderboard).toHaveLength(1);
+      expect(result.leaderboard[0].isCurrentUser).toBe(true);
+    });
+
+    it('départage les 0 XP par XP total (ligue)', async () => {
+      mockPrisma.friendRequest.findMany.mockResolvedValue([
+        { senderId: 'u1', receiverId: 'u2' },
+      ]);
+      mockPrisma.user.findMany.mockResolvedValue([
+        { id: 'u1', username: 'moi', xp: 100 },
+        { id: 'u2', username: 'ami2', xp: 900 },
+      ]);
+      mockPrisma.weeklyXp.findMany.mockResolvedValue([]);
+
+      const result = await service.getFriendsLeaderboard('u1');
+
+      expect(result.leaderboard.map((e) => e.userId)).toEqual(['u2', 'u1']);
     });
   });
 });

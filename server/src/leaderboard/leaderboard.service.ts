@@ -161,6 +161,83 @@ export class LeaderboardService {
   }
 
   /**
+   * Classement hebdo restreint aux amis (demandes ACCEPTED, les deux sens)
+   * + soi-même. Les amis à 0 XP cette semaine sont inclus pour ne jamais
+   * afficher une liste vide.
+   */
+  async getFriendsLeaderboard(userId: string): Promise<{
+    leaderboard: LeaderboardEntry[];
+    userPosition: LeaderboardEntry | null;
+    weekStart: Date;
+    weekEnd: Date;
+  }> {
+    const weekStart = this.getWeekStart(new Date());
+    const weekEnd = new Date(weekStart);
+    weekEnd.setDate(weekEnd.getDate() + 7);
+
+    const links = await this.prisma.friendRequest.findMany({
+      where: {
+        status: 'ACCEPTED',
+        OR: [{ senderId: userId }, { receiverId: userId }],
+      },
+      select: { senderId: true, receiverId: true },
+    });
+    const memberIds = Array.from(
+      new Set([
+        userId,
+        ...links.map((l) => (l.senderId === userId ? l.receiverId : l.senderId)),
+      ]),
+    );
+
+    const lastWeekStart = new Date(weekStart);
+    lastWeekStart.setDate(lastWeekStart.getDate() - 7);
+
+    const [users, weekEntries, lastWeekEntries] = await Promise.all([
+      this.prisma.user.findMany({
+        where: { id: { in: memberIds }, deletedAt: null },
+        select: { id: true, username: true, xp: true },
+      }),
+      this.prisma.weeklyXp.findMany({
+        where: { weekStart, userId: { in: memberIds } },
+        select: { userId: true, xpEarned: true },
+      }),
+      this.prisma.weeklyXp.findMany({
+        where: { weekStart: lastWeekStart, userId: { in: memberIds } },
+        select: { userId: true, xpEarned: true },
+      }),
+    ]);
+
+    const weekMap = new Map(weekEntries.map((e) => [e.userId, e.xpEarned]));
+    const lastWeekMap = new Map(lastWeekEntries.map((e) => [e.userId, e.xpEarned]));
+
+    const ranked = users
+      .map((user) => ({ user, xpEarned: weekMap.get(user.id) ?? 0 }))
+      .sort((a, b) => b.xpEarned - a.xpEarned || b.user.xp - a.user.xp);
+
+    const leaderboard: LeaderboardEntry[] = ranked.map((entry, index) => {
+      const lastWeekXp = lastWeekMap.get(entry.user.id) ?? 0;
+      return {
+        rank: index + 1,
+        userId: entry.user.id,
+        username: entry.user.username,
+        xpEarned: entry.xpEarned,
+        xpDelta: entry.xpEarned - lastWeekXp,
+        lastWeekXp,
+        totalXp: entry.user.xp,
+        isCurrentUser: entry.user.id === userId,
+        rankDelta: null,
+      };
+    });
+
+    return {
+      leaderboard,
+      userPosition: leaderboard.find((e) => e.isCurrentUser) ?? null,
+      weekStart,
+      weekEnd,
+    };
+  }
+
+  /**
    * Classement général (XP total) — repli quand la semaine courante n'a aucune
    * activité, pour ne jamais afficher un classement vide.
    */

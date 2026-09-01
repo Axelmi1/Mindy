@@ -116,6 +116,34 @@ export class LeaderboardController {
   }
 
   /**
+   * GET /api/leaderboard/friends?userId=xxx
+   * Weekly leaderboard restricted to the user's friends (+ themselves)
+   */
+  @Get('friends')
+  @ApiOperation({
+    summary: 'Get weekly leaderboard among friends',
+    description: [
+      'Returns the weekly XP ranking restricted to the user\'s accepted friends,',
+      'plus the user themselves. Friends with 0 XP this week are included so the',
+      'list is never empty.',
+    ].join(' '),
+  })
+  @ApiQuery({
+    name: 'userId',
+    required: true,
+    description: 'The authenticated user\'s ID',
+    example: 'clxyz123abc',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Friends leaderboard with user position and week boundaries',
+    type: WeeklyLeaderboardResponseDto,
+  })
+  getFriendsLeaderboard(@Query('userId') userId: string) {
+    return this.leaderboardService.getFriendsLeaderboard(userId);
+  }
+
+  /**
    * GET /api/leaderboard/me?userId=xxx
    * User's personal weekly stats
    */

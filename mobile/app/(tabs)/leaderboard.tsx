@@ -6,7 +6,9 @@ import {
   FlatList,
   RefreshControl,
   Platform,
+  TouchableOpacity,
 } from 'react-native';
+import { router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -352,6 +354,7 @@ export default function LeaderboardScreen() {
   const [userPosition, setUserPosition] = useState<LeaderboardEntry | null>(null);
   const [userStats, setUserStats] = useState<UserWeeklyStats | null>(null);
   const [timeUntilReset, setTimeUntilReset] = useState('');
+  const [scope, setScope] = useState<'global' | 'friends'>('global');
 
   const formatTimeUntilReset = (ms: number) => {
     const days = Math.floor(ms / (1000 * 60 * 60 * 24));
@@ -364,7 +367,9 @@ export default function LeaderboardScreen() {
     if (!userId) return;
     try {
       const [leaderboardRes, statsRes] = await Promise.all([
-        leaderboardApi.getWeekly(userId),
+        scope === 'friends'
+          ? leaderboardApi.getFriendsLeaderboard(userId)
+          : leaderboardApi.getWeekly(userId),
         leaderboardApi.getUserStats(userId),
       ]);
 
@@ -382,7 +387,7 @@ export default function LeaderboardScreen() {
       setIsLoading(false);
       setIsRefreshing(false);
     }
-  }, [userId]);
+  }, [userId, scope]);
 
   useEffect(() => {
     if (!isUserLoading && userId) loadData();
@@ -451,6 +456,28 @@ export default function LeaderboardScreen() {
                 </View>
               </View>
               <Text style={styles.subtitle}>XP hebdomadaire · renouvelle chaque lundi</Text>
+
+              {/* ── Général / Amis ───────────────────────────────── */}
+              <View style={styles.scopeToggle}>
+                <TouchableOpacity
+                  style={[styles.scopeButton, scope === 'global' && styles.scopeButtonActive]}
+                  onPress={() => setScope('global')}
+                  activeOpacity={0.8}
+                >
+                  <Text style={[styles.scopeText, scope === 'global' && styles.scopeTextActive]}>
+                    🌍 Général
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.scopeButton, scope === 'friends' && styles.scopeButtonActive]}
+                  onPress={() => setScope('friends')}
+                  activeOpacity={0.8}
+                >
+                  <Text style={[styles.scopeText, scope === 'friends' && styles.scopeTextActive]}>
+                    👥 Amis
+                  </Text>
+                </TouchableOpacity>
+              </View>
             </Animated.View>
 
             {/* ── User stats card ──────────────────────────────────── */}
@@ -519,16 +546,34 @@ export default function LeaderboardScreen() {
           </View>
         }
         ListFooterComponent={
-          userNotInTop && userPosition ? (
-            <Animated.View
-              entering={FadeInDown.duration(300)}
-              style={styles.footerSection}
-            >
-              <View style={styles.footerSeparator} />
-              <Text style={styles.footerLabel}>Votre position</Text>
-              <LeaderboardRow item={userPosition} index={0} />
-            </Animated.View>
-          ) : null
+          <>
+            {scope === 'friends' && leaderboard.length <= 1 && (
+              <TouchableOpacity
+                style={styles.inviteHint}
+                onPress={() => router.push('/friends')}
+                activeOpacity={0.85}
+              >
+                <Text style={styles.inviteHintEmoji}>👥</Text>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.inviteHintTitle}>Personne à défier ici…</Text>
+                  <Text style={styles.inviteHintSub}>
+                    Ajoute des amis pour vous comparer chaque semaine
+                  </Text>
+                </View>
+                <Icon name="chevron-right" size={16} color="#39FF14" />
+              </TouchableOpacity>
+            )}
+            {userNotInTop && userPosition ? (
+              <Animated.View
+                entering={FadeInDown.duration(300)}
+                style={styles.footerSection}
+              >
+                <View style={styles.footerSeparator} />
+                <Text style={styles.footerLabel}>Votre position</Text>
+                <LeaderboardRow item={userPosition} index={0} />
+              </Animated.View>
+            ) : null}
+          </>
         }
       />
     </SafeAreaView>
@@ -562,6 +607,60 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: '800',
     color: '#E6EDF3',
+  },
+  scopeToggle: {
+    flexDirection: 'row',
+    marginTop: 12,
+    backgroundColor: '#161B22',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#30363D',
+    padding: 4,
+    gap: 4,
+  },
+  scopeButton: {
+    flex: 1,
+    paddingVertical: 8,
+    borderRadius: 9,
+    alignItems: 'center',
+  },
+  scopeButtonActive: {
+    backgroundColor: '#21262D',
+    borderWidth: 1,
+    borderColor: '#39FF14',
+  },
+  scopeText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#8B949E',
+  },
+  scopeTextActive: {
+    color: '#39FF14',
+    fontWeight: '700',
+  },
+  inviteHint: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    backgroundColor: '#161B22',
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: '#30363D',
+    padding: 14,
+    marginTop: 12,
+  },
+  inviteHintEmoji: {
+    fontSize: 24,
+  },
+  inviteHintTitle: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#E6EDF3',
+  },
+  inviteHintSub: {
+    fontSize: 12,
+    color: '#8B949E',
+    marginTop: 2,
   },
   subtitle: {
     fontFamily: 'JetBrainsMono',
