@@ -835,6 +835,23 @@ export default function ProfileScreen() {
             </Pressable>
           </GlassCard>
 
+          <GlassCard borderColor="#39FF14">
+            <Pressable style={styles.settingItemInner} onPress={() => router.push('/shop' as any)}>
+              <View style={styles.settingInfo}>
+                <View style={styles.settingIconBg}>
+                  <Text style={{ fontSize: 16 }}>🛒</Text>
+                </View>
+                <View>
+                  <Text style={styles.settingLabel}>Boutique d'avatars</Text>
+                  <Text style={[styles.settingLabel, { fontSize: 11, color: '#484F58', marginTop: 1 }]}>
+                    Dépense ton XP pour customiser ton profil
+                  </Text>
+                </View>
+              </View>
+              <Icon name="chevron-right" size={18} color="#39FF14" />
+            </Pressable>
+          </GlassCard>
+
           <GlassCard borderColor="#F85149">
             <Pressable style={styles.settingItemInner} onPress={handleResetProgress}>
               <View style={styles.settingInfo}>

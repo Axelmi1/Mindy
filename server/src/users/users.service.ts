@@ -6,6 +6,7 @@ import { AnalyticsService } from '../analytics/analytics.service';
 import { AchievementCheckerService } from '../achievements/achievement-checker.service';
 import { LeaderboardService } from '../leaderboard/leaderboard.service';
 import type { CreateUserDto, UpdateUserDto } from '@mindy/shared';
+import { AVATAR_CATALOG, DEFAULT_AVATAR_ID, findAvatar } from './avatars.catalog';
 
 @Injectable()
 export class UsersService {
@@ -367,6 +368,73 @@ export class UsersService {
     return { streak: updated.streak, xp: updated.xp, xpSpent: UsersService.STREAK_REPAIR_COST };
   }
 
+  // ── Boutique d'avatars ────────────────────────────────────────────────────
+
+  /** Catalogue + état (possédé/équipé) pour l'écran boutique. */
+  async getAvatarShop(id: string) {
+    const user = await this.findById(id);
+    const equippedId = user.avatar ?? DEFAULT_AVATAR_ID;
+    const owned = new Set([
+      ...AVATAR_CATALOG.filter((a) => a.free).map((a) => a.id),
+      ...user.ownedAvatars,
+    ]);
+    return {
+      xp: user.xp,
+      equipped: equippedId,
+      items: AVATAR_CATALOG.map((item) => ({
+        ...item,
+        owned: owned.has(item.id),
+        equipped: equippedId === item.id,
+      })),
+    };
+  }
+
+  /** Achète un avatar avec l'XP et l'équipe dans la foulée. */
+  async buyAvatar(id: string, avatarId: string) {
+    const user = await this.findById(id);
+    const item = findAvatar(avatarId);
+    if (!item) throw new NotFoundException(`Unknown avatar: ${avatarId}`);
+    if (item.free || user.ownedAvatars.includes(avatarId)) {
+      throw new BadRequestException('Avatar already owned');
+    }
+    if (user.xp < item.price) {
+      throw new BadRequestException(
+        `Not enough XP — need ${item.price} XP (you have ${user.xp})`,
+      );
+    }
+
+    const updated = await this.prisma.user.update({
+      where: { id },
+      data: {
+        xp: { decrement: item.price },
+        ownedAvatars: { push: avatarId },
+        avatar: avatarId,
+      },
+    });
+
+    this.analyticsService.track(id, 'AVATAR_PURCHASED', {
+      avatarId,
+      xpSpent: item.price,
+    });
+
+    return { xp: updated.xp, avatar: avatarId, ownedAvatars: updated.ownedAvatars };
+  }
+
+  /** Équipe un avatar possédé (les gratuits le sont toujours). */
+  async equipAvatar(id: string, avatarId: string) {
+    const user = await this.findById(id);
+    const item = findAvatar(avatarId);
+    if (!item) throw new NotFoundException(`Unknown avatar: ${avatarId}`);
+    if (!item.free && !user.ownedAvatars.includes(avatarId)) {
+      throw new BadRequestException('Avatar not owned');
+    }
+    const updated = await this.prisma.user.update({
+      where: { id },
+      data: { avatar: avatarId },
+    });
+    return { avatar: updated.avatar };
+  }
+
   /** Offre de rachat active (ou null) — exposée dans getStats pour le mobile. */
   private getStreakRepairOffer(user: { lostStreak: number; streakLostAt: Date | null }) {
     if (!user.streakLostAt || user.lostStreak <= 0) return null;
@@ -412,6 +480,7 @@ export class UsersService {
       streakFreezes: user.streakFreezes,
       streakAtRisk: this.isStreakAtRisk(user.lastActiveAt),
       streakRepair: this.getStreakRepairOffer(user),
+      avatarEmoji: findAvatar(user.avatar ?? DEFAULT_AVATAR_ID)?.emoji ?? '🧠',
       soundEnabled: user.soundEnabled,
       lessonsCompleted: completedCount,
       totalLessons: totalCount,

@@ -26,6 +26,8 @@ model User {
   streakFreezes           Int                      @default(3)
   lostStreak              Int                      @default(0)
   streakLostAt            DateTime?
+  avatar                  String?
+  ownedAvatars            String[]                 @default([])
   referralCode            String?                  @unique
   referralXpEarned        Int                      @default(0)
   preferredDomain         String?
@@ -271,6 +273,7 @@ enum EventType {
   CHALLENGE_ACCEPTED
   CHALLENGE_COMPLETED
   XP_EARNED
+  AVATAR_PURCHASED
 }
 
 enum NotificationType {

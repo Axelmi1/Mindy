@@ -53,6 +53,8 @@ export interface UserStats {
     cost: number;
     expiresAt: string;
   } | null;
+  /** Emoji de l'avatar équipé (boutique XP) */
+  avatarEmoji: string;
   soundEnabled: boolean;
   lessonsCompleted: number;
   totalLessons: number;

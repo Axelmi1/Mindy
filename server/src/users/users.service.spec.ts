@@ -33,6 +33,8 @@ function baseUser() {
     streakFreezeUsedAt: null as Date | null,
     lostStreak: 0,
     streakLostAt: null as Date | null,
+    avatar: null as string | null,
+    ownedAvatars: [] as string[],
     createdAt: new Date('2026-01-01'),
     updatedAt: new Date('2026-03-04'),
   };
@@ -824,7 +826,7 @@ describe('UsersService', () => {
       await expect(service.repairStreak('user-1')).rejects.toThrow(/not enough xp/i);
     });
 
-    it('getStats expose l\'offre de rachat active', async () => {
+    it('rend l\'offre visible dans getStats via streakRepair', async () => {
       const user = makeUser({
         lostStreak: 7,
         streakLostAt: new Date(Date.now() - 60 * 60 * 1000),
@@ -839,6 +841,83 @@ describe('UsersService', () => {
       const stats = await service.getStats('user-1');
 
       expect(stats.streakRepair).toMatchObject({ lostStreak: 7, cost: 100 });
+    });
+  });
+
+  // ────────────────────────────────────────────────────────────────────────────
+  // Boutique d'avatars
+  // ────────────────────────────────────────────────────────────────────────────
+
+  describe('avatar shop', () => {
+    it('achète un avatar : débite le prix, l\'ajoute et l\'équipe', async () => {
+      const user = makeUser({ xp: 500 });
+      mockPrisma.user.findUnique.mockResolvedValue(user);
+      mockPrisma.user.update.mockResolvedValue(
+        makeUser({ xp: 400, avatar: 'fox', ownedAvatars: ['fox'] }),
+      );
+
+      const result = await service.buyAvatar('user-1', 'fox'); // 100 XP
+
+      const data = mockPrisma.user.update.mock.calls[0][0].data;
+      expect(data.xp).toEqual({ decrement: 100 });
+      expect(data.ownedAvatars).toEqual({ push: 'fox' });
+      expect(data.avatar).toBe('fox');
+      expect(result.avatar).toBe('fox');
+    });
+
+    it('refuse un achat sans assez d\'XP', async () => {
+      mockPrisma.user.findUnique.mockResolvedValue(makeUser({ xp: 10 }));
+
+      await expect(service.buyAvatar('user-1', 'dragon')).rejects.toThrow(/not enough xp/i);
+    });
+
+    it('refuse de racheter un avatar possédé', async () => {
+      mockPrisma.user.findUnique.mockResolvedValue(makeUser({ ownedAvatars: ['fox'] }));
+
+      await expect(service.buyAvatar('user-1', 'fox')).rejects.toThrow(/already owned/i);
+    });
+
+    it('refuse un avatar inconnu', async () => {
+      mockPrisma.user.findUnique.mockResolvedValue(makeUser());
+
+      await expect(service.buyAvatar('user-1', 'nope')).rejects.toThrow(/unknown avatar/i);
+    });
+
+    it('équipe un avatar possédé, refuse un non possédé', async () => {
+      mockPrisma.user.findUnique.mockResolvedValue(makeUser({ ownedAvatars: ['fox'] }));
+      mockPrisma.user.update.mockResolvedValue(makeUser({ avatar: 'fox' }));
+
+      const result = await service.equipAvatar('user-1', 'fox');
+      expect(result.avatar).toBe('fox');
+
+      await expect(service.equipAvatar('user-1', 'dragon')).rejects.toThrow(/not owned/i);
+    });
+
+    it('les avatars gratuits sont toujours équipables et jamais achetables', async () => {
+      mockPrisma.user.findUnique.mockResolvedValue(makeUser());
+      mockPrisma.user.update.mockResolvedValue(makeUser({ avatar: 'rocket' }));
+
+      const result = await service.equipAvatar('user-1', 'rocket');
+      expect(result.avatar).toBe('rocket');
+
+      await expect(service.buyAvatar('user-1', 'rocket')).rejects.toThrow(/already owned/i);
+    });
+
+    it('getAvatarShop expose owned/equipped et l\'XP', async () => {
+      mockPrisma.user.findUnique.mockResolvedValue(
+        makeUser({ xp: 500, avatar: 'fox', ownedAvatars: ['fox'] }),
+      );
+
+      const shop = await service.getAvatarShop('user-1');
+
+      expect(shop.xp).toBe(500);
+      expect(shop.equipped).toBe('fox');
+      const fox = shop.items.find((i) => i.id === 'fox')!;
+      const dragon = shop.items.find((i) => i.id === 'dragon')!;
+      const brain = shop.items.find((i) => i.id === 'brain')!;
+      expect(fox).toMatchObject({ owned: true, equipped: true });
+      expect(dragon.owned).toBe(false);
+      expect(brain.owned).toBe(true); // gratuit
     });
   });
 });

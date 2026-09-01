@@ -189,6 +189,30 @@ export const usersApi = {
     ),
 
   /**
+   * Avatar shop — catalog with owned/equipped state
+   */
+  getAvatarShop: (id: string) =>
+    fetchApi<AvatarShop>(`/users/${id}/shop`),
+
+  /**
+   * Buy an avatar with XP (equips it immediately)
+   */
+  buyAvatar: (id: string, avatarId: string) =>
+    fetchApi<{ xp: number; avatar: string; ownedAvatars: string[] }>(
+      `/users/${id}/shop/buy`,
+      { method: 'POST', body: JSON.stringify({ avatarId }) },
+    ),
+
+  /**
+   * Equip an owned avatar
+   */
+  equipAvatar: (id: string, avatarId: string) =>
+    fetchApi<{ avatar: string }>(
+      `/users/${id}/shop/equip`,
+      { method: 'POST', body: JSON.stringify({ avatarId }) },
+    ),
+
+  /**
    * Get recent activity timeline for the user's profile feed
    */
   getRecentActivity: (id: string, limit = 10) =>
@@ -1010,6 +1034,27 @@ export const challengesApi = {
       body: JSON.stringify({ requesterId }),
     }),
 };
+
+// ============================================================================
+// Avatar Shop types
+// ============================================================================
+
+export interface AvatarShopItem {
+  id: string;
+  emoji: string;
+  name: string;
+  price: number;
+  rarity: 'COMMON' | 'RARE' | 'EPIC' | 'LEGENDARY';
+  free?: boolean;
+  owned: boolean;
+  equipped: boolean;
+}
+
+export interface AvatarShop {
+  xp: number;
+  equipped: string;
+  items: AvatarShopItem[];
+}
 
 // ============================================================================
 // Daily Quests API

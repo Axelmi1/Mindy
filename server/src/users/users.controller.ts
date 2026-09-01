@@ -221,6 +221,49 @@ export class UsersController {
   }
 
   /**
+   * GET /api/users/:id/shop
+   * Avatar shop catalog with owned/equipped state
+   */
+  @ApiOperation({ summary: 'Get the avatar shop (catalog + owned + equipped)' })
+  @ApiParam({ name: 'id', description: 'User ID' })
+  @Get(':id/shop')
+  async getAvatarShop(@Param('id') id: string) {
+    return { success: true, data: await this.usersService.getAvatarShop(id) };
+  }
+
+  /**
+   * POST /api/users/:id/shop/buy
+   * Buy an avatar with XP (equips it immediately)
+   */
+  @ApiOperation({ summary: 'Buy an avatar with XP' })
+  @ApiParam({ name: 'id', description: 'User ID' })
+  @SwaggerApiResponse({ status: 400, description: 'Already owned or not enough XP' })
+  @Post(':id/shop/buy')
+  @HttpCode(HttpStatus.CREATED)
+  async buyAvatar(
+    @Param('id') id: string,
+    @Body() body: { avatarId: string },
+  ) {
+    return { success: true, data: await this.usersService.buyAvatar(id, body.avatarId) };
+  }
+
+  /**
+   * POST /api/users/:id/shop/equip
+   * Equip an owned avatar
+   */
+  @ApiOperation({ summary: 'Equip an owned avatar' })
+  @ApiParam({ name: 'id', description: 'User ID' })
+  @SwaggerApiResponse({ status: 400, description: 'Avatar not owned' })
+  @Post(':id/shop/equip')
+  @HttpCode(HttpStatus.OK)
+  async equipAvatar(
+    @Param('id') id: string,
+    @Body() body: { avatarId: string },
+  ) {
+    return { success: true, data: await this.usersService.equipAvatar(id, body.avatarId) };
+  }
+
+  /**
    * PATCH /api/users/:id/settings
    * Update user settings (sound, etc.)
    */
