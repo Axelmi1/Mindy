@@ -50,6 +50,7 @@ import {
 } from '@/components/steps';
 import { domainColor } from '@/data/domains';
 import { normalizeLegacySteps } from '@/utils/legacySteps';
+import { ShareResultButton } from '@/components/ui/ShareResultCard';
 
 type ScreenState = 'loading' | 'ready' | 'playing' | 'feedback' | 'completed' | 'error';
 
@@ -92,7 +93,7 @@ const RETRY_MESSAGES = [
 export default function LessonScreen() {
   const { id, practice } = useLocalSearchParams<{ id: string; practice?: string }>();
   const isPracticeMode = practice === 'true';
-  const { userId, isLoading: isUserLoading } = useUser();
+  const { userId, username, isLoading: isUserLoading } = useUser();
   const { play: playSound } = useSound();
   const { stats: referralStats } = useReferrals(userId);
 
@@ -769,6 +770,21 @@ export default function LessonScreen() {
               })()}
             </Animated.View>
           </Animated.View>
+
+          {/* 📤 Partage du résultat en image (pas en mode pratique) */}
+          {!isPracticeMode && (
+            <Animated.View entering={FadeInUp.delay(750)}>
+              <ShareResultButton
+                lessonTitle={lesson.title}
+                xp={xpAwarded || lesson.xpReward}
+                accuracy={totalSteps > 0
+                  ? Math.round(((totalSteps - erroredSteps.size) / totalSteps) * 100)
+                  : 100}
+                streak={streak}
+                username={username}
+              />
+            </Animated.View>
+          )}
         </View>
 
         <Animated.View entering={FadeInUp.delay(800)} style={styles.footer}>
