@@ -24,6 +24,8 @@ model User {
   soundEnabled            Boolean                  @default(true)
   streakFreezeUsedAt      DateTime?
   streakFreezes           Int                      @default(3)
+  lostStreak              Int                      @default(0)
+  streakLostAt            DateTime?
   referralCode            String?                  @unique
   referralXpEarned        Int                      @default(0)
   preferredDomain         String?

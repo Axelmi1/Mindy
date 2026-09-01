@@ -47,6 +47,12 @@ export interface UserStats {
   maxStreak: number;
   streakFreezes: number;
   streakAtRisk: boolean;
+  /** Offre de rachat de la dernière série perdue (48h), ou null si aucune */
+  streakRepair: {
+    lostStreak: number;
+    cost: number;
+    expiresAt: string;
+  } | null;
   soundEnabled: boolean;
   lessonsCompleted: number;
   totalLessons: number;

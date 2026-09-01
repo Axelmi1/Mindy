@@ -201,6 +201,26 @@ export class UsersController {
   }
 
   /**
+   * POST /api/users/:id/streak-repair
+   * Repair the last lost streak within 48h, for 100 XP
+   */
+  @ApiOperation({
+    summary: 'Repair a lost streak with XP',
+    description: 'Costs 100 XP. Available for 48h after a streak is broken. Restores the lost streak on top of the current one.',
+  })
+  @ApiParam({ name: 'id', description: 'User ID' })
+  @SwaggerApiResponse({ status: 201, description: 'Streak repaired successfully' })
+  @SwaggerApiResponse({ status: 400, description: 'No repairable streak, window expired, or not enough XP' })
+  @Post(':id/streak-repair')
+  @HttpCode(HttpStatus.CREATED)
+  async repairStreak(@Param('id') id: string): Promise<
+    { success: boolean; data: { streak: number; xp: number; xpSpent: number } }
+  > {
+    const result = await this.usersService.repairStreak(id);
+    return { success: true, data: result };
+  }
+
+  /**
    * PATCH /api/users/:id/settings
    * Update user settings (sound, etc.)
    */

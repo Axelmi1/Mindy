@@ -339,6 +339,48 @@ export default function HomeScreen() {
           </View>
         </Animated.View>
 
+        {/* 💔 Streak repair offer (48h après une série perdue) */}
+        {userStats?.streakRepair && (
+          <Animated.View entering={FadeInDown.delay(290)}>
+            <Pressable
+              style={styles.streakRiskBanner}
+              onPress={() => {
+                const offer = userStats.streakRepair!;
+                Alert.alert(
+                  '💔 Série perdue',
+                  `Ta série de ${offer.lostStreak} jours s'est éteinte. Répare-la pour ${offer.cost} XP ?`,
+                  [
+                    { text: 'Laisser filer', style: 'cancel' },
+                    {
+                      text: `Réparer (${offer.cost} XP)`,
+                      onPress: async () => {
+                        try {
+                          const res = await usersApi.repairStreak(userId!);
+                          if (res.success && res.data) {
+                            Alert.alert('🔥 Série restaurée !', `Te revoilà à ${res.data.streak} jours. Ne la lâche plus !`);
+                            loadData();
+                          }
+                        } catch (e: any) {
+                          Alert.alert('Impossible de réparer', e?.message ?? 'Réessaie plus tard.');
+                        }
+                      },
+                    },
+                  ],
+                );
+              }}
+            >
+              <View style={styles.streakRiskLeft}>
+                <Text style={styles.streakRiskEmoji}>💔</Text>
+                <View>
+                  <Text style={styles.streakRiskTitle}>Série de {userStats.streakRepair.lostStreak} jours perdue</Text>
+                  <Text style={styles.streakRiskSub}>Touche pour la réparer — {userStats.streakRepair.cost} XP</Text>
+                </View>
+              </View>
+              <Icon name="chevron-right" size={16} color="#FF6B35" />
+            </Pressable>
+          </Animated.View>
+        )}
+
         {/* Streak at-risk warning banner */}
         {userStats?.streakAtRisk && userStats.streak > 0 && (
           <Animated.View entering={FadeInDown.delay(295)}>

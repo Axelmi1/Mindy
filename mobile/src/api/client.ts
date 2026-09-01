@@ -180,6 +180,15 @@ export const usersApi = {
     ),
 
   /**
+   * Repair the last lost streak (48h window, costs 100 XP)
+   */
+  repairStreak: (id: string) =>
+    fetchApi<{ streak: number; xp: number; xpSpent: number }>(
+      `/users/${id}/streak-repair`,
+      { method: 'POST' },
+    ),
+
+  /**
    * Get recent activity timeline for the user's profile feed
    */
   getRecentActivity: (id: string, limit = 10) =>

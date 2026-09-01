@@ -188,6 +188,7 @@ export class UsersService {
 
     let newStreak = user.streak;
     let freezeUsed = false;
+    let streakLost = false;
 
     if (!lastActive) {
       // First activity
@@ -213,10 +214,12 @@ export class UsersService {
         } else {
           // Freeze already used, reset streak
           newStreak = 1;
+          streakLost = user.streak >= 2;
         }
       } else {
         // Streak broken, reset to 1
         newStreak = 1;
+        streakLost = user.streak >= 2;
       }
     }
 
@@ -232,6 +235,11 @@ export class UsersService {
         ...(freezeUsed && {
           streakFreezes: { decrement: 1 },
           streakFreezeUsedAt: now,
+        }),
+        // Mémorise la série perdue → rachetable 48h (repairStreak)
+        ...(streakLost && {
+          lostStreak: user.streak,
+          streakLostAt: now,
         }),
       },
     });
@@ -314,6 +322,65 @@ export class UsersService {
     };
   }
 
+  /** Coût et fenêtre du rachat de série */
+  static readonly STREAK_REPAIR_COST = 100;
+  static readonly STREAK_REPAIR_WINDOW_MS = 48 * 60 * 60 * 1000;
+
+  /**
+   * Rachète la dernière série perdue (fenêtre 48h) contre 100 XP.
+   * La série restaurée = série perdue + lancée en cours (généralement 1).
+   */
+  async repairStreak(id: string): Promise<{ streak: number; xp: number; xpSpent: number }> {
+    const user = await this.findById(id);
+
+    if (!user.streakLostAt || user.lostStreak <= 0) {
+      throw new BadRequestException('No lost streak to repair');
+    }
+    if (Date.now() - user.streakLostAt.getTime() > UsersService.STREAK_REPAIR_WINDOW_MS) {
+      throw new BadRequestException('Repair window expired (48h)');
+    }
+    if (user.xp < UsersService.STREAK_REPAIR_COST) {
+      throw new BadRequestException(
+        `Not enough XP — need ${UsersService.STREAK_REPAIR_COST} XP (you have ${user.xp})`,
+      );
+    }
+
+    const restored = user.lostStreak + user.streak;
+    const updated = await this.prisma.user.update({
+      where: { id },
+      data: {
+        streak: restored,
+        maxStreak: Math.max(user.maxStreak, restored),
+        xp: { decrement: UsersService.STREAK_REPAIR_COST },
+        lostStreak: 0,
+        streakLostAt: null,
+      },
+    });
+
+    this.analyticsService.track(id, 'STREAK_UPDATED', {
+      previousStreak: user.streak,
+      newStreak: restored,
+      repaired: true,
+      xpSpent: UsersService.STREAK_REPAIR_COST,
+    });
+
+    return { streak: updated.streak, xp: updated.xp, xpSpent: UsersService.STREAK_REPAIR_COST };
+  }
+
+  /** Offre de rachat active (ou null) — exposée dans getStats pour le mobile. */
+  private getStreakRepairOffer(user: { lostStreak: number; streakLostAt: Date | null }) {
+    if (!user.streakLostAt || user.lostStreak <= 0) return null;
+    const expiresAt = new Date(
+      user.streakLostAt.getTime() + UsersService.STREAK_REPAIR_WINDOW_MS,
+    );
+    if (expiresAt.getTime() <= Date.now()) return null;
+    return {
+      lostStreak: user.lostStreak,
+      cost: UsersService.STREAK_REPAIR_COST,
+      expiresAt: expiresAt.toISOString(),
+    };
+  }
+
   /**
    * Get user stats for dashboard — includes rank and domain breakdown
    */
@@ -344,6 +411,7 @@ export class UsersService {
       maxStreak: user.maxStreak,
       streakFreezes: user.streakFreezes,
       streakAtRisk: this.isStreakAtRisk(user.lastActiveAt),
+      streakRepair: this.getStreakRepairOffer(user),
       soundEnabled: user.soundEnabled,
       lessonsCompleted: completedCount,
       totalLessons: totalCount,

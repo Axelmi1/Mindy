@@ -31,6 +31,8 @@ function baseUser() {
     userGoal: 'invest',
     referralCode: 'ABC123',
     streakFreezeUsedAt: null as Date | null,
+    lostStreak: 0,
+    streakLostAt: null as Date | null,
     createdAt: new Date('2026-01-01'),
     updatedAt: new Date('2026-03-04'),
   };
@@ -738,6 +740,105 @@ describe('UsersService', () => {
 
       const call = mockPrisma.analyticsEvent.findMany.mock.calls[0][0];
       expect(call.take).toBe(10);
+    });
+  });
+
+  // ────────────────────────────────────────────────────────────────────────────
+  // Rachat de série (repairStreak) + mémorisation de la perte (updateStreak)
+  // ────────────────────────────────────────────────────────────────────────────
+
+  describe('updateStreak() — mémorisation de la série perdue', () => {
+    it('enregistre lostStreak/streakLostAt quand la série casse', async () => {
+      const threeDaysAgo = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000);
+      const user = makeUser({ streak: 7, lastActiveAt: threeDaysAgo, streakFreezes: 0 });
+      mockPrisma.user.findUnique.mockResolvedValue(user);
+      mockPrisma.user.update.mockResolvedValue(makeUser({ streak: 1 }));
+
+      await service.updateStreak('user-1');
+
+      const data = mockPrisma.user.update.mock.calls[0][0].data;
+      expect(data.streak).toBe(1);
+      expect(data.lostStreak).toBe(7);
+      expect(data.streakLostAt).toBeInstanceOf(Date);
+    });
+
+    it("n'enregistre pas de perte pour une série de 1", async () => {
+      const threeDaysAgo = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000);
+      const user = makeUser({ streak: 1, lastActiveAt: threeDaysAgo, streakFreezes: 0 });
+      mockPrisma.user.findUnique.mockResolvedValue(user);
+      mockPrisma.user.update.mockResolvedValue(makeUser({ streak: 1 }));
+
+      await service.updateStreak('user-1');
+
+      const data = mockPrisma.user.update.mock.calls[0][0].data;
+      expect(data.lostStreak).toBeUndefined();
+    });
+  });
+
+  describe('repairStreak()', () => {
+    it('restaure la série (perdue + en cours) et débite 100 XP', async () => {
+      const user = makeUser({
+        streak: 1,
+        maxStreak: 10,
+        xp: 500,
+        lostStreak: 7,
+        streakLostAt: new Date(Date.now() - 60 * 60 * 1000), // il y a 1h
+      });
+      mockPrisma.user.findUnique.mockResolvedValue(user);
+      mockPrisma.user.update.mockResolvedValue(makeUser({ streak: 8, xp: 400 }));
+
+      const result = await service.repairStreak('user-1');
+
+      const data = mockPrisma.user.update.mock.calls[0][0].data;
+      expect(data.streak).toBe(8); // 7 perdus + 1 en cours
+      expect(data.xp).toEqual({ decrement: 100 });
+      expect(data.lostStreak).toBe(0);
+      expect(data.streakLostAt).toBeNull();
+      expect(result.xpSpent).toBe(100);
+    });
+
+    it('refuse sans série perdue', async () => {
+      mockPrisma.user.findUnique.mockResolvedValue(makeUser());
+
+      await expect(service.repairStreak('user-1')).rejects.toThrow(/no lost streak/i);
+    });
+
+    it('refuse après la fenêtre de 48h', async () => {
+      const user = makeUser({
+        lostStreak: 7,
+        streakLostAt: new Date(Date.now() - 49 * 60 * 60 * 1000),
+      });
+      mockPrisma.user.findUnique.mockResolvedValue(user);
+
+      await expect(service.repairStreak('user-1')).rejects.toThrow(/expired/i);
+    });
+
+    it('refuse sans assez d\'XP', async () => {
+      const user = makeUser({
+        xp: 50,
+        lostStreak: 7,
+        streakLostAt: new Date(Date.now() - 60 * 60 * 1000),
+      });
+      mockPrisma.user.findUnique.mockResolvedValue(user);
+
+      await expect(service.repairStreak('user-1')).rejects.toThrow(/not enough xp/i);
+    });
+
+    it('getStats expose l\'offre de rachat active', async () => {
+      const user = makeUser({
+        lostStreak: 7,
+        streakLostAt: new Date(Date.now() - 60 * 60 * 1000),
+      });
+      mockPrisma.user.findUnique.mockResolvedValue(user);
+      mockPrisma.userProgress.count.mockResolvedValue(0);
+      mockPrisma.lesson.count.mockResolvedValue(0);
+      mockPrisma.userAchievement.count.mockResolvedValue(0);
+      mockLeaderboard.getUserWeeklyStats.mockResolvedValue(null);
+      mockPrisma.analyticsEvent.findMany.mockResolvedValue([]);
+
+      const stats = await service.getStats('user-1');
+
+      expect(stats.streakRepair).toMatchObject({ lostStreak: 7, cost: 100 });
     });
   });
 });
