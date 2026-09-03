@@ -34,6 +34,7 @@ import { lessonsApi, progressApi } from '@/api/client';
 import { useUser } from '@/hooks/useUser';
 import { Icon } from '@/components/ui/Icon';
 import { SkeletonBox } from '@/components/ui/SkeletonBox';
+import { MindyMascot } from '@/components/mindy';
 import { LinearGradient } from 'expo-linear-gradient';
 
 
@@ -701,7 +702,7 @@ export default function LearnScreen() {
       {viewMode === 'path' && (
         activeNodes.length === 0 ? (
           <View style={styles.domainEmpty}>
-            <Text style={styles.domainEmptyIcon}>🚧</Text>
+            <MindyMascot mood="sleepy" size={90} style={styles.domainEmptyMascot} />
             <Text style={styles.domainEmptyTitle}>Bientôt disponible</Text>
             <Text style={styles.domainEmptySub}>Les premières leçons de ce domaine arrivent.</Text>
           </View>
@@ -770,7 +771,7 @@ export default function LearnScreen() {
           >
             {filteredNodes.length === 0 ? (
               <View style={styles.emptyState}>
-                <Text style={styles.emptyIcon}>🔍</Text>
+                <MindyMascot mood="thinking" size={70} style={styles.emptyMascot} />
                 <Text style={styles.emptyTitle}>Aucune leçon trouvée</Text>
                 <Text style={styles.emptyText}>
                   {searchQuery ? `Aucun résultat pour "${searchQuery}"` : 'Essaie un autre filtre'}
@@ -998,7 +999,7 @@ const styles = StyleSheet.create({
   scrollView: { flex: 1 },
   scrollContent: { paddingHorizontal: 20, paddingBottom: 40, gap: 10 },
   emptyState: { alignItems: 'center', paddingVertical: 60, gap: 8 },
-  emptyIcon: { fontSize: 40, marginBottom: 8 },
+  emptyMascot: { marginBottom: 8 },
   emptyTitle: { fontSize: 16, fontWeight: '600', color: '#E6EDF3', fontFamily: 'Inter' },
   emptyText: { fontSize: 13, color: '#484F58', fontFamily: 'Inter', textAlign: 'center' },
   card: {
@@ -1036,7 +1037,7 @@ const styles = StyleSheet.create({
 
   // ── Domain Empty State ──────────────────────────────────────────────────
   domainEmpty: { alignItems: 'center', paddingVertical: 64, paddingHorizontal: 32 },
-  domainEmptyIcon: { fontSize: 40, marginBottom: 12 },
+  domainEmptyMascot: { marginBottom: 12 },
   domainEmptyTitle: { fontFamily: 'Inter', fontSize: 18, fontWeight: '700', color: '#E6EDF3', marginBottom: 6 },
   domainEmptySub: { fontFamily: 'Inter', fontSize: 14, color: '#8B949E', textAlign: 'center' },
 

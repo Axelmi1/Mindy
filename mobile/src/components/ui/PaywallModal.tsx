@@ -33,6 +33,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
 import { subscriptionsApi, type SubscriptionPlan, type PlanDetails } from '@/api/client';
 import { MockStripeCheckout } from './MockStripeCheckout';
+import { MindyMascot } from '@/components/mindy';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -195,7 +196,7 @@ export function PaywallModal({ visible, onClose, userId, onSubscribed }: Paywall
               </Pressable>
 
               <View style={styles.crownContainer}>
-                <Text style={styles.crown}>👑</Text>
+                <MindyMascot mood="pro" size={100} style={styles.crownMascot} />
                 <LinearGradient
                   colors={[COLORS.pro, COLORS.proLight, COLORS.pro]}
                   start={{ x: 0, y: 0 }}
@@ -328,7 +329,7 @@ const styles = StyleSheet.create({
   },
   closeBtnText: { color: COLORS.muted, fontSize: 14, fontWeight: '600' },
   crownContainer: { alignItems: 'center', marginTop: 16, marginBottom: 12 },
-  crown: { fontSize: 44, marginBottom: 8 },
+  crownMascot: { marginBottom: 8 },
   proGradientBadge: {
     paddingHorizontal: 16,
     paddingVertical: 6,

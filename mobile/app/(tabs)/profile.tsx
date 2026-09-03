@@ -15,6 +15,7 @@ import { useAchievements, getRarityColor, getCategoryIcon } from '@/hooks/useAch
 import { useReferrals } from '@/hooks/useReferrals';
 import { Icon, IconName } from '@/components/ui/Icon';
 import { StreakFire, AchievementUnlockedModal } from '@/components/animations';
+import { MindyMascot } from '@/components/mindy';
 import { ReferralCard } from '@/components/ui/ReferralCard';
 import { LeagueBadge } from '@/components/ui/LeagueBadge';
 import { getLeague, xpToNextLeague } from '@/utils/league';
@@ -386,30 +387,33 @@ export default function ProfileScreen() {
 
             {/* Buy streak freeze */}
             {(userStats?.streakFreezes ?? 0) < 3 && (
-              <Pressable
-                style={styles.buyFreezeBtn}
-                onPress={async () => {
-                  if (!userId) return;
-                  try {
-                    const res = await usersApi.buyStreakFreeze(userId);
-                    if (res.success && res.data) {
-                      setUserStats(prev => prev ? {
-                        ...prev,
-                        xp: res.data!.xp,
-                        streakFreezes: res.data!.streakFreezes,
-                      } : prev);
-                      Alert.alert('🛡️ Freeze acheté !', `Tu as dépensé ${res.data.xpSpent} XP pour un streak freeze.`);
-                    } else {
-                      Alert.alert('Erreur', 'Pas assez de XP ou maximum atteint.');
+              <View style={styles.freezeCta}>
+                <MindyMascot mood="freeze" size={48} />
+                <Pressable
+                  style={styles.buyFreezeBtn}
+                  onPress={async () => {
+                    if (!userId) return;
+                    try {
+                      const res = await usersApi.buyStreakFreeze(userId);
+                      if (res.success && res.data) {
+                        setUserStats(prev => prev ? {
+                          ...prev,
+                          xp: res.data!.xp,
+                          streakFreezes: res.data!.streakFreezes,
+                        } : prev);
+                        Alert.alert('🛡️ Freeze acheté !', `Tu as dépensé ${res.data.xpSpent} XP pour un streak freeze.`);
+                      } else {
+                        Alert.alert('Erreur', 'Pas assez de XP ou maximum atteint.');
+                      }
+                    } catch {
+                      Alert.alert('Erreur', 'Impossible d\'acheter un freeze.');
                     }
-                  } catch {
-                    Alert.alert('Erreur', 'Impossible d\'acheter un freeze.');
-                  }
-                }}
-              >
-                <Icon name="shield" size={14} color="#58A6FF" />
-                <Text style={styles.buyFreezeBtnText}>Acheter un freeze (-50 XP)</Text>
-              </Pressable>
+                  }}
+                >
+                  <Icon name="shield" size={14} color="#58A6FF" />
+                  <Text style={styles.buyFreezeBtnText}>Acheter un freeze (-50 XP)</Text>
+                </Pressable>
+              </View>
             )}
           </GlassCard>
         </Animated.View>
@@ -994,12 +998,18 @@ const styles = StyleSheet.create({
     color: '#8B949E',
     letterSpacing: 0.3,
   },
+  freezeCta: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    marginTop: 12,
+  },
   buyFreezeBtn: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 6,
-    marginTop: 12,
     backgroundColor: 'rgba(88,166,255,0.08)',
     borderWidth: 1,
     borderColor: 'rgba(88,166,255,0.3)',
