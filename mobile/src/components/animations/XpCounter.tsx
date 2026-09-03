@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, StyleProp, ViewStyle } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -23,6 +23,12 @@ interface XpCounterProps {
   showPlus?: boolean;
   /** Size variant */
   size?: 'small' | 'medium' | 'large';
+  /** Suffix label after the value (default 'XP'). Pass '' to hide it. */
+  suffix?: string;
+  /** Color of the value + suffix text (default XP gold) */
+  valueColor?: string;
+  /** Extra style for the row container */
+  containerStyle?: StyleProp<ViewStyle>;
   /** Called when animation completes */
   onComplete?: () => void;
 }
@@ -43,6 +49,9 @@ export function XpCounter({
   prefix = '',
   showPlus = false,
   size = 'medium',
+  suffix = 'XP',
+  valueColor = '#FFD700',
+  containerStyle,
   onComplete,
 }: XpCounterProps) {
   const [displayValue, setDisplayValue] = useState(from);
@@ -95,12 +104,12 @@ export function XpCounter({
   const displayText = showPlus && displayValue > 0 ? `+${displayValue}` : `${displayValue}`;
 
   return (
-    <Animated.View style={[styles.container, animatedStyle]}>
-      <Text style={[styles.prefix, { fontSize: labelSize }]}>{prefix}</Text>
-      <Text style={[styles.value, { fontSize: valueSize }]}>
+    <Animated.View style={[styles.container, animatedStyle, containerStyle]}>
+      {!!prefix && <Text style={[styles.prefix, { fontSize: labelSize }]}>{prefix}</Text>}
+      <Text style={[styles.value, { fontSize: valueSize, color: valueColor }]}>
         {displayText}
       </Text>
-      <Text style={[styles.label, { fontSize: labelSize }]}>XP</Text>
+      {!!suffix && <Text style={[styles.label, { fontSize: labelSize, color: valueColor }]}>{suffix}</Text>}
     </Animated.View>
   );
 }

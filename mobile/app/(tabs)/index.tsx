@@ -5,7 +5,7 @@ import { router } from 'expo-router';
 import { useFocusEffect } from 'expo-router';
 import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
-import Animated, { FadeInDown, FadeInRight } from 'react-native-reanimated';
+import Animated, { FadeInDown } from 'react-native-reanimated';
 import type { Lesson, UserProgressWithLesson, UserStats, Domain } from '@mindy/shared';
 import { domainColor, domainLabel } from '@/data/domains';
 import { lessonsApi, progressApi, usersApi, dailyChallengeApi, challengesApi, DailyChallenge, LessonChallenge } from '@/api/client';
@@ -13,7 +13,7 @@ import { useUser } from '@/hooks/useUser';
 import { useAchievements } from '@/hooks/useAchievements';
 import { useDailyGoal } from '@/hooks/useDailyGoal';
 import { usePushToken } from '@/hooks/usePushToken';
-import { StreakFire, AchievementUnlockedModal } from '@/components/animations';
+import { StreakFire, XpCounter, AchievementUnlockedModal } from '@/components/animations';
 import { Icon } from '@/components/ui/Icon';
 import { ProgressBar } from '@/components/ui/ProgressBar';
 import { SkeletonBox } from '@/components/ui/SkeletonBox';
@@ -22,6 +22,7 @@ import { DailyGoalCard } from '@/components/ui/DailyGoalCard';
 import { DailyQuestsCard } from '@/components/ui/DailyQuestsCard';
 import { LeagueBadge } from '@/components/ui/LeagueBadge';
 import { GoalCelebrationModal } from '@/components/ui/GoalCelebrationModal';
+import { PressableScale } from '@/components/ui/PressableScale';
 
 interface CurrentLesson {
   id: string;
@@ -216,6 +217,34 @@ export default function HomeScreen() {
   const hour = new Date().getHours();
   const greeting = hour < 12 ? 'Bonjour' : hour < 18 ? 'Bon après-midi' : 'Bonsoir';
 
+  // Stagger d'entrée : un pas constant entre les sections réellement affichées pour
+  // cet utilisateur (les sections conditionnelles absentes ne consomment pas de pas),
+  // calculé en une passe dans l'ordre de rendu plutôt qu'en delays codés en dur.
+  const STAGGER_STEP = 60;
+  let staggerDelay = 0;
+  const nextDelay = () => {
+    const d = staggerDelay;
+    staggerDelay += STAGGER_STEP;
+    return d;
+  };
+
+  const headerDelay = nextDelay();
+  const statsGridDelay = nextDelay();
+  const rankPillDelay = userStats?.userRank != null ? nextDelay() : 0;
+  const levelProgressDelay = nextDelay();
+  const streakRepairDelay = userStats?.streakRepair ? nextDelay() : 0;
+  const streakAtRiskDelay = userStats?.streakAtRisk && userStats.streak > 0 ? nextDelay() : 0;
+  const dailyGoalDelay = nextDelay();
+  // Le défi du jour terminé/non-terminé sont mutuellement exclusifs : un seul pas pour les deux.
+  const dailyChallengeDelay = dailyChallenge ? nextDelay() : 0;
+  const dailyQuestsDelay = userId ? nextDelay() : 0;
+  const pendingSectionDelay = pendingChallenges.length > 0 ? nextDelay() : 0;
+  const streakCalendarDelay = userStats !== null ? nextDelay() : 0;
+  const continueCardDelay = currentLesson ? nextDelay() : 0;
+  const progressSectionDelay = nextDelay();
+  const weeklyRecapDelay = nextDelay();
+  const quickActionsDelay = nextDelay();
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView
@@ -231,21 +260,21 @@ export default function HomeScreen() {
         }
       >
         {/* Header */}
-        <Animated.View entering={FadeInDown.delay(100)} style={styles.header}>
+        <Animated.View entering={FadeInDown.delay(headerDelay)} style={styles.header}>
           <View>
             <Text style={styles.greeting}>{greeting} 👋</Text>
             <Text style={styles.username}>{userStats?.username ?? cachedUsername ?? '...'}</Text>
           </View>
-          <Pressable onPress={() => router.push('/(tabs)/profile')} style={{ gap: 6, alignItems: 'flex-end' }}>
+          <PressableScale onPress={() => router.push('/(tabs)/profile')} style={styles.headerProfileArea}>
             <View style={styles.levelBadge}>
               <Text style={styles.levelText}>Lvl {userStats?.level ?? 1}</Text>
             </View>
             <LeagueBadge xp={currentXp} size="sm" />
-          </Pressable>
+          </PressableScale>
         </Animated.View>
 
         {/* Stats Grid */}
-        <Animated.View entering={FadeInDown.delay(200)} style={styles.statsGrid}>
+        <Animated.View entering={FadeInDown.delay(statsGridDelay)} style={styles.statsGrid}>
           {/* XP Card */}
           <View style={styles.statCard}>
             {Platform.OS === 'ios' ? (
@@ -258,12 +287,18 @@ export default function HomeScreen() {
               style={StyleSheet.absoluteFill}
             />
             <Icon name="zap" size={24} color="#FFD700" />
-            <Text style={styles.statValue}>{(userStats?.xp ?? 0).toLocaleString()}</Text>
+            <XpCounter
+              value={userStats?.xp ?? 0}
+              suffix=""
+              valueColor="#E6EDF3"
+              size="small"
+              containerStyle={styles.statValueRow}
+            />
             <Text style={styles.statLabel}>XP</Text>
           </View>
 
           {/* Streak Card */}
-          <Pressable style={styles.statCard} onPress={() => router.push('/(tabs)/leaderboard')}>
+          <PressableScale style={styles.statCard} onPress={() => router.push('/(tabs)/leaderboard')}>
             {Platform.OS === 'ios' ? (
               <BlurView intensity={20} tint="dark" style={StyleSheet.absoluteFill} />
             ) : (
@@ -279,9 +314,15 @@ export default function HomeScreen() {
               showCount={false}
               atRisk={userStats?.streakAtRisk ?? false}
             />
-            <Text style={styles.statValue}>{userStats?.streak ?? 0}</Text>
+            <XpCounter
+              value={userStats?.streak ?? 0}
+              suffix=""
+              valueColor="#E6EDF3"
+              size="small"
+              containerStyle={styles.statValueRow}
+            />
             <Text style={styles.statLabel}>SÉRIE</Text>
-          </Pressable>
+          </PressableScale>
 
           {/* Lessons Card */}
           <View style={styles.statCard}>
@@ -302,8 +343,8 @@ export default function HomeScreen() {
 
         {/* Weekly rank pill */}
         {userStats?.userRank != null && (
-          <Animated.View entering={FadeInDown.delay(240)}>
-            <Pressable
+          <Animated.View entering={FadeInDown.delay(rankPillDelay)}>
+            <PressableScale
               style={styles.rankPill}
               onPress={() => router.push('/(tabs)/leaderboard')}
             >
@@ -312,12 +353,12 @@ export default function HomeScreen() {
                 Tu es #{userStats.userRank} au classement hebdo
               </Text>
               <Icon name="chevron-right" size={14} color="#FFD700" />
-            </Pressable>
+            </PressableScale>
           </Animated.View>
         )}
 
         {/* Level XP Progress Bar */}
-        <Animated.View entering={FadeInDown.delay(280)} style={styles.levelProgressCard}>
+        <Animated.View entering={FadeInDown.delay(levelProgressDelay)} style={styles.levelProgressCard}>
           <View style={styles.levelProgressHeader}>
             <View style={styles.levelProgressLeft}>
               <View style={styles.levelCircle}>
@@ -341,7 +382,7 @@ export default function HomeScreen() {
 
         {/* 💔 Streak repair offer (48h après une série perdue) */}
         {userStats?.streakRepair && (
-          <Animated.View entering={FadeInDown.delay(290)}>
+          <Animated.View entering={FadeInDown.delay(streakRepairDelay)}>
             <Pressable
               style={styles.streakRiskBanner}
               onPress={() => {
@@ -383,7 +424,7 @@ export default function HomeScreen() {
 
         {/* Streak at-risk warning banner */}
         {userStats?.streakAtRisk && userStats.streak > 0 && (
-          <Animated.View entering={FadeInDown.delay(295)}>
+          <Animated.View entering={FadeInDown.delay(streakAtRiskDelay)}>
             <Pressable
               style={styles.streakRiskBanner}
               onPress={() => router.push('/(tabs)/learn')}
@@ -401,7 +442,7 @@ export default function HomeScreen() {
         )}
 
         {/* Daily XP Goal */}
-        <Animated.View entering={FadeInDown.delay(298)} style={styles.dailyGoalWrapper}>
+        <Animated.View entering={FadeInDown.delay(dailyGoalDelay)} style={styles.dailyGoalWrapper}>
           <DailyGoalCard
             goal={dailyGoal.goal}
             xpToday={dailyGoal.xpToday}
@@ -410,10 +451,10 @@ export default function HomeScreen() {
           />
         </Animated.View>
 
-        {/* Daily Challenge */}
+        {/* Daily Challenge (isCompleted/non-completed sont exclusifs : un seul delay pour les deux) */}
         {dailyChallenge && !dailyChallenge.isCompleted && (
-          <Animated.View entering={FadeInDown.delay(300)}>
-            <Pressable
+          <Animated.View entering={FadeInDown.delay(dailyChallengeDelay)}>
+            <PressableScale
               style={styles.dailyCard}
               onPress={() => router.push('/daily-challenge')}
             >
@@ -438,12 +479,12 @@ export default function HomeScreen() {
                 <Text style={styles.dailyActionText}>Touche pour commencer</Text>
                 <Icon name="chevron-right" size={16} color="#FFD700" />
               </View>
-            </Pressable>
+            </PressableScale>
           </Animated.View>
         )}
 
         {dailyChallenge?.isCompleted && (
-          <Animated.View entering={FadeInDown.delay(300)} style={styles.dailyCompleted}>
+          <Animated.View entering={FadeInDown.delay(dailyChallengeDelay)} style={styles.dailyCompleted}>
             <Icon name="check" size={18} color="#39FF14" />
             <Text style={styles.dailyCompletedText}>Défi du jour terminé !</Text>
           </Animated.View>
@@ -451,14 +492,14 @@ export default function HomeScreen() {
 
         {/* 🗺️ Daily Quests */}
         {userId && (
-          <Animated.View entering={FadeInDown.delay(310)}>
+          <Animated.View entering={FadeInDown.delay(dailyQuestsDelay)}>
             <DailyQuestsCard userId={userId} onXpClaimed={() => loadData()} />
           </Animated.View>
         )}
 
         {/* ⚔️ Pending Challenges */}
         {pendingChallenges.length > 0 && (
-          <Animated.View entering={FadeInDown.delay(320)} style={styles.pendingSection}>
+          <Animated.View entering={FadeInDown.delay(pendingSectionDelay)} style={styles.pendingSection}>
             <View style={styles.pendingHeader}>
               <Text style={styles.pendingSectionTitle}>⚔️ Défis en attente</Text>
               <View style={styles.pendingBadge}>
@@ -470,7 +511,7 @@ export default function HomeScreen() {
               return (
                 <Animated.View
                   key={ch.id}
-                  entering={FadeInDown.delay(330 + idx * 60)}
+                  entering={FadeInDown.delay(pendingSectionDelay + STAGGER_STEP + idx * STAGGER_STEP)}
                   style={styles.challengeCard}
                 >
                   {Platform.OS === 'ios' ? (
@@ -538,7 +579,7 @@ export default function HomeScreen() {
 
         {/* Streak Calendar */}
         {userStats !== null && (
-          <Animated.View entering={FadeInDown.delay(380)} style={{ marginBottom: 20 }}>
+          <Animated.View entering={FadeInDown.delay(streakCalendarDelay)} style={{ marginBottom: 20 }}>
             <StreakCalendar
               streak={userStats.streak}
               atRisk={userStats.streakAtRisk}
@@ -548,8 +589,8 @@ export default function HomeScreen() {
 
         {/* Continue Learning */}
         {currentLesson && (
-          <Animated.View entering={FadeInDown.delay(400)}>
-            <Pressable
+          <Animated.View entering={FadeInDown.delay(continueCardDelay)}>
+            <PressableScale
               style={styles.continueCard}
               onPress={() => router.push(`/lesson/${currentLesson.id}`)}
             >
@@ -577,12 +618,12 @@ export default function HomeScreen() {
                 <Text style={styles.continueActionText}>Reprendre la leçon</Text>
                 <Icon name="arrow-right" size={18} color="#39FF14" />
               </View>
-            </Pressable>
+            </PressableScale>
           </Animated.View>
         )}
 
         {/* Overall Progress */}
-        <Animated.View entering={FadeInDown.delay(500)} style={styles.progressSection}>
+        <Animated.View entering={FadeInDown.delay(progressSectionDelay)} style={styles.progressSection}>
           <View style={styles.progressHeader}>
             <Text style={styles.progressTitle}>Parcours d’apprentissage</Text>
             <Text style={styles.progressCount}>{lessonsCompleted}/{totalLessons} leçons</Text>
@@ -625,8 +666,8 @@ export default function HomeScreen() {
         </Animated.View>
 
         {/* Weekly Recap Card */}
-        <Animated.View entering={FadeInDown.delay(560)}>
-          <Pressable
+        <Animated.View entering={FadeInDown.delay(weeklyRecapDelay)}>
+          <PressableScale
             style={styles.weeklyRecapCard}
             onPress={() => router.push('/weekly-recap' as any)}
           >
@@ -647,12 +688,12 @@ export default function HomeScreen() {
               </View>
               <Icon name="chevron-right" size={20} color="#39FF14" />
             </View>
-          </Pressable>
+          </PressableScale>
         </Animated.View>
 
         {/* Quick Actions */}
-        <Animated.View entering={FadeInDown.delay(600)} style={styles.quickActions}>
-          <Pressable style={styles.quickAction} onPress={() => router.push('/(tabs)/leaderboard')}>
+        <Animated.View entering={FadeInDown.delay(quickActionsDelay)} style={styles.quickActions}>
+          <PressableScale style={styles.quickAction} onPress={() => router.push('/(tabs)/leaderboard')}>
             {Platform.OS === 'ios' ? (
               <BlurView intensity={15} tint="dark" style={StyleSheet.absoluteFill} />
             ) : (
@@ -661,9 +702,9 @@ export default function HomeScreen() {
             <Icon name="trophy" size={20} color="#FFD700" />
             <Text style={styles.quickActionText}>Classement</Text>
             <Icon name="chevron-right" size={16} color="#484F58" />
-          </Pressable>
+          </PressableScale>
 
-          <Pressable style={styles.quickAction} onPress={() => router.push('/(tabs)/profile')}>
+          <PressableScale style={styles.quickAction} onPress={() => router.push('/(tabs)/profile')}>
             {Platform.OS === 'ios' ? (
               <BlurView intensity={15} tint="dark" style={StyleSheet.absoluteFill} />
             ) : (
@@ -672,7 +713,7 @@ export default function HomeScreen() {
             <Icon name="user" size={20} color="#58A6FF" />
             <Text style={styles.quickActionText}>Profil</Text>
             <Icon name="chevron-right" size={16} color="#484F58" />
-          </Pressable>
+          </PressableScale>
         </Animated.View>
       </ScrollView>
 
@@ -721,6 +762,10 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter',
     fontSize: 14,
     color: '#8B949E',
+  },
+  headerProfileArea: {
+    gap: 6,
+    alignItems: 'flex-end',
   },
   username: {
     fontFamily: 'Inter',
@@ -890,6 +935,9 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '700',
     color: '#E6EDF3',
+    marginTop: 8,
+  },
+  statValueRow: {
     marginTop: 8,
   },
   statLabel: {
