@@ -13,6 +13,7 @@ import Animated, {
   FadeInDown,
   ZoomIn,
   BounceIn,
+  LinearTransition,
 } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import type { Lesson, LessonStep, UserProgress } from '@mindy/shared';
@@ -132,6 +133,7 @@ export default function LessonScreen() {
 
   // Animation key
   const [stepKey, setStepKey] = useState(0);
+  const stepScrollRef = useRef<ScrollView>(null);
 
   // Computed values
   const totalSteps = lesson?.content.steps.length ?? 0;
@@ -300,6 +302,8 @@ export default function LessonScreen() {
   const advanceToNextStep = useCallback(async () => {
     const nextQueueIndex = currentQueueIndex + 1;
 
+    stepScrollRef.current?.scrollTo({ y: 0, animated: false });
+
     if (nextQueueIndex < stepQueue.length) {
       // More steps in queue
       setCurrentQueueIndex(nextQueueIndex);
@@ -314,6 +318,7 @@ export default function LessonScreen() {
         setCurrentQueueIndex(0);
         setStepKey(prev => prev + 1);
         setIsRetryPhase(true);
+        setLastAnswerCorrect(null);
         setFeedbackMessage(getRandomMessage(RETRY_MESSAGES));
         setScreenState('feedback');
 
@@ -350,6 +355,7 @@ export default function LessonScreen() {
 
     if (!progress || !userId) return;
 
+    let leveledUp = false;
     try {
       // Mark all steps as completed via API
       for (let i = 0; i < totalSteps; i++) {
@@ -378,6 +384,7 @@ export default function LessonScreen() {
         if (statsRes.success && statsRes.data) {
           const currentLevel = statsRes.data.level;
           if (previousLevelRef.current !== null && currentLevel > previousLevelRef.current) {
+            leveledUp = true;
             setNewLevel(currentLevel);
             playSound('levelUp');
             setTimeout(() => setShowLevelUp(true), 1000);
@@ -386,7 +393,11 @@ export default function LessonScreen() {
       }
 
       playSound('complete');
-      setShowConfetti(true);
+      // Si level up, LevelUpCelebration affiche déjà son propre confetti 1s plus tard —
+      // éviter un double burst en n'affichant celui-ci que si on ne level-up pas.
+      if (!leveledUp) {
+        setShowConfetti(true);
+      }
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       setScreenState('completed');
     } catch (err) {
@@ -560,8 +571,11 @@ export default function LessonScreen() {
 
   // Feedback state (between steps)
   if (screenState === 'feedback') {
-    const feedbackColor = lastAnswerCorrect ? '#39FF14' : '#F85149';
-    const feedbackBgColor = lastAnswerCorrect
+    // null = annonce neutre (ex. début de la phase de correction), pas une mauvaise réponse
+    const feedbackColor = lastAnswerCorrect === null ? '#FFD700' : lastAnswerCorrect ? '#39FF14' : '#F85149';
+    const feedbackBgColor = lastAnswerCorrect === null
+      ? 'rgba(255, 215, 0, 0.1)'
+      : lastAnswerCorrect
       ? 'rgba(57, 255, 20, 0.1)'
       : 'rgba(248, 81, 73, 0.1)';
 
@@ -574,6 +588,7 @@ export default function LessonScreen() {
         >
           <Animated.View
             entering={BounceIn.duration(400)}
+            exiting={FadeOut.duration(200)}
             style={styles.feedbackCard}
           >
             {Platform.OS === 'ios' ? (
@@ -593,7 +608,7 @@ export default function LessonScreen() {
               style={[styles.feedbackIconContainer, { backgroundColor: feedbackBgColor }]}
             >
               <Icon
-                name={lastAnswerCorrect ? 'check' : 'x'}
+                name={lastAnswerCorrect === null ? 'refresh' : lastAnswerCorrect ? 'check' : 'x'}
                 size={36}
                 color={feedbackColor}
               />
@@ -859,7 +874,7 @@ export default function LessonScreen() {
 
       {/* Retry phase banner */}
       {isRetryPhase && (
-        <Animated.View entering={FadeIn} style={styles.retryBanner}>
+        <Animated.View entering={FadeIn.duration(300)} style={styles.retryBanner}>
           <Icon name="refresh" size={16} color="#FFD700" />
           <Text style={styles.retryBannerText}>Correction des erreurs</Text>
         </Animated.View>
@@ -867,6 +882,7 @@ export default function LessonScreen() {
 
       {/* Step Content */}
       <ScrollView
+        ref={stepScrollRef}
         style={styles.scrollContainer}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
@@ -876,6 +892,7 @@ export default function LessonScreen() {
           key={stepKey}
           entering={SlideInRight.duration(300)}
           exiting={SlideOutLeft.duration(200)}
+          layout={LinearTransition.duration(250)}
         >
           {renderStep()}
         </Animated.View>
