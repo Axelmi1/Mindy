@@ -1,4 +1,4 @@
-import { Audio } from 'expo-av';
+import { createAudioPlayer, setAudioModeAsync, type AudioPlayer } from 'expo-audio';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Sound types available in the app
@@ -16,8 +16,12 @@ const SOUND_URLS: Record<SoundName, string> = {
 
 const STORAGE_KEY = '@mindy_sound_enabled';
 
+/**
+ * Service son basé sur expo-audio (remplaçant officiel d'expo-av,
+ * seul supporté par Expo Go SDK 57+).
+ */
 class SoundService {
-  private sounds: Map<SoundName, Audio.Sound> = new Map();
+  private sounds: Map<SoundName, AudioPlayer> = new Map();
   private isEnabled: boolean = true;
   private isInitialized: boolean = false;
 
@@ -33,23 +37,14 @@ class SoundService {
       const stored = await AsyncStorage.getItem(STORAGE_KEY);
       this.isEnabled = stored !== 'false';
 
-      // Configure audio mode for iOS - optimized for low latency
-      await Audio.setAudioModeAsync({
-        playsInSilentModeIOS: true,
-        staysActiveInBackground: false,
-        shouldDuckAndroid: true,
-        playThroughEarpieceAndroid: false,
+      // Configure audio mode for iOS - play even in silent mode
+      await setAudioModeAsync({
+        playsInSilentMode: true,
+        shouldPlayInBackground: false,
       });
 
-      // Preload ALL sounds in parallel for instant playback
-      await Promise.all([
-        this.preloadSound('correct'),
-        this.preloadSound('wrong'),
-        this.preloadSound('complete'),
-        this.preloadSound('streak'),
-        this.preloadSound('levelUp'),
-        this.preloadSound('tap'),
-      ]);
+      // Create players for ALL sounds (loading happens lazily inside expo-audio)
+      (Object.keys(SOUND_URLS) as SoundName[]).forEach((name) => this.preloadSound(name));
 
       this.isInitialized = true;
     } catch (error) {
@@ -60,13 +55,11 @@ class SoundService {
   /**
    * Preload a sound for faster playback
    */
-  private async preloadSound(name: SoundName): Promise<void> {
+  private preloadSound(name: SoundName): void {
     try {
-      const { sound } = await Audio.Sound.createAsync(
-        { uri: SOUND_URLS[name] },
-        { shouldPlay: false, volume: 0.5 }
-      );
-      this.sounds.set(name, sound);
+      const player = createAudioPlayer({ uri: SOUND_URLS[name] });
+      player.volume = 0.5;
+      this.sounds.set(name, player);
     } catch (error) {
       console.warn(`Failed to preload sound ${name}:`, error);
     }
@@ -79,18 +72,17 @@ class SoundService {
     if (!this.isEnabled) return;
 
     try {
-      const sound = this.sounds.get(name);
+      const player = this.sounds.get(name);
 
-      if (!sound) {
+      if (!player) {
         // Sound not preloaded - skip to avoid delay
         console.warn(`Sound ${name} not preloaded, skipping`);
         return;
       }
 
-      // Fire and forget for instant response - don't await
-      sound.setPositionAsync(0).then(() => {
-        sound.playAsync();
-      });
+      // Fire and forget for instant response
+      player.seekTo(0);
+      player.play();
     } catch (error) {
       console.warn(`Failed to play sound ${name}:`, error);
     }
@@ -115,9 +107,9 @@ class SoundService {
    * Cleanup sounds when app is closing
    */
   async cleanup(): Promise<void> {
-    for (const sound of this.sounds.values()) {
+    for (const player of this.sounds.values()) {
       try {
-        await sound.unloadAsync();
+        player.remove();
       } catch (error) {
         // Ignore cleanup errors
       }

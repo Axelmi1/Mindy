@@ -7,23 +7,22 @@
     "icon": "./assets/icon.png",
     "scheme": "mindy",
     "userInterfaceStyle": "dark",
-    "newArchEnabled": true,
-    "platforms": ["ios", "android"],
+    "platforms": [
+      "ios",
+      "android"
+    ],
     "runtimeVersion": {
       "policy": "sdkVersion"
     },
     "updates": {
       "url": "https://u.expo.dev/ad1323b4-1656-49bd-8e63-d2ccdb64b6ec"
     },
-    "splash": {
-      "image": "./assets/splash-icon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#0D1117"
-    },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "app.mindy.mobile",
-      "associatedDomains": ["applinks:mindy.app"]
+      "associatedDomains": [
+        "applinks:mindy.app"
+      ]
     },
     "android": {
       "adaptiveIcon": {
@@ -36,10 +35,18 @@
           "action": "VIEW",
           "autoVerify": true,
           "data": [
-            { "scheme": "mindy" },
-            { "scheme": "https", "host": "mindy.app" }
+            {
+              "scheme": "mindy"
+            },
+            {
+              "scheme": "https",
+              "host": "mindy.app"
+            }
           ],
-          "category": ["BROWSABLE", "DEFAULT"]
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
         }
       ]
     },
@@ -53,6 +60,17 @@
           "icon": "./assets/icon.png",
           "color": "#39FF14",
           "defaultChannel": "default"
+        }
+      ],
+      "expo-sharing",
+      "expo-status-bar",
+      "expo-audio",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "resizeMode": "contain",
+          "backgroundColor": "#0D1117"
         }
       ]
     ],

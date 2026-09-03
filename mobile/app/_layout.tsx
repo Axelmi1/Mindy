@@ -158,7 +158,7 @@ export default function RootLayout() {
     <ErrorBoundary>
     <GestureHandlerRootView style={{ flex: 1 }}>
       <View className="flex-1 bg-background">
-        <StatusBar style="light" backgroundColor="#0D1117" />
+        <StatusBar style="light" />
         <Stack
           screenOptions={{
             headerShown: false,

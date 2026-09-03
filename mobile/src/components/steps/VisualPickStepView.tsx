@@ -216,7 +216,7 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   hotspotOverlay: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
   },
   hotspot: {
     borderRadius: 100,

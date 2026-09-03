@@ -127,7 +127,7 @@ export function Confetti({ count = 50, onComplete, active = true }: ConfettiProp
 
 const styles = StyleSheet.create({
   container: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     overflow: 'hidden',
     zIndex: 1000,
   },

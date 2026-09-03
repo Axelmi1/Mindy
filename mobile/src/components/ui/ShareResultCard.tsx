@@ -10,6 +10,8 @@
 import React, { useRef, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 import ViewShot, { captureRef } from 'react-native-view-shot';
+
+type ViewShotHandle = React.ComponentRef<typeof ViewShot>;
 import * as Sharing from 'expo-sharing';
 import { Icon } from '@/components/ui/Icon';
 
@@ -22,7 +24,7 @@ interface ShareResultButtonProps {
 }
 
 export function ShareResultButton({ lessonTitle, xp, accuracy, streak, username }: ShareResultButtonProps) {
-  const cardRef = useRef<View>(null);
+  const cardRef = useRef<ViewShotHandle>(null);
   const [isSharing, setIsSharing] = useState(false);
 
   const handleShare = async () => {

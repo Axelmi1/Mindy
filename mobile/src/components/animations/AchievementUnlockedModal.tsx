@@ -150,7 +150,7 @@ export function AchievementUnlockedModal({
 
 const styles = StyleSheet.create({
   overlay: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     backgroundColor: 'rgba(13, 17, 23, 0.95)',
     justifyContent: 'center',
     alignItems: 'center',
