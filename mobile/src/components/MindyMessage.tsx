@@ -1,6 +1,6 @@
 import React, { useEffect, useCallback, useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { MindyMascot } from './mindy';
+import { MindyMascot, MindyMood } from './mindy';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -15,8 +15,6 @@ import * as Haptics from 'expo-haptics';
 // ============================================================================
 // Types
 // ============================================================================
-
-type MindyMood = 'neutral' | 'hype' | 'roast' | 'thinking';
 
 interface MindyMessageProps {
   /** The message to display */
@@ -46,6 +44,10 @@ const moodConfig: Record<MindyMood, { emoji: string; prefixColor: string }> = {
   hype: { emoji: ' 🚀', prefixColor: '#39FF14' },
   roast: { emoji: ' 🔥', prefixColor: '#F78166' },
   thinking: { emoji: ' 🤔', prefixColor: '#58A6FF' },
+  sleepy: { emoji: ' 😴', prefixColor: '#8B949E' },
+  pro: { emoji: ' 👑', prefixColor: '#FFD700' },
+  freeze: { emoji: ' 🧊', prefixColor: '#58A6FF' },
+  coach: { emoji: ' 🎧', prefixColor: '#58A6FF' },
 };
 
 // ============================================================================
