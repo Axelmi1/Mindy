@@ -6,9 +6,22 @@
  * Se recharge à chaque focus de l'écran (retour de leçon, etc.).
  */
 
-import React, { useCallback, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useFocusEffect } from 'expo-router';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  withSequence,
+  withSpring,
+  interpolateColor,
+  Easing,
+  ZoomIn,
+  FadeOut,
+} from 'react-native-reanimated';
+import * as Haptics from 'expo-haptics';
+import { Confetti } from '@/components/animations';
 import { questsApi, DailyQuest } from '@/api/client';
 
 interface DailyQuestsCardProps {
@@ -68,51 +81,108 @@ export function DailyQuestsCard({ userId, onXpClaimed }: DailyQuestsCardProps) {
         </Text>
       </View>
 
-      {quests.map((quest) => {
-        const ratio = quest.target > 0 ? quest.progress / quest.target : 0;
-        const claimable = quest.isCompleted && !quest.claimed;
+      {quests.map((quest) => (
+        <QuestRow
+          key={quest.key}
+          quest={quest}
+          claiming={claimingKey === quest.key}
+          disabled={claimingKey !== null}
+          onClaim={handleClaim}
+        />
+      ))}
+    </View>
+  );
+}
 
-        return (
-          <View key={quest.key} style={styles.questRow}>
-            <Text style={styles.questEmoji}>{quest.emoji}</Text>
+interface QuestRowProps {
+  quest: DailyQuest;
+  claiming: boolean;
+  disabled: boolean;
+  onClaim: (quest: DailyQuest) => void;
+}
 
-            <View style={styles.questBody}>
-              <Text style={styles.questTitle}>{quest.title}</Text>
-              <View style={styles.progressTrack}>
-                <View
-                  style={[
-                    styles.progressFill,
-                    quest.isCompleted && styles.progressFillDone,
-                    { width: `${Math.round(ratio * 100)}%` },
-                  ]}
-                />
-              </View>
-              <Text style={styles.progressLabel}>
-                {quest.progress}/{quest.target}
-              </Text>
-            </View>
+function QuestRow({ quest, claiming, disabled, onClaim }: QuestRowProps) {
+  const ratio = quest.target > 0 ? quest.progress / quest.target : 0;
+  const claimable = quest.isCompleted && !quest.claimed;
 
-            {quest.claimed ? (
-              <View style={styles.claimedBadge}>
-                <Text style={styles.claimedText}>✓</Text>
-              </View>
-            ) : claimable ? (
-              <TouchableOpacity
-                style={styles.claimButton}
-                onPress={() => handleClaim(quest)}
-                disabled={claimingKey !== null}
-                activeOpacity={0.8}
-              >
+  const progressSV = useSharedValue(ratio);
+  const doneSV = useSharedValue(quest.isCompleted ? 1 : 0);
+  const buttonScale = useSharedValue(1);
+  const [burst, setBurst] = useState(false);
+  const prevClaimed = useRef(quest.claimed);
+
+  useEffect(() => {
+    progressSV.value = withTiming(ratio, { duration: 400, easing: Easing.out(Easing.cubic) });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [quest.progress, quest.target]);
+
+  useEffect(() => {
+    doneSV.value = withTiming(quest.isCompleted ? 1 : 0, { duration: 300 });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [quest.isCompleted]);
+
+  useEffect(() => {
+    if (quest.claimed && !prevClaimed.current) {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      buttonScale.value = withSequence(
+        withTiming(1.15, { duration: 120 }),
+        withSpring(1, { damping: 8, stiffness: 200 }),
+      );
+      setBurst(true);
+    }
+    prevClaimed.current = quest.claimed;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [quest.claimed]);
+
+  const progressStyle = useAnimatedStyle(() => ({
+    width: `${progressSV.value * 100}%`,
+    backgroundColor: interpolateColor(doneSV.value, [0, 1], ['#58A6FF', '#39FF14']),
+  }));
+
+  const buttonAnimStyle = useAnimatedStyle(() => ({ transform: [{ scale: buttonScale.value }] }));
+
+  return (
+    <View style={styles.questRow}>
+      <Text style={styles.questEmoji}>{quest.emoji}</Text>
+
+      <View style={styles.questBody}>
+        <Text style={styles.questTitle}>{quest.title}</Text>
+        <View style={styles.progressTrack}>
+          <Animated.View style={[styles.progressFill, progressStyle]} />
+        </View>
+        <Text style={styles.progressLabel}>
+          {quest.progress}/{quest.target}
+        </Text>
+      </View>
+
+      <View style={styles.claimSlot}>
+        {burst && <Confetti count={16} onComplete={() => setBurst(false)} />}
+
+        {quest.claimed ? (
+          <Animated.View entering={ZoomIn.springify().damping(12)} style={styles.claimedBadge}>
+            <Text style={styles.claimedText}>✓</Text>
+          </Animated.View>
+        ) : claimable ? (
+          <Animated.View exiting={FadeOut.duration(150)} style={buttonAnimStyle}>
+            <TouchableOpacity
+              style={styles.claimButton}
+              onPress={() => onClaim(quest)}
+              disabled={disabled}
+              activeOpacity={0.8}
+            >
+              {claiming ? (
+                <ActivityIndicator size="small" color="#0D1117" />
+              ) : (
                 <Text style={styles.claimButtonText}>+{quest.xpReward} XP</Text>
-              </TouchableOpacity>
-            ) : (
-              <View style={styles.rewardBadge}>
-                <Text style={styles.rewardText}>+{quest.xpReward} XP</Text>
-              </View>
-            )}
+              )}
+            </TouchableOpacity>
+          </Animated.View>
+        ) : (
+          <View style={styles.rewardBadge}>
+            <Text style={styles.rewardText}>+{quest.xpReward} XP</Text>
           </View>
-        );
-      })}
+        )}
+      </View>
     </View>
   );
 }
@@ -175,13 +245,14 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     backgroundColor: '#58A6FF',
   },
-  progressFillDone: {
-    backgroundColor: '#39FF14',
-  },
   progressLabel: {
     fontSize: 11,
     color: '#8B949E',
     marginTop: 3,
+  },
+  claimSlot: {
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   rewardBadge: {
     backgroundColor: '#21262D',
@@ -200,6 +271,9 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     paddingVertical: 8,
     paddingHorizontal: 12,
+    minWidth: 64,
+    alignItems: 'center',
+    justifyContent: 'center',
     shadowColor: '#39FF14',
     shadowOpacity: 0.4,
     shadowRadius: 6,
