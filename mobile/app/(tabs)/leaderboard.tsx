@@ -264,12 +264,21 @@ function MedalBadge({ rank }: { rank: number }) {
 
 // ─── Leaderboard Entry ───────────────────────────────────────────────────────
 
+// Delai après la cascade des blocs d'en-tête (stats card finit ~450ms, LeagueProgressCard ~510ms)
+// pour que le stagger des lignes leur succède au lieu de les chevaucher.
+const ROW_BASE_DELAY = 200;
+const ROW_STAGGER_STEP = 40;
+const ROW_STAGGER_CAP = 10;
+
 function LeaderboardRow({
   item,
   index,
+  animateEntry = true,
 }: {
   item: LeaderboardEntry;
   index: number;
+  /** false pour la ligne "Votre position" du footer, déjà dans un wrapper animé — évite un double fade+translate. */
+  animateEntry?: boolean;
 }) {
   const isTop3 = item.rank <= 3;
   const borderColor = item.isCurrentUser
@@ -278,8 +287,10 @@ function LeaderboardRow({
     ? '#FFD70050'
     : '#30363D';
 
+  const rowDelay = ROW_BASE_DELAY + Math.min(index, ROW_STAGGER_CAP) * ROW_STAGGER_STEP;
+
   return (
-    <Animated.View entering={FadeInDown.duration(250).delay(index * 40)}>
+    <Animated.View entering={animateEntry ? FadeInDown.duration(250).delay(rowDelay) : undefined}>
       <GlassCard
         style={{ marginBottom: 8 }}
         borderColor={borderColor}
@@ -528,12 +539,12 @@ export default function LeaderboardScreen() {
             )}
 
             {/* ── Column headers ───────────────────────────────────── */}
-            <View style={styles.colHeaders}>
+            <Animated.View entering={FadeIn.duration(200).delay(180)} style={styles.colHeaders}>
               <Text style={[styles.colHeader, { width: 40 }]}>#</Text>
               <Text style={[styles.colHeader, { flex: 1 }]}>Joueur</Text>
               <Text style={[styles.colHeader, { width: 36 }]}>Ligue</Text>
               <Text style={[styles.colHeader, { width: 60, textAlign: 'right' }]}>XP</Text>
-            </View>
+            </Animated.View>
           </>
         }
         ListEmptyComponent={
@@ -570,7 +581,7 @@ export default function LeaderboardScreen() {
               >
                 <View style={styles.footerSeparator} />
                 <Text style={styles.footerLabel}>Votre position</Text>
-                <LeaderboardRow item={userPosition} index={0} />
+                <LeaderboardRow item={userPosition} index={0} animateEntry={false} />
               </Animated.View>
             ) : null}
           </>
