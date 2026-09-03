@@ -15,10 +15,12 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
-import Animated, { FadeInDown } from 'react-native-reanimated';
+import Animated, { FadeInDown, ZoomIn } from 'react-native-reanimated';
+import * as Haptics from 'expo-haptics';
 import { usersApi, AvatarShop, AvatarShopItem } from '@/api/client';
 import { useUser } from '@/hooks/useUser';
 import { Icon } from '@/components/ui/Icon';
+import { Confetti } from '@/components/animations';
 
 const RARITY_COLORS: Record<AvatarShopItem['rarity'], string> = {
   COMMON: '#8B949E',
@@ -38,6 +40,7 @@ export default function ShopScreen() {
   const { userId } = useUser();
   const [shop, setShop] = useState<AvatarShop | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [showConfetti, setShowConfetti] = useState(false);
 
   const load = useCallback(async () => {
     if (!userId) return;
@@ -91,6 +94,8 @@ export default function ShopScreen() {
             try {
               const res = await usersApi.buyAvatar(userId, item.id);
               if (res.success) {
+                setShowConfetti(true);
+                await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
                 Alert.alert('🎉 À toi !', `${item.emoji} ${item.name} est maintenant ton avatar.`);
                 await load();
               }
@@ -140,7 +145,13 @@ export default function ShopScreen() {
           const rarityColor = RARITY_COLORS[item.rarity];
           const affordable = shop.xp >= item.price;
           return (
-            <Animated.View entering={FadeInDown.delay(index * 40)} style={styles.cardWrapper}>
+            <Animated.View
+              entering={FadeInDown.delay(Math.min(Math.floor(index / 2), 8) * 60)
+                .springify()
+                .damping(16)
+                .mass(0.6)}
+              style={styles.cardWrapper}
+            >
               <TouchableOpacity
                 style={[
                   styles.card,
@@ -160,13 +171,13 @@ export default function ShopScreen() {
                 {busyId === item.id ? (
                   <ActivityIndicator size="small" color="#39FF14" />
                 ) : item.equipped ? (
-                  <View style={styles.equippedBadge}>
+                  <Animated.View entering={ZoomIn.springify().damping(12)} style={styles.equippedBadge}>
                     <Text style={styles.equippedText}>✓ Équipé</Text>
-                  </View>
+                  </Animated.View>
                 ) : item.owned ? (
-                  <View style={styles.ownedBadge}>
+                  <Animated.View entering={ZoomIn.springify().damping(12)} style={styles.ownedBadge}>
                     <Text style={styles.ownedText}>Équiper</Text>
-                  </View>
+                  </Animated.View>
                 ) : (
                   <View style={[styles.priceBadge, !affordable && styles.priceBadgeLocked]}>
                     <Icon name="zap" size={12} color={affordable ? '#0D1117' : '#8B949E'} />
@@ -180,6 +191,8 @@ export default function ShopScreen() {
           );
         }}
       />
+
+      {showConfetti && <Confetti count={80} onComplete={() => setShowConfetti(false)} />}
     </SafeAreaView>
   );
 }
