@@ -10,8 +10,8 @@ import { Icon } from '@/components/ui/Icon';
 import { MindyMascot } from '@/components/mindy';
 import { useOnboardingStore } from './onboarding/hooks/useOnboardingStore';
 
-const ADMIN_EMAIL = process.env.EXPO_PUBLIC_ADMIN_EMAIL || 'test@mindy.app';
-const ADMIN_PASSWORD = process.env.EXPO_PUBLIC_ADMIN_PASSWORD || 'test1234';
+const ADMIN_EMAIL = process.env.EXPO_PUBLIC_ADMIN_EMAIL || 'demo@mindy.app';
+const ADMIN_PASSWORD = process.env.EXPO_PUBLIC_ADMIN_PASSWORD || 'MindyDemo2026';
 
 /**
  * Login screen — primary CTA starts onboarding (new user); returning users

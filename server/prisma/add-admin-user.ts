@@ -8,14 +8,14 @@ const prisma = new PrismaClient();
  * Idempotent (upsert par email) et NON destructif — même pattern que
  * add-domain-lessons / add-domain-achievements.
  *
- * Le mot de passe suit ADMIN_PASSWORD (défaut `test1234`), qui doit rester
+ * Le mot de passe suit ADMIN_PASSWORD (défaut `MindyDemo2026`), qui doit rester
  * aligné avec EXPO_PUBLIC_ADMIN_PASSWORD côté mobile.
  *
  * Lancer une fois contre Neon :  npx ts-node prisma/add-admin-user.ts
  */
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL ?? 'test@mindy.app';
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD ?? 'test1234';
-const ADMIN_USERNAME = process.env.ADMIN_USERNAME ?? 'test_user';
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL ?? 'demo@mindy.app';
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD ?? 'MindyDemo2026';
+const ADMIN_USERNAME = process.env.ADMIN_USERNAME ?? 'mindy_demo';
 
 async function main() {
   const password = bcrypt.hashSync(ADMIN_PASSWORD, 12);
