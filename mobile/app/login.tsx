@@ -7,6 +7,7 @@ import * as Haptics from 'expo-haptics';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useUser } from '@/hooks/useUser';
 import { Icon } from '@/components/ui/Icon';
+import { MindyMascot } from '@/components/mindy';
 import { useOnboardingStore } from './onboarding/hooks/useOnboardingStore';
 
 const ADMIN_EMAIL = process.env.EXPO_PUBLIC_ADMIN_EMAIL || 'test@mindy.app';
@@ -67,10 +68,10 @@ export default function LoginScreen() {
         {/* Logo & Branding */}
         <Animated.View entering={FadeIn.duration(600)} style={styles.logoSection}>
           <View style={styles.logoContainer}>
-            <Icon name="brain" size={48} color="#39FF14" />
+            <MindyMascot mood="neutral" size={86} />
           </View>
           <Text style={styles.appName}>MINDY</Text>
-          <Text style={styles.tagline}>Apprends la crypto & la finance</Text>
+          <Text style={styles.tagline}>Le Duolingo du business</Text>
         </Animated.View>
 
         {/* Welcome */}
